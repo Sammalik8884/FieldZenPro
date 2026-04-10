@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AlertTriangle, X, Clock, Zap } from "lucide-react";
 import { apiClient } from "../services/apiClient";
@@ -10,6 +10,31 @@ interface TrialStatus {
     daysRemaining: number;
     trialEndsAt: string | null;
 }
+
+// ── Shared cache so TrialBanner + useTrialEnforcement share ONE API call ──
+let _trialCache: TrialStatus | null = null;
+let _trialFetchPromise: Promise<TrialStatus> | null = null;
+
+function fetchTrialStatusOnce(): Promise<TrialStatus> {
+    // If we already have a cached result, return it instantly
+    if (_trialCache) return Promise.resolve(_trialCache);
+    // If a fetch is already in-flight, reuse that same promise (dedup)
+    if (_trialFetchPromise) return _trialFetchPromise;
+    _trialFetchPromise = apiClient.get("/subscription/trial-status")
+        .then((res: { data: TrialStatus }) => {
+            _trialCache = res.data;
+            _trialFetchPromise = null;
+            return res.data;
+        })
+        .catch(() => {
+            _trialFetchPromise = null;
+            return { isOnTrial: false, hasActivePlan: true, isExpired: false, daysRemaining: 0, trialEndsAt: null } as TrialStatus;
+        });
+    return _trialFetchPromise;
+}
+
+// Call this on logout to clear the cache
+export function clearTrialCache() { _trialCache = null; _trialFetchPromise = null; }
 
 // Full-page blocking wall for expired trials
 export const TrialExpiredWall: React.FC = () => {
@@ -44,18 +69,17 @@ export const TrialExpiredWall: React.FC = () => {
 export const TrialBanner: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [status, setStatus] = useState<TrialStatus | null>(null);
+    const [status, setStatus] = useState<TrialStatus | null>(_trialCache);
     const [dismissed, setDismissed] = useState(false);
+    const hasFetched = useRef(false);
 
-    // Don't show on auth or subscription pages
     const isPublicRoute = ["/login", "/signup", "/subscription"].some(p => location.pathname.startsWith(p));
 
     useEffect(() => {
-        if (isPublicRoute) return;
-        apiClient.get("/subscription/trial-status")
-            .then((res: { data: TrialStatus }) => setStatus(res.data))
-            .catch(() => {}); // Silently fail
-    }, [location.pathname]);
+        if (isPublicRoute || hasFetched.current) return;
+        hasFetched.current = true;
+        fetchTrialStatusOnce().then(setStatus);
+    }, [isPublicRoute]);
 
     if (!status || status.hasActivePlan || isPublicRoute || dismissed) return null;
 
@@ -97,21 +121,21 @@ export const TrialBanner: React.FC = () => {
     );
 };
 
-// Hook to check if the trial wall should be shown
+// Hook to check if the trial wall should be shown — shares the same cached API call
 export const useTrialEnforcement = () => {
     const [shouldBlock, setShouldBlock] = useState(false);
     const location = useLocation();
     const isPublicRoute = ["/login", "/signup", "/subscription"].some(p => location.pathname.startsWith(p));
+    const hasFetched = useRef(false);
 
     useEffect(() => {
         if (isPublicRoute) { setShouldBlock(false); return; }
-        apiClient.get("/subscription/trial-status")
-            .then((res: { data: TrialStatus }) => {
-                const s: TrialStatus = res.data;
-                setShouldBlock(s.isExpired && !s.hasActivePlan);
-            })
+        if (hasFetched.current) return;
+        hasFetched.current = true;
+        fetchTrialStatusOnce()
+            .then(s => setShouldBlock(s.isExpired && !s.hasActivePlan))
             .catch(() => setShouldBlock(false));
-    }, [location.pathname]);
+    }, [isPublicRoute]);
 
     return shouldBlock;
 };

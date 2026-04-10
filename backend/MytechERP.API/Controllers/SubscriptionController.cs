@@ -92,16 +92,38 @@ namespace MytechERP.API.Controllers
             var tenantId = _currentUserService.TenantId;
             if (tenantId == null) return Unauthorized();
 
-            var features = await _subscriptionService.GetPlanFeaturesAsync(tenantId.Value);
-
-            // Also return the plan name so the frontend can show the correct label
+            // Single query — get subscription + plan in one shot
             var subscription = await _subscriptionService.GetByTenantIdAsync(tenantId.Value);
+            
+            int planFeaturesVal = 0;
+            string planName = "Trial";
+            string status = "Trial";
+
+            if (subscription != null && subscription.SubscriptionStatus == MytechERP.domain.Enums.SubscriptionStatus.Active && subscription.Plan != null)
+            {
+                planFeaturesVal = (int)subscription.Plan.PlanFeatures;
+                planName = subscription.Plan.Name;
+                status = subscription.SubscriptionStatus.ToString();
+            }
+            else
+            {
+                // Check trial — grant all features during trial
+                bool isTrialActive = await _subscriptionService.IsTrialActiveAsync(tenantId.Value);
+                if (isTrialActive)
+                {
+                    planFeaturesVal = (int)(MytechERP.domain.Enums.PlanFeature.HrPayroll |
+                                           MytechERP.domain.Enums.PlanFeature.ChecklistFormBuilder |
+                                           MytechERP.domain.Enums.PlanFeature.AuditLogs |
+                                           MytechERP.domain.Enums.PlanFeature.AdvancedAnalytics |
+                                           MytechERP.domain.Enums.PlanFeature.OfflineSync);
+                }
+            }
 
             return Ok(new
             {
-                planFeatures = (int)features,
-                planName     = subscription?.Plan?.Name ?? "Trial",
-                status       = subscription?.SubscriptionStatus.ToString() ?? "Trial"
+                planFeatures = planFeaturesVal,
+                planName,
+                status
             });
         }
 
