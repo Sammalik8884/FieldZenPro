@@ -340,4 +340,8 @@ catch (Exception ex)
 app.UseStaticFiles();
 app.MapControllers();
 app.MapHub<MytechERP.API.Hubs.SyncHub>("/hubs/sync");
+
+// Lightweight health endpoint — used by Azure "Always On" and frontend pre-warming
+app.MapGet("/api/health", () => Results.Ok(new { status = "alive", time = DateTime.UtcNow }));
+
 app.Run();
