@@ -12,7 +12,7 @@ import { ConfirmModal } from "../components/common/ConfirmModal";
 const getImageUrl = (url: string | null | undefined) => {
     if (!url) return "";
     if (url.startsWith("http")) return url;
-    let base = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:5269");
+    let base = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5269");
     base = base.replace(/\/api\/?$/, "").replace(/\/$/, "");
     const safePath = url.startsWith("/") ? url : `/${url}`;
     return `${base}${safePath}`;

@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create Axios Instance
 export const apiClient = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "/api" : "http://localhost:5269/api"),
+    baseURL: import.meta.env.PROD ? "/api" : (import.meta.env.VITE_API_URL || "http://localhost:5269/api"),
     headers: {
         "Content-Type": "application/json",
     },
@@ -41,7 +41,7 @@ apiClient.interceptors.response.use(
             if (savedCredsStr) {
                 try {
                     const creds = JSON.parse(atob(savedCredsStr));
-                    const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "/api" : "http://localhost:5269/api");
+                    const apiUrl = import.meta.env.PROD ? "/api" : (import.meta.env.VITE_API_URL || "http://localhost:5269/api");
                     // Add a 5-second timeout so the refresh can't hang forever
                     const res = await axios.post(`${apiUrl}/Auth/login`, creds, { timeout: 5000 });
 
