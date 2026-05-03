@@ -31,7 +31,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowMyFrontend", policy =>
     {
-        policy.WithOrigins(frontendUrls) 
+        policy.SetIsOriginAllowed(origin => true) 
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -74,7 +74,7 @@ builder.Services.AddScoped<IWorkflowService, WorkFlowService>();
 builder.Services.AddScoped<IQuotationRepository, QuotationRepository>();
 builder.Services.AddScoped<IQuotationService, QuotationService>();
 builder.Services.AddScoped<IProductImportService, ProductImportService>();
-builder.Services.AddScoped<IFikeProductImportService, FikeProductImportService>();
+
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<MyTechERP.Infrastructure.Services.QuotationPdfService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
@@ -162,7 +162,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins(frontendUrls)
+            policy.SetIsOriginAllowed(origin => true)
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
