@@ -67,15 +67,15 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
     return (
         <div className={cn(
-            "fixed md:static inset-y-0 left-0 z-50 flex flex-col bg-background/95 backdrop-blur-xl border-r border-border/40 text-foreground w-64 shadow-2xl transition-transform duration-300 ease-in-out md:translate-x-0 h-full",
+            "fixed md:static inset-y-0 left-0 z-50 flex flex-col bg-card border-r border-border text-foreground w-64 transition-transform duration-300 ease-in-out md:translate-x-0 h-full",
             isOpen ? "translate-x-0" : "-translate-x-full"
         )}>
             <div className="p-6 flex justify-between items-center">
                 <div className="flex items-center space-x-3">
-                    <div className="bg-primary/20 p-2 rounded-xl border border-primary/30">
-                        <Briefcase className="h-6 w-6 text-primary" />
+                    <div className="text-primary p-1">
+                        <Briefcase className="h-6 w-6" />
                     </div>
-                    <span className="text-xl font-bold tracking-wider font-mono text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+                    <span className="text-xl font-bold tracking-wide font-sans text-primary">
                         FieldZenPro
                     </span>
                 </div>
@@ -84,9 +84,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 </button>
             </div>
 
-            <nav className="flex-1 px-2 py-4 space-y-2 relative overflow-y-auto custom-scrollbar">
-                <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-background/95 to-transparent pointer-events-none z-10" />
-
+            <nav className="flex-1 py-4 space-y-1 relative overflow-y-auto custom-scrollbar">
                 {SIDEBAR_ITEMS.map((item, index) => {
                     if (item.allowedRoles && !hasRole(item.allowedRoles)) {
                         return null;
@@ -128,14 +126,14 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                                     to={href}
                                     onClick={() => { if (isOpen) onClose(); }}
                                     className={cn(
-                                        "flex items-center justify-between space-x-3 px-4 py-3 rounded-lg transition-all duration-300 relative overflow-hidden group font-medium text-sm",
+                                        "flex items-center justify-between space-x-3 pl-6 pr-4 py-2.5 rounded-r-full mr-3 transition-colors duration-200 font-medium text-sm",
                                         isActive
-                                            ? "bg-primary/10 text-primary border-l-4 border-primary"
-                                            : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground hover:translate-x-1"
+                                            ? "bg-accent text-primary"
+                                            : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                                     )}
                                 >
-                                    <div className="flex items-center space-x-3">
-                                        <item.icon className="h-5 w-5" />
+                                    <div className="flex items-center space-x-4">
+                                        <item.icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
                                         <span>{item.label}</span>
                                     </div>
                                 </NavLink>
@@ -195,22 +193,22 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 })}
             </nav>
 
-            <div className="p-4 border-t border-border/40 bg-secondary/30">
+            <div className="p-4 border-t border-border bg-card">
                 <div className="flex items-center space-x-3 mb-4 px-2">
-                    <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 shadow-[0_0_15px_rgba(var(--primary),0.3)]">
+                    <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center">
                         <span className="text-primary font-bold">
                             {user?.fullName?.[0] || 'U'}
                         </span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-sm font-semibold truncate w-32">{user?.fullName || 'User'}</span>
+                        <span className="text-sm font-semibold text-foreground truncate w-32">{user?.fullName || 'User'}</span>
                         <span className="text-xs text-muted-foreground truncate w-32">{user?.email}</span>
                     </div>
                 </div>
 
                 <button
                     onClick={logout}
-                    className="w-full flex items-center justify-center space-x-2 px-4 py-2 mt-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive hover:text-foreground transition-all duration-300"
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-2 mt-2 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors duration-200"
                 >
                     <LogOut className="h-4 w-4" />
                     <span className="text-sm font-medium">Sign out</span>

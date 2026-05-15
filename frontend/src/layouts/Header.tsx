@@ -119,7 +119,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
     };
 
     return (
-        <header className="h-16 border-b border-border/40 bg-background/50 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between px-4 md:px-8 shadow-sm">
+        <header className="h-16 border-b border-border bg-card sticky top-0 z-40 flex items-center justify-between px-4 md:px-8">
             <div className="flex flex-1 items-center space-x-2 md:space-x-4">
                 <button
                     onClick={onMenuClick}
@@ -139,12 +139,12 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
                             setShowDropdown(true);
                         }}
                         onFocus={() => setShowDropdown(true)}
-                        className="w-full bg-secondary/30 border border-border rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all shadow-inner"
+                        className="w-full bg-muted border-none rounded-full pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:bg-card focus:shadow-md transition-all text-foreground"
                     />
                     
                     {/* Search Dropdown */}
                     {showDropdown && searchQuery.length >= 2 && (
-                        <div className="absolute top-full mt-2 w-full max-w-md bg-card/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl overflow-hidden z-50">
+                        <div className="absolute top-full mt-2 w-full max-w-md bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50">
                             {isSearching ? (
                                 <div className="p-4 flex justify-center items-center text-muted-foreground">
                                     <Loader2 className="h-5 w-5 animate-spin mr-2" /> Searching...
@@ -198,8 +198,8 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
 
                     {/* Notification Dropdown */}
                     {showNotifDropdown && (
-                        <div className="absolute right-0 top-full mt-2 w-80 md:w-96 bg-card/95 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl overflow-hidden z-50 flex flex-col max-h-[400px]">
-                            <div className="p-4 border-b border-border/40 flex justify-between items-center bg-secondary/20">
+                        <div className="absolute right-0 top-full mt-2 w-80 md:w-96 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50 flex flex-col max-h-[400px]">
+                            <div className="p-4 border-b border-border flex justify-between items-center bg-muted">
                                 <h3 className="font-semibold text-foreground">Notifications</h3>
                                 {unreadCount > 0 && (
                                     <button 

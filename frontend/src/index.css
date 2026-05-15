@@ -3,41 +3,41 @@
 
 @layer base {
   :root {
-    /* Google Light Theme */
-    --background: 210 17% 98%; /* F8F9FA */
+    /* Google Material Light Theme */
+    --background: 0 0% 100%; /* FFFFFF */
     --foreground: 210 6% 13%; /* 202124 */
 
     --card: 0 0% 100%; /* FFFFFF */
-    --card-foreground: 210 6% 13%;
+    --card-foreground: 210 6% 13%; /* 202124 */
 
     --popover: 0 0% 100%;
     --popover-foreground: 210 6% 13%;
 
-    --primary: 217 89% 61%; /* 4285F4 */
+    --primary: 213 82% 51%; /* 1A73E8 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 17% 98%;
+    --secondary: 210 17% 98%; /* F8F9FA */
     --secondary-foreground: 210 6% 13%;
 
     --muted: 215 16% 94%; /* F1F3F4 */
     --muted-foreground: 215 5% 39%; /* 5F6368 */
 
-    --accent: 215 16% 94%;
-    --accent-foreground: 210 6% 13%;
+    --accent: 216 66% 95%; /* E8F0FE */
+    --accent-foreground: 213 82% 51%; /* 1A73E8 */
 
     --destructive: 5 81% 56%; /* EA4335 */
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 9% 87%; /* DADCE0 */
     --input: 220 9% 87%;
-    --ring: 217 89% 61%;
+    --ring: 213 82% 51%;
 
     --radius: 0.5rem;
   }
 
   /* Force light theme always */
   :root.dark {
-    --background: 210 17% 98%;
+    --background: 0 0% 100%;
     --foreground: 210 6% 13%;
 
     --card: 0 0% 100%;
@@ -46,7 +46,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 210 6% 13%;
 
-    --primary: 217 89% 61%;
+    --primary: 213 82% 51%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 17% 98%;
@@ -55,15 +55,15 @@
     --muted: 215 16% 94%;
     --muted-foreground: 215 5% 39%;
 
-    --accent: 215 16% 94%;
-    --accent-foreground: 210 6% 13%;
+    --accent: 216 66% 95%;
+    --accent-foreground: 213 82% 51%;
 
     --destructive: 5 81% 56%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 9% 87%;
     --input: 220 9% 87%;
-    --ring: 217 89% 61%;
+    --ring: 213 82% 51%;
   }
 }
 
@@ -191,23 +191,21 @@
 
 /* ====== GLASSMORPHISM UTILITY ====== */
 .glass {
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: hsl(var(--background));
 }
 
 /* ====== PREMIUM CARD STYLES ====== */
 .premium-card {
-  @apply bg-card border border-border rounded-2xl shadow-sm;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  @apply bg-card border border-border rounded-xl shadow-sm;
+  transition: box-shadow 0.2s ease-in-out;
 }
 .premium-card:hover {
-  @apply shadow-lg border-primary/20;
-  transform: translateY(-2px);
+  @apply shadow-md;
 }
 
 /* ====== GRADIENT TEXT UTILITY ====== */
 .gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+  @apply text-primary font-medium;
 }
 
 /* ====== LOADING SKELETON ====== */
