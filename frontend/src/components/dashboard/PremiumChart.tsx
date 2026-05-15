@@ -127,21 +127,21 @@ export const PremiumChart: React.FC<PremiumChartProps> = ({
     };
 
     return (
-        <div className="bg-card/50 backdrop-blur border border-border/60 rounded-2xl p-5 hover:border-border transition-colors">
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm transition-shadow hover:shadow-md">
             <div className="flex items-start justify-between mb-4">
                 <div>
                     <h3 className="font-bold text-foreground text-sm">{title}</h3>
                     {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
                 </div>
-                <div className="flex items-center bg-background/80 border border-border rounded-lg p-0.5 space-x-0.5">
+                <div className="flex items-center bg-muted rounded-lg p-1 space-x-1">
                     {allowedTypes.map(t => (
                         <button
                             key={t}
                             onClick={() => setChartType(t)}
-                            className={`flex items-center space-x-1 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all
+                            className={`flex items-center space-x-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all
                                 ${chartType === t
-                                    ? 'bg-primary text-primary-foreground shadow'
-                                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                                    ? 'bg-card text-primary shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground'
                                 }`}
                         >
                             {typeConfig[t].icon}

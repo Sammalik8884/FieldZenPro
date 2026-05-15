@@ -219,14 +219,14 @@ export const DashboardPage: React.FC = () => {
                                 height={200}
                             />
                             {/* Embedded Pipeline Summary within charts area */}
-                            <div className="bg-gradient-to-br from-violet-950/40 via-indigo-950/30 to-blue-950/20 border border-violet-500/20 rounded-2xl p-4 flex items-center justify-between">
+                            <div className="bg-card border border-border rounded-xl p-6 flex items-center justify-between shadow-sm">
                                 <div>
-                                    <p className="text-xs uppercase tracking-widest text-violet-400 font-bold mb-1">Total Pipeline Value</p>
-                                    <p className="text-4xl font-black text-white">{fmt(metrics.totalQuotationValue)}</p>
+                                    <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">Total Pipeline Value</p>
+                                    <p className="text-4xl font-black text-primary">{fmt(metrics.totalQuotationValue)}</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">Pending Quotes</p>
-                                    <p className="text-3xl font-bold text-amber-400">{metrics.pendingQuotations}</p>
+                                    <p className="text-3xl font-bold text-foreground">{metrics.pendingQuotations}</p>
                                 </div>
                             </div>
                         </div>
