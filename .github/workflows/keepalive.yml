@@ -2,9 +2,10 @@ name: Keep Azure App Service Alive
 
 on:
   schedule:
-    # Runs every 15 minutes to prevent IIS worker process from going idle.
-    # Azure App Service usually sleeps after 20 minutes of inactivity.
-    - cron: '*/15 * * * *'
+    # Runs every 5 minutes (the most frequent interval GitHub Actions supports).
+    # This prevents the Azure IIS worker process from ever going idle,
+    # completely eliminating the 20-30 second cold start delay.
+    - cron: '*/5 * * * *'
   # Allow running manually from the Actions tab
   workflow_dispatch:
 
@@ -13,12 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Azure Web API
-        # Pings the application to keep it awake.
-        # It's recommended to ping a lightweight endpoint like /swagger/index.html or a custom /api/health
+        # Pings the backend health endpoint to keep it awake.
         run: |
-          curl -sS https://mytecherpapi20260322094207-fnfwfsf5bshubmfs.francecentral-01.azurewebsites.net > /dev/null
+          curl -sS https://mytecherp-backend-69091.azurewebsites.net/api/health > /dev/null
           
-      - name: Ping Azure Web Frontend (if applicable)
-        # Assuming you also have a frontend hosted on Azure that needs keeping awake
+      - name: Ping Vercel Frontend
+        # Pings the frontend to keep serverless functions warm
         run: |
-          curl -sS https://mytech-erp-drg7f9gqcxgahggv.austriaeast-01.azurewebsites.net > /dev/null
+          curl -sS https://fieldzenpro.com > /dev/null
