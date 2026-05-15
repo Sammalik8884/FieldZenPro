@@ -219,7 +219,7 @@ export const QuotationFormPage = () => {
                     <ArrowLeft className="h-5 w-5" />
                 </button>
                 <div>
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+                    <h1 className="text-3xl font-bold text-foreground">
                         {isEditMode ? "Edit Quotation" : "Create Quotation"}
                     </h1>
                     <p className="text-muted-foreground mt-1 text-sm">Build a detailed sales quotation for your customer.</p>

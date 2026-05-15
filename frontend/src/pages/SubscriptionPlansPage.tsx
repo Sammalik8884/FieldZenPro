@@ -58,7 +58,7 @@ export const SubscriptionPlansPage: React.FC = () => {
                 className="mb-12 text-center"
             >
                 <h1 className="mb-4 text-4xl font-extrabold tracking-tight lg:text-5xl">
-                    Choose Your <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">Power Plan</span>
+                    Choose Your <span className="text-primary">Power Plan</span>
                 </h1>
                 <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
                     Scale your operations unconditionally with our industry-leading ERP tools. No hidden fees, just pure productivity.

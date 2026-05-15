@@ -91,7 +91,7 @@ export const DashboardPage: React.FC = () => {
             <div className="min-h-screen p-8 animate-in fade-in duration-500">
                 <h1 className="text-4xl font-black tracking-tight text-foreground leading-tight">
                     {greeting},&nbsp;
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-cyan-400 to-blue-400">
+                    <span className="text-primary">
                         {user?.fullName?.split(' ')[0] ?? 'User'}
                     </span>
                 </h1>
@@ -110,7 +110,7 @@ export const DashboardPage: React.FC = () => {
                 <div>
                     <h1 className="text-4xl font-black tracking-tight text-foreground leading-tight">
                         {greeting},&nbsp;
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-cyan-400 to-blue-400">
+                        <span className="text-primary">
                             {user?.fullName?.split(' ')[0] ?? 'Admin'}
                         </span>
                     </h1>

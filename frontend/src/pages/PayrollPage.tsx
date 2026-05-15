@@ -172,7 +172,7 @@ export const PayrollPage = () => {
             {/* Header section */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 relative z-10">
                 <div>
-                    <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary via-indigo-400 to-accent flex items-center gap-3">
+                    <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground flex items-center gap-3">
                         <div className="p-2.5 bg-primary/10 rounded-2xl border border-primary/20 backdrop-blur-md">
                             <DollarSign className="h-8 w-8 text-primary shadow-primary/50" />
                         </div>

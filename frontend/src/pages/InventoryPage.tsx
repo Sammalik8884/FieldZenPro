@@ -316,7 +316,7 @@ export const InventoryPage = () => {
         <div className="p-8 animate-in fade-in duration-500">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
                         <Package className="h-8 w-8 text-primary" />
                         Inventory & Distribution
                     </h1>

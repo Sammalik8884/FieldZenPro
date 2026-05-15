@@ -113,7 +113,7 @@ export const CustomersPage = () => {
         <div className="p-8 animate-in fade-in duration-500">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Customers</h1>
+                    <h1 className="text-3xl font-bold text-foreground">Customers</h1>
                     <p className="text-muted-foreground mt-1 text-sm">Manage your client base and contacts.</p>
                 </div>
                 <button

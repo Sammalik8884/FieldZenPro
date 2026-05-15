@@ -66,7 +66,7 @@ export const MyJobsPage = () => {
     return (
         <div className="p-4 md:p-8 max-w-4xl mx-auto animate-in fade-in duration-500">
             <div className="mb-6">
-                <h1 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent flex items-center gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
                     <Wrench className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                     My Jobs
                 </h1>

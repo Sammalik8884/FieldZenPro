@@ -178,7 +178,7 @@ export const ProductsPage = () => {
         <div className="p-8 animate-in fade-in duration-500">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Products & Services</h1>
+                    <h1 className="text-3xl font-bold text-foreground">Products & Services</h1>
                     <p className="text-muted-foreground mt-1 text-sm">Manage your catalog of items and services.</p>
                 </div>
                 <div className="flex space-x-3">

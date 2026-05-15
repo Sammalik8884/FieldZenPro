@@ -78,7 +78,7 @@ export const ResetPasswordPage = () => {
                         <div className="h-16 w-16 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 border border-primary/30 shadow-[0_0_30px_rgba(var(--primary),0.3)]">
                             <Key className="h-8 w-8 text-primary" />
                         </div>
-                        <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-white to-white/60">
+                        <h1 className="text-3xl font-extrabold tracking-tight text-white">
                             Create New Password
                         </h1>
                         <p className="text-muted-foreground mt-2 text-sm">
