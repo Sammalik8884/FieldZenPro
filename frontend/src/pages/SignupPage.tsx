@@ -63,7 +63,7 @@ export const SignupPage = () => {
                             Create an Account
                         </h1>
                         <p className="text-muted-foreground mt-2 text-sm">
-                            Sign up to get started with Firetech ERP.
+                            Sign up to get started with FieldZenPro.
                         </p>
                     </div>
 

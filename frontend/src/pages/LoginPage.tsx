@@ -92,7 +92,7 @@ export const LoginPage = () => {
                                     Welcome Back
                                 </h1>
                                 <p className="text-muted-foreground mt-2 text-sm">
-                                    Sign in to secure Firetech ERP access.
+                                    Sign in to secure FieldZenPro access.
                                 </p>
                             </div>
 

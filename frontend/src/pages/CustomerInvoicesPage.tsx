@@ -76,7 +76,7 @@ export const CustomerInvoicesPage = () => {
                         <Receipt className="h-7 w-7 text-primary" />
                         My Invoices
                     </h1>
-                    <p className="text-muted-foreground text-sm mt-0.5">View and pay your invoices from FiretechERP.</p>
+                    <p className="text-muted-foreground text-sm mt-0.5">View and pay your invoices from FieldZenPro.</p>
                 </div>
             </div>
 

@@ -14,7 +14,7 @@ export const CustomerPortalLayout = () => {
                         <Building2 className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                        <div className="text-sm font-bold text-foreground tracking-wide">FiretechERP</div>
+                        <div className="text-sm font-bold text-foreground tracking-wide">FieldZenPro</div>
                         <div className="text-[10px] text-primary/70 uppercase tracking-widest font-medium">Customer Portal</div>
                     </div>
                 </div>
@@ -69,7 +69,7 @@ export const CustomerPortalLayout = () => {
 
             {/* Footer */}
             <footer className="border-t border-border/50 py-4 text-center text-xs text-gray-600">
-                &copy; {new Date().getFullYear()} FiretechERP — Secure Customer Portal
+                &copy; {new Date().getFullYear()} FieldZenPro — Secure Customer Portal
             </footer>
         </div>
     );

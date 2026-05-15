@@ -76,7 +76,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                         <Briefcase className="h-6 w-6 text-primary" />
                     </div>
                     <span className="text-xl font-bold tracking-wider font-mono text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-                        FiretechERP
+                        FieldZenPro
                     </span>
                 </div>
                 <button onClick={onClose} className="md:hidden p-2 text-muted-foreground hover:bg-secondary/50 rounded-lg">
