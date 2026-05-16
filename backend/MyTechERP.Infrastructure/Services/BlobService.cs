@@ -1,4 +1,4 @@
-﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -13,18 +13,26 @@ namespace MyTechERP.Infrastructure.Services
 {
     public class BlobService : IBlobService
     {
-        private readonly BlobServiceClient _blobServiceClient;
+        private readonly string _connectionString;
         private readonly string _containerName = "evidence-vault";
 
         public BlobService(IConfiguration configuration)
         {
-            string connectionString = configuration.GetConnectionString("AzureStorage");
-            _blobServiceClient = new BlobServiceClient(connectionString);
+            _connectionString = configuration.GetConnectionString("AzureStorage") ?? string.Empty;
+        }
+
+        private BlobServiceClient GetClient()
+        {
+            if (string.IsNullOrEmpty(_connectionString) || !_connectionString.Contains("="))
+            {
+                throw new InvalidOperationException("Azure Storage connection string is missing or improperly formatted. Please configure 'ConnectionStrings:AzureStorage' in your environment.");
+            }
+            return new BlobServiceClient(_connectionString);
         }
 
         public async Task<string> UploadAsync(IFormFile file, string fileName)
         {
-            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+            var containerClient = GetClient().GetBlobContainerClient(_containerName);
 
             try
             {
@@ -48,7 +56,7 @@ namespace MyTechERP.Infrastructure.Services
 
         public async Task<string> UploadStreamAsync(System.IO.Stream stream, string fileName, string contentType)
         {
-            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+            var containerClient = GetClient().GetBlobContainerClient(_containerName);
             try
             {
                 await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
