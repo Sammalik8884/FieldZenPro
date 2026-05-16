@@ -191,7 +191,7 @@ export const ProductsPage = () => {
  </button>
  <button
  onClick={() => handleOpenModal()}
- className="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium hover:-translate-y-0.5 transition-all shadow-lg hover:shadow-primary/25 flex items-center space-x-2"
+ className="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium hover:-translate-y-0.5 transition-all shadow-sm flex items-center space-x-2"
  >
  <Plus className="h-5 w-5" />
  <span>Add Item</span>
@@ -480,7 +480,7 @@ export const ProductsPage = () => {
  <button
  type="submit"
  disabled={importLoading}
- className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:-translate-y-0.5 transition-transform flex items-center space-x-2 shadow-lg hover:shadow-primary/25"
+ className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:-translate-y-0.5 transition-transform flex items-center space-x-2 shadow-sm"
  >
  {importLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
  <span>Upload & Import</span>

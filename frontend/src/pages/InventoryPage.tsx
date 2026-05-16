@@ -335,14 +335,14 @@ export const InventoryPage = () => {
  </button>
  <button
  onClick={() => setShowAddStockModal(true)}
- className="bg-green-600 text-foreground px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-500 transition-all font-medium hover:shadow-lg hover:shadow-green-500/20 active:scale-95"
+ className="bg-green-600 text-foreground px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-500 transition-all font-medium hover:shadow-sm active:scale-95"
  >
  <PlusCircle className="h-4 w-4" />
  <span className="hidden sm:inline">Add Stock</span>
  </button>
  <button
  onClick={() => setShowTransferModal(true)}
- className="bg-primary text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-all font-medium border border-primary hover:shadow-lg hover:shadow-primary/20 active:scale-95"
+ className="bg-primary text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-all font-medium border border-primary hover:shadow-sm active:scale-95"
  >
  <ArrowRightLeft className="h-4 w-4" />
  <span className="hidden sm:inline">Transfer Stock</span>

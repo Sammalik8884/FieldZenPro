@@ -283,7 +283,7 @@ export const WorkOrdersPage = () => {
  </div>
  <button
  onClick={() => setIsCreateModalOpen(true)}
- className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold transition-all hover:-translate-y-0.5 active:scale-95 shadow-lg shadow-primary/25"
+ className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold transition-all hover:-translate-y-0.5 active:scale-95 shadow-sm"
  >
  <PlusCircle className="h-5 w-5" />
  New Work Order

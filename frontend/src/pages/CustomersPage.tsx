@@ -118,7 +118,7 @@ export const CustomersPage = () => {
  </div>
  <button
  onClick={() => handleOpenModal()}
- className="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium hover:-translate-y-0.5 transition-all shadow-lg hover:shadow-primary/25 flex items-center space-x-2"
+ className="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium hover:-translate-y-0.5 transition-all shadow-sm flex items-center space-x-2"
  >
  <Plus className="h-5 w-5" />
  <span>Add Customer</span>

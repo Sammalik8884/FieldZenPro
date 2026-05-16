@@ -55,7 +55,7 @@ export const StatCard: React.FC<StatCardProps> = ({
                 className={`
                     relative group overflow-hidden rounded-2xl p-5 border-l-4 ${dc.accentBorder}
                     ${dc.bg} border ${dc.border}
-                    shadow-lg shadow-black/20
+                    shadow-sm
                     transition-all duration-300 ease-out
                     ${href ? 'cursor-pointer hover:shadow-xl hover:-translate-y-1 hover:scale-[1.01]' : ''}
                     animate-slide-up

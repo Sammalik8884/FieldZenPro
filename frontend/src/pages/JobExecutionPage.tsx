@@ -450,7 +450,7 @@ export const JobExecutionPage = () => {
  <button
  type="submit"
  disabled={actionLoading || !notes}
- className="w-full bg-primary text-primary-foreground font-semibold py-3.5 flex items-center justify-center gap-2 rounded-xl hover:-translate-y-0.5 transition-all shadow-lg hover:shadow-primary/30 disabled:opacity-50 disabled:hover:translate-y-0"
+ className="w-full bg-primary text-primary-foreground font-semibold py-3.5 flex items-center justify-center gap-2 rounded-xl hover:-translate-y-0.5 transition-all shadow-sm disabled:opacity-50 disabled:hover:translate-y-0"
  >
  {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
  <span>Complete & Lock Job</span>

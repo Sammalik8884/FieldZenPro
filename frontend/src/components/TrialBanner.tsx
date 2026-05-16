@@ -53,7 +53,7 @@ export const TrialExpiredWall: React.FC = () => {
                 <div className="space-y-3">
                     <button
                         onClick={() => navigate("/subscription/plans")}
-                        className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+                        className="w-full bg-primary text-primary-foreground font-semibold py-3 rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-sm"
                     >
                         <Zap className="w-4 h-4" />
                         Choose a Plan — From $49/mo

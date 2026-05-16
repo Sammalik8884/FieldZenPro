@@ -165,7 +165,7 @@ export const ContractsPage = () => {
  </div>
  <button
  onClick={() => setIsModalOpen(true)}
- className="bg-primary text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-all font-medium border border-primary hover:shadow-lg hover:shadow-primary/20 active:scale-95"
+ className="bg-primary text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-all font-medium border border-primary hover:shadow-sm active:scale-95"
  >
  <Plus className="h-4 w-4" />
  <span className="hidden sm:inline">New AMC</span>

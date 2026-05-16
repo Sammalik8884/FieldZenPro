@@ -286,7 +286,7 @@ export const ProcurementPage = () => {
  <span className="hidden sm:inline">Add Vendor</span>
  </button>
  <button
- className="bg-primary text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-all font-medium border border-primary hover:shadow-lg hover:shadow-primary/20 active:scale-95"
+ className="bg-primary text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary/90 transition-all font-medium border border-primary hover:shadow-sm active:scale-95"
  onClick={() => setShowPOModal(true)}
  >
  <ShoppingCart className="h-4 w-4" />
@@ -764,7 +764,7 @@ export const ProcurementPage = () => {
  </div> <button
  type="submit"
  disabled={isSubmittingPO}
- className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/25 flex justify-center items-center mt-6 disabled:opacity-50"
+ className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-sm flex justify-center items-center mt-6 disabled:opacity-50"
  >
  {isSubmittingPO ? <><Loader2 className="animate-spin h-5 w-5 mr-2" /> Processing...</> : (editingPO ? "Update Purchase Order" : "Create Purchase Order")}
  </button>

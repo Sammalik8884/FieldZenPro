@@ -500,7 +500,7 @@ export const QuotationFormPage = () => {
  <button
  type="submit"
  disabled={saving || uiItems.filter(i => i.productId !== 0).length === 0}
- className="px-6 py-2.5 text-sm font-bold bg-primary text-primary-foreground rounded-xl hover:-translate-y-0.5 transition-transform flex items-center space-x-2 shadow-lg hover:shadow-primary/25 disabled:opacity-50 disabled:hover:translate-y-0"
+ className="px-6 py-2.5 text-sm font-bold bg-primary text-primary-foreground rounded-xl hover:-translate-y-0.5 transition-transform flex items-center space-x-2 shadow-sm disabled:opacity-50 disabled:hover:translate-y-0"
  >
  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
  <span>{isEditMode ? "Update Quotation" : "Save Quotation"}</span>

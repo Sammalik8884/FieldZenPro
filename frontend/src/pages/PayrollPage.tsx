@@ -285,13 +285,13 @@ export const PayrollPage = () => {
  <div className="inline-flex bg-secondary p-1.5 rounded-full border border-border ">
  <button
  onClick={() => setActiveTab("payslips")}
- className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${activeTab === "payslips" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-muted-foreground hover:text-white hover:bg-muted"}`}
+ className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${activeTab === "payslips" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10"}`}
  >
  <FileText className="h-4 w-4" /> Payslips Record
  </button>
  <button
  onClick={() => setActiveTab("profiles")}
- className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${activeTab === "profiles" ? "bg-accent text-white shadow-lg shadow-accent/25" : "text-muted-foreground hover:text-white hover:bg-muted"}`}
+ className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${activeTab === "profiles" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10"}`}
  >
  <UserCircle className="h-4 w-4" /> Salary Profiles
  </button>
@@ -411,7 +411,7 @@ export const PayrollPage = () => {
  <button
  onClick={() => handleApproveAndPay(ps.id)}
  disabled={processingId === ps.id}
- className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 rounded-lg transition-all font-semibold disabled:opacity-50 hover:shadow-lg hover:shadow-emerald-500/20"
+ className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 rounded-lg transition-all font-semibold disabled:opacity-50 hover:shadow-sm"
  >
  {processingId === ps.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
  <span>Disburse</span>
