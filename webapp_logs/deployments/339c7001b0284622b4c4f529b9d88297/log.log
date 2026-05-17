@@ -1,0 +1,29 @@
+2026-05-11T00:10:57.4635018Z,Updating submodules.,20338c9c-684d-438d-bf83-a1a3f5b77bdf,0
+2026-05-11T00:10:57.4947540Z,Preparing deployment for commit id '339c7001b0'.,c33b9b93-2de1-4951-8bf3-91508664c2d7,0
+2026-05-11T00:10:57.5729308Z,Running build. Project type: OneDeploy,c3652b88-07ca-42c6-9414-739b2a8acda5,0
+2026-05-11T00:10:57.6041826Z,Copying the manifest,f1141cec-16b6-47b0-bc17-6218c256acfd,0
+2026-05-11T00:10:57.6354311Z,Clean deploying to C:\home\site\wwwroot,6830c166-7258-43be-a182-166eb947525b,0
+2026-05-11T00:10:57.6674632Z,Generating deployment script.,13e188c1-7b1a-4dac-88bd-56fe0e1b9280,0
+	2026-05-11T00:10:57.6830864Z,Using cached version of deployment script (command: 'azure -y --no-dot-deployment -r "C:\local\Temp\zipdeploy\extracted" -o "C:\home\site\deployments\tools" --basic --sitePath "C:\local\Temp\zipdeploy\extracted"').,,0
+2026-05-11T00:10:57.7302292Z,Running deployment command...,2701b3a7-33bd-4391-ab55-7386a634a7d7,0
+	2026-05-11T00:10:57.7302292Z,Command: "C:\home\site\deployments\tools\deploy.cmd",,0
+	2026-05-11T00:10:57.8396440Z,Handling Basic Web Site deployment.,,0
+	2026-05-11T00:10:58.1365172Z,Creating app_offline.htm,,0
+	2026-05-11T00:10:58.1521431Z,KuduSync.NET from: 'C:\local\Temp\zipdeploy\extracted' to: 'C:\home\site\wwwroot',,0
+	2026-05-11T00:10:58.1521431Z,Copying file: 'MytechERP.API.dll',,0
+	2026-05-11T00:10:58.1677665Z,Copying file: 'MytechERP.API.exe',,0
+	2026-05-11T00:10:58.1677665Z,Copying file: 'MytechERP.API.pdb',,0
+	2026-05-11T00:10:58.1834014Z,Copying file: 'MytechERP.Application.dll',,0
+	2026-05-11T00:10:58.1990195Z,Copying file: 'MytechERP.Application.pdb',,0
+	2026-05-11T00:10:58.1990195Z,Copying file: 'MytechERP.domain.dll',,0
+	2026-05-11T00:10:58.2146437Z,Copying file: 'MytechERP.domain.pdb',,0
+	2026-05-11T00:10:58.2146437Z,Copying file: 'MyTechERP.Infrastructure.dll',,0
+	2026-05-11T00:10:58.2302648Z,Copying file: 'MyTechERP.Infrastructure.pdb',,0
+	2026-05-11T00:10:58.2302648Z,Deleting app_offline.htm,,0
+	2026-05-11T00:10:58.2458898Z,Finished successfully.,,0
+2026-05-11T00:10:58.2771407Z,Build completed succesfully.,1a36043c-a563-4d62-8cbc-ec08b0df7a7b,0
+2026-05-11T00:10:58.2927645Z,Running post deployment command(s)...,f206fa78-0c97-494c-a9cc-472235521c39,0
+2026-05-11T00:10:58.3240247Z,Requesting site restart,cf56298e-4ee0-443d-a180-f6d46749b0b1,0
+2026-05-11T00:10:58.3552731Z,Requesting site restart. Attempt #1,6d1bb457-da9d-4123-9267-83242ce10b6f,0
+2026-05-11T00:10:58.4490161Z,Successfully requested a restart. Attempt #1,e93b546f-7ac4-48c3-b8b6-f21f0c2d3f50,0
+2026-05-11T00:10:58.4802684Z,Deployment successful.,921436e3-7ee0-4cf4-893d-a33b4cdf4c16,0

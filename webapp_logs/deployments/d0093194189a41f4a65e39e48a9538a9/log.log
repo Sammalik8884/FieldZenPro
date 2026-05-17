@@ -1,0 +1,22 @@
+2026-05-11T00:00:13.7944785Z,Updating submodules.,c25bfc6f-1187-4f22-aaea-b37c2dd68032,0
+2026-05-11T00:00:13.8257271Z,Preparing deployment for commit id 'd009319418'.,44868bbf-bab4-48a8-b1bd-85fe3a24ec10,0
+2026-05-11T00:00:13.9038587Z,Running build. Project type: OneDeploy,e227651e-227b-423d-a665-97fa74c10356,0
+2026-05-11T00:00:13.9194832Z,Copying the manifest,8486d683-e56e-40b4-bd3a-e3f3f9fa66af,0
+2026-05-11T00:00:13.9507276Z,Clean deploying to C:\home\site\wwwroot,0cfe1866-b23f-45e5-b2cd-820ecf48da3e,0
+2026-05-11T00:00:13.9819779Z,Generating deployment script.,ff766e28-597c-4904-ad9b-1e47078bbfd4,0
+	2026-05-11T00:00:13.9976049Z,Using cached version of deployment script (command: 'azure -y --no-dot-deployment -r "C:\local\Temp\zipdeploy\extracted" -o "C:\home\site\deployments\tools" --basic --sitePath "C:\local\Temp\zipdeploy\extracted"').,,0
+2026-05-11T00:00:14.0913543Z,Running deployment command...,039fbd87-afda-4ea9-b0b1-f21f9ac51a52,0
+	2026-05-11T00:00:14.1069840Z,Command: "C:\home\site\deployments\tools\deploy.cmd",,0
+	2026-05-11T00:00:14.2163561Z,Handling Basic Web Site deployment.,,0
+	2026-05-11T00:00:14.4194770Z,Creating app_offline.htm,,0
+	2026-05-11T00:00:14.4351050Z,KuduSync.NET from: 'C:\local\Temp\zipdeploy\extracted' to: 'C:\home\site\wwwroot',,0
+	2026-05-11T00:00:14.4351050Z,Copying file: 'MyTechERP.Infrastructure.dll',,0
+	2026-05-11T00:00:14.4507282Z,Copying file: 'MyTechERP.Infrastructure.pdb',,0
+	2026-05-11T00:00:14.4507282Z,Deleting app_offline.htm,,0
+	2026-05-11T00:00:14.4663531Z,Finished successfully.,,0
+2026-05-11T00:00:14.4819831Z,Build completed succesfully.,fe16fff3-aa3e-48f5-aff1-d3cec081ec0a,0
+2026-05-11T00:00:14.5132288Z,Running post deployment command(s)...,75eccb40-14c2-4fba-8f4a-72e6d5222b16,0
+2026-05-11T00:00:14.5444784Z,Requesting site restart,addac620-69d5-4382-bd5b-2fa5e562bb73,0
+2026-05-11T00:00:14.5757345Z,Requesting site restart. Attempt #1,3f2626ef-a632-48c7-a62d-5db4c8609975,0
+2026-05-11T00:00:14.7007275Z,Successfully requested a restart. Attempt #1,6fd8df4c-97bf-4a39-bef7-de7427e14d5c,0
+2026-05-11T00:00:14.7319774Z,Deployment successful.,5a9590dd-9b88-4308-940f-caea48b1c029,0

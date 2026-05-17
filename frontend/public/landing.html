@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="google-site-verification" content="tdpdsyArJFNcbSQIYoakUNiyew4_qlX4OFgHm_wy7_4" />
 <meta charset="UTF-8" />
+<meta name="google-site-verification" content="tdpdsyArJFNcbSQIYoakUNiyew4_qlX4OFgHm_wy7_4" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>FieldZenPro — Cloud Based Field Service Management Software</title>
 <meta name="description" content="The all-in-one field service management software for HVAC, plumbing, and service businesses. Master scheduling, dispatch, and work orders in one platform." />
@@ -23,12 +23,12 @@
   --success:#34A853;
   --warning:#FBBC05;
 }
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
+html{scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:clip;line-height:1.6}
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:68px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all .3s}
-.nav-logo{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px}
+.nav-logo{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px;text-decoration:none;display:inline-block}
 .nav-links{display:flex;gap:2.5rem;list-style:none}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
 .nav-links a:hover{color:var(--text)}
@@ -214,10 +214,10 @@ main{position:relative;z-index:1}
 .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 
 /* MOBILE DRAWER */
-.mobile-menu{display:none;position:fixed;top:68px;left:0;right:0;z-index:99;background:rgba(5,9,20,0.97);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:1.5rem;flex-direction:column;gap:.5rem;transform:translateY(-10px);opacity:0;transition:transform .3s ease, opacity .3s ease}
-.mobile-menu.open{transform:translateY(0);opacity:1}
-.mobile-menu a{display:block;padding:.85rem 1rem;color:var(--muted);text-decoration:none;font-size:1rem;font-weight:500;border-radius:10px;transition:all .2s}
-.mobile-menu a:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+.mobile-menu{display:none;position:fixed;top:68px;left:0;right:0;z-index:99;background:rgba(248,249,250,0.97);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:1.5rem;flex-direction:column;gap:.5rem;transform:translateY(-10px);opacity:0;transition:transform .3s ease, opacity .3s ease;pointer-events:none;visibility:hidden}
+.mobile-menu.open{transform:translateY(0);opacity:1;pointer-events:auto;visibility:visible}
+.mobile-menu a{display:block;padding:.85rem 1rem;color:var(--text);text-decoration:none;font-size:1rem;font-weight:500;border-radius:10px;transition:all .2s;-webkit-tap-highlight-color:rgba(66,133,244,0.1)}
+.mobile-menu a:hover,.mobile-menu a:active{color:var(--primary);background:rgba(66,133,244,0.08)}
 .mobile-menu-divider{height:1px;background:var(--border);margin:.5rem 0}
 .mobile-menu-ctas{display:flex;flex-direction:column;gap:.75rem;margin-top:.5rem}
 
@@ -255,7 +255,7 @@ main{position:relative;z-index:1}
 
 <!-- NAV -->
 <nav id="navbar">
-  <div class="nav-logo">⚡ FieldZenPro</div>
+  <a href="/landing" class="nav-logo" style="text-decoration:none">⚡ FieldZenPro</a>
   <ul class="nav-links">
     <li><a href="#features">Features</a></li>
     <li><a href="#modules">Modules</a></li>
@@ -281,8 +281,8 @@ main{position:relative;z-index:1}
   <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
   <div class="mobile-menu-divider"></div>
   <div class="mobile-menu-ctas">
-    <a href="/login" class="btn-ghost" style="text-align:center">Sign In</a>
-    <a href="/signup" class="btn-primary" style="text-align:center;padding:.75rem 1rem">Start Free Trial</a>
+    <a href="/login" class="btn-ghost" style="text-align:center;display:block">Sign In</a>
+    <a href="/signup" class="btn-primary" style="text-align:center;padding:.85rem 1rem;display:block;font-size:1rem">Start Free Trial →</a>
   </div>
 </div>
 
