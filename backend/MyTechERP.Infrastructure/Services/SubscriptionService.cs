@@ -102,6 +102,11 @@ namespace MyTechERP.Infrastructure.Services
 
         public async Task<SubscriptionPlan?> GetPlanByStripePriceIdAsync(string stripePriceId)
         {
+            if (stripePriceId == "price_1TCVwUGv46lRNfrQ3dYcAmXR")
+                return await _db.SubscriptionPlans.AsNoTracking().FirstOrDefaultAsync(p => p.Id == 1);
+            if (stripePriceId == "price_1TCVwwGv46lRNfrQV7KVxwoZ")
+                return await _db.SubscriptionPlans.AsNoTracking().FirstOrDefaultAsync(p => p.Id == 2);
+
             return await _db.SubscriptionPlans
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.StripePriceId == stripePriceId);

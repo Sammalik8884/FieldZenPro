@@ -41,9 +41,7 @@ namespace MytechERP.API.Controllers
                 p.Name,
                 p.MonthlyPrice,
                 p.MaxUsers,
-                StripePriceId = string.IsNullOrWhiteSpace(p.StripePriceId) 
-                    ? (p.Id == 1 ? "price_1TCVwUGv46lRNfrQ3dYcAmXR" : "price_1TCVwwGv46lRNfrQV7KVxwoZ")
-                    : p.StripePriceId
+                StripePriceId = p.Id == 1 ? "price_1TCVwUGv46lRNfrQ3dYcAmXR" : "price_1TCVwwGv46lRNfrQV7KVxwoZ"
             }));
         }
 
@@ -190,9 +188,9 @@ namespace MytechERP.API.Controllers
             if (string.IsNullOrWhiteSpace(request.StripePriceId))
                 return BadRequest(new { error = "stripePriceId is required." });
 
-            // Validate the plan exists (or allow fallbacks)
+            // Validate the plan exists (allowing fallbacks)
             var plan = await _subscriptionService.GetPlanByStripePriceIdAsync(request.StripePriceId);
-            if (plan == null && request.StripePriceId != "price_1TCVwUGv46lRNfrQ3dYcAmXR" && request.StripePriceId != "price_1TCVwwGv46lRNfrQV7KVxwoZ")
+            if (plan == null)
                 return BadRequest(new { error = "Invalid plan selected." });
 
             var result = await _paymentGatewayService.CreateSubscriptionCheckoutAsync(
