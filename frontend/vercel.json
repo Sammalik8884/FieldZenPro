@@ -1,4 +1,5 @@
 {
+  "cleanUrls": true,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://mytecherp-backend-69091.azurewebsites.net/api/$1" },
     { "source": "/hubs/(.*)", "destination": "https://mytecherp-backend-69091.azurewebsites.net/hubs/$1" },
