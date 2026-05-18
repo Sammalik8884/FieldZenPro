@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://mytecherp-backend-69091.azurewebsites.net/api/:path*" },
+    { "source": "/hubs/:path*", "destination": "https://mytecherp-backend-69091.azurewebsites.net/hubs/:path*" },
+    { "source": "/:any*", "destination": "/index.html" }
+  ]
+}
