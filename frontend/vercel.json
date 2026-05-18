@@ -1,8 +1,10 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://mytecherp-backend-69091.azurewebsites.net/api/$1" },
-    { "source": "/hubs/(.*)", "destination": "https://mytecherp-backend-69091.azurewebsites.net/hubs/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+  "routes": [
+    { "src": "/api/(.*)", "dest": "https://mytecherp-backend-69091.azurewebsites.net/api/$1" },
+    { "src": "/hubs/(.*)", "dest": "https://mytecherp-backend-69091.azurewebsites.net/hubs/$1" },
+    { "src": "/landing", "dest": "/landing.html" },
+    { "src": "/blog", "dest": "/blog.html" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
