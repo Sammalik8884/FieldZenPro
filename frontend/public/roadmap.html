@@ -30,7 +30,19 @@ h1{font-size:2.5rem;font-weight:800;margin-bottom:.5rem;}
 .item.done{border-color:rgba(52,211,153,0.2);}
 .item.done .item-text{text-decoration:line-through;opacity:.6;}
 a{color:var(--primary);text-decoration:none;}
-</style>
+
+    .header-logo {
+      height: 40px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-H54SMK14ZK"></script>
 <script>
@@ -59,7 +71,7 @@ a{color:var(--primary);text-decoration:none;}
 </head>
 <body>
 <nav>
-  <a href="/" class="nav-logo">⚡ FieldZenPro</a>
+  <a href="/" class="nav-logo" aria-label="FieldZenPro Home"><img src="/assets/images/fieldzenpro-logo.png" alt="FieldZenPro Field Service Management Software" title="FieldZenPro Field Service Management Software" class="header-logo"></a>
 </nav>
 <div class="container">
   <h1>Product Roadmap</h1>

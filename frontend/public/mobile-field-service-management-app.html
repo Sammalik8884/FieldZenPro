@@ -79,7 +79,19 @@ details p{padding:0.9rem 1.25rem 1.1rem;color:var(--muted);margin:0;font-size:0.
 .related li{margin-bottom:0.5rem}
 .related a{color:var(--primary);text-decoration:none;font-size:0.95rem;font-weight:500}
 .related a:hover{text-decoration:underline}
-</style>
+
+    .header-logo {
+      height: 40px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-H54SMK14ZK"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-H54SMK14ZK');</script>
@@ -122,7 +134,7 @@ details p{padding:0.9rem 1.25rem 1.1rem;color:var(--muted);margin:0;font-size:0.
 </head>
 <body>
 <nav>
-  <a href="/" class="nav-logo">⚡ FieldZenPro</a>
+  <a href="/" class="nav-logo" aria-label="FieldZenPro Home"><img src="/assets/images/fieldzenpro-logo.png" alt="FieldZenPro Field Service Management Software" title="FieldZenPro Field Service Management Software" class="header-logo"></a>
   <div class="nav-links">
     <a href="/field-service-management-software">Features</a>
     <a href="/best-field-service-software">Compare</a>

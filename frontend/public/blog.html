@@ -26,7 +26,19 @@ h1{font-size:clamp(2.5rem, 5vw, 3.5rem);font-weight:800;margin-bottom:1rem;color
 .post-tag { font-size: 0.75rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 0.75rem; }
 .post-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); line-height: 1.4; flex-grow: 1; }
 .post-meta { font-size: 0.85rem; color: var(--muted); margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
-</style>
+
+    .header-logo {
+      height: 40px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-H54SMK14ZK"></script>
 <script>
@@ -55,7 +67,7 @@ h1{font-size:clamp(2.5rem, 5vw, 3.5rem);font-weight:800;margin-bottom:1rem;color
 </head>
 <body>
 <nav>
-  <a href="/" class="nav-logo">⚡ FieldZenPro</a>
+  <a href="/" class="nav-logo" aria-label="FieldZenPro Home"><img src="/assets/images/fieldzenpro-logo.png" alt="FieldZenPro Field Service Management Software" title="FieldZenPro Field Service Management Software" class="header-logo"></a>
 </nav>
 <div class="container">
   <div class="header-text">

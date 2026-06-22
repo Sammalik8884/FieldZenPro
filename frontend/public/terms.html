@@ -21,7 +21,19 @@ p, li{color:var(--muted);margin-bottom:1rem;}
 ul{margin-left:1.5rem;margin-bottom:1.5rem;}
 a{color:var(--primary);text-decoration:none;}
 a:hover{text-decoration:underline;}
-</style>
+
+    .header-logo {
+      height: 40px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-H54SMK14ZK"></script>
 <script>
@@ -50,7 +62,7 @@ a:hover{text-decoration:underline;}
 </head>
 <body>
 <nav>
-  <a href="/" class="nav-logo">⚡ FieldZenPro</a>
+  <a href="/" class="nav-logo" aria-label="FieldZenPro Home"><img src="/assets/images/fieldzenpro-logo.png" alt="FieldZenPro Field Service Management Software" title="FieldZenPro Field Service Management Software" class="header-logo"></a>
 </nav>
 <div class="container">
   <h1>Terms of Service</h1>
