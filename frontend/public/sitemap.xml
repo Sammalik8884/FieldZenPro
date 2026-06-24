@@ -1,555 +1,596 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  <url>
-    <loc>https://fieldzenpro.com/</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://fieldzenpro.com/about</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://fieldzenpro.com/blog</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://fieldzenpro.com/blog-automate-invoicing</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://fieldzenpro.com/blog-best-fm-software-2026</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://fieldzenpro.com/blog-digital-checklists-fm</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://fieldzenpro.com/blog-digital-work-orders</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://fieldzenpro.com/blog-erp-vs-cmms</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/appliance-repair-business-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/best-field-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/best-field-service-app</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/best-field-service-management-software-for-small-business</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/best-field-service-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/best-field-service-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/best-fsm-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/best-service-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/blog-automate-invoicing</loc>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/blog-best-fm-software-2026</loc>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/blog-digital-checklists-fm</loc>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/blog-digital-work-orders</loc>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/blog-erp-vs-cmms</loc>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/blog</loc>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/business-service-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/careers</loc>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/changelog</loc>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/cleaning-business-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/cloud-based-field-service-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/commercial-cleaning-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/electrical-contractor-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/enterprise-field-service-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-engineer-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-force-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-management-app</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-management-software-for-small-business</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-management-system</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-operations-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-scheduling-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-applications</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-automation-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-crm-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-dispatch-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-erp-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-inventory-management</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-management-app</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-management-platform</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-management-software-for-small-business</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-management-system</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-management-tools</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-management</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-routing-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-scheduling-app</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-scheduling-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-software-for-small-business</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-software-small-business-not-servicetitan</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-service-tracking-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-tech-scheduling-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-technician-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/field-technician-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/fire-protection-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/free-field-service-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/fsm-field-service-management</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/fsm-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/garage-door-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/gdpr</loc>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/housecall-pro-alternative</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/hvac-business-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/hvac-dispatch-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/hvac-field-service-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/hvac-field-service-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/it-service-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/jobber-alternative</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/jobber-vs-fieldzenpro</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/</loc>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/landscaping-business-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/mobile-field-service-management-app</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/pest-control-routing-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/plumbing-business-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/pool-service-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/privacy</loc>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/property-maintenance-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/roadmap</loc>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/roofing-business-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/scheduling-software-for-field-technicians</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/scheduling-software-for-landscaping-business</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/security-system-installation-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/security</loc>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/service-business-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/service-call-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/service-engineer-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/service-management-software-for-small-business</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/service-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/service-tech-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/service-technician-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/servicetitan-too-expensive</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/servicetitan-vs-fieldzenpro</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/snow-removal-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/switch-from-jobber</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/technician-scheduling-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/telecom-field-service-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fieldzenpro.com/terms</loc>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/top-field-service-management-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/window-cleaning-software</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://fieldzenpro.com/work-order-software-for-small-business</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
