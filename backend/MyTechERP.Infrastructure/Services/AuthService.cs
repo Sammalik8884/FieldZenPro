@@ -24,19 +24,22 @@ namespace MyTechERP.Infrastructure.Services
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly ISubscriptionService _subscriptionService;
+        private readonly IEmailService _emailService;
 
         public AuthService(
              UserManager<AppUser> userManager,
              RoleManager<IdentityRole> roleManager,
              ApplicationDbContext context,
              IConfiguration configuration,
-             ISubscriptionService subscriptionService)
+             ISubscriptionService subscriptionService,
+             IEmailService emailService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
             _configuration = configuration;
             _subscriptionService = subscriptionService;
+            _emailService = emailService;
         }
 
        
@@ -73,6 +76,24 @@ namespace MyTechERP.Infrastructure.Services
 
                 await EnsureRolesExist();
                 await _userManager.AddToRoleAsync(user, "Admin");
+
+                // Send notification email to admin
+                try 
+                {
+                    string subject = $"New Trial Signup: {request.CompanyName}";
+                    string body = $"<h2>New Trial Signup</h2>" +
+                                  $"<p><strong>Name:</strong> {request.FullName}</p>" +
+                                  $"<p><strong>Email:</strong> {request.Email}</p>" +
+                                  $"<p><strong>Company:</strong> {request.CompanyName}</p>" +
+                                  $"<p><strong>Time:</strong> {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC</p>";
+                                  
+                    await _emailService.SendEmailAsync("fieldzenpro@gmail.com", subject, body, true);
+                }
+                catch (Exception ex)
+                {
+                    // Log error but don't fail registration
+                    Console.WriteLine($"[AUTH ERROR] Failed to send signup notification email: {ex.Message}");
+                }
 
                 return "Company registered successfully! You are the Admin.";
             }
