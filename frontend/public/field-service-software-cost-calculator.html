@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Field Service Software Cost Calculator 2026 | Compare FSM Pricing | FieldZenPro</title>
+<meta name="description" content="Free FSM software cost calculator. Enter your technician count and see exact monthly costs for ServiceTitan, Jobber, Workiz, Housecall Pro, and FieldZenPro side-by-side."/>
+<link rel="canonical" href="https://fieldzenpro.com/field-service-software-cost-calculator"/>
+<meta property="og:title" content="Field Service Software Cost Calculator 2026 | FieldZenPro"/>
+<meta property="og:description" content="Compare exact FSM software costs for your team size. ServiceTitan vs Jobber vs Workiz vs Housecall Pro vs FieldZenPro â€” side-by-side pricing calculator."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://fieldzenpro.com/field-service-software-cost-calculator"/>
+<meta property="og:image" content="https://fieldzenpro.com/og-image.png"/>
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>
+<link rel="icon" type="image/png" href="/favicon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#1a73e8;--accent:#f97316;--green:#137333;--red:#d93025;--text:#202124;--muted:#5f6368;--bg:#f8f9fa;--white:#fff;--border:#e0e0e0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.nav-cta{background:var(--primary);color:#fff;padding:0.5rem 1.25rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:0.9rem;}
+.container{max-width:900px;margin:0 auto;padding:0 1.5rem;}
+.hero{color:#fff;padding:7rem 0 3rem;text-align:center;margin-top:64px;}
+.hero h1{font-size:2.4rem;font-weight:800;margin-bottom:0.75rem;line-height:1.2;}
+.hero p{font-size:1.05rem;opacity:0.9;max-width:600px;margin:0 auto 1.75rem;}
+.hero-cta{display:inline-block;background:#f97316;color:#fff;padding:0.9rem 2.25rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:1.05rem;}
+section{padding:3.5rem 0;}
+h2{font-size:1.75rem;font-weight:700;margin-bottom:1rem;}
+h3{font-size:1.1rem;font-weight:600;margin-bottom:0.5rem;}
+p{margin-bottom:1rem;color:var(--muted);}
+.ctbl{width:100%;border-collapse:collapse;margin:1.5rem 0;background:var(--white);border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.08);}
+.ctbl th{background:var(--primary);color:#fff;padding:0.9rem 1rem;text-align:left;font-weight:600;}
+.ctbl td{padding:0.8rem 1rem;border-bottom:1px solid #f0f0f0;color:var(--text);font-size:0.95rem;}
+.ctbl tr:last-child td{border-bottom:none;}
+.ctbl tr:nth-child(even){background:#fafafa;}
+.ctbl .hl td{background:#fff8e1!important;font-weight:600;}
+.yes{color:var(--green);font-weight:600;}
+.no{color:var(--red);}
+.faq-item{background:var(--white);border-radius:8px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.faq-item h3{color:var(--text);margin-bottom:0.5rem;}
+.cta-section{background:var(--primary);color:#fff;padding:4rem 0;text-align:center;}
+.cta-section h2{color:#fff;margin-bottom:1rem;}
+.cta-btn{display:inline-block;background:var(--accent);color:#fff;padding:1rem 2.5rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:1.05rem;}
+footer{background:#202124;color:#9aa0a6;padding:2rem;text-align:center;font-size:0.85rem;}
+footer a{color:#8ab4f8;text-decoration:none;margin:0 0.5rem;}
+@media(max-width:768px){.hero h1{font-size:1.9rem;}}
+</style>
+<style>
+.calc-card{background:var(--white);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.1);padding:2.5rem;margin:3rem auto;max-width:820px;}
+.slider-row{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;}
+.slider-row label{font-weight:600;min-width:200px;}
+.slider-row input{flex:1;accent-color:var(--primary);}
+.slider-val{font-weight:800;color:var(--primary);font-size:1.2rem;min-width:40px;text-align:right;}
+.results-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin:2rem 0;}
+.res-card{background:var(--bg);border-radius:10px;padding:1.25rem;text-align:center;border:2px solid transparent;}
+.res-card.winner{background:#e8f5e9;border-color:var(--green);}
+.res-card .brand{font-size:0.85rem;font-weight:700;margin-bottom:0.5rem;color:var(--muted);}
+.res-card .monthly{font-size:1.4rem;font-weight:800;}
+.res-card.winner .monthly{color:var(--green);}
+.res-card .annual{font-size:0.8rem;color:var(--muted);margin-top:0.25rem;}
+.calc-btn{display:block;width:100%;background:var(--primary);color:#fff;border:none;padding:1rem;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:1rem;}
+.calc-btn:hover{background:#1557b0;}
+.savings-banner{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:2px solid var(--green);border-radius:10px;padding:1.5rem;text-align:center;margin-top:1.5rem;display:none;}
+.savings-banner .saving-amt{font-size:2rem;font-weight:800;color:var(--green);}
+@media(max-width:768px){.results-grid{grid-template-columns:1fr 1fr;}.slider-row{flex-wrap:wrap;}.slider-row label{min-width:100%;}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H54SMK14ZK"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-H54SMK14ZK");</script>
+</head>
+<body>
+<nav><a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none;"><img src="/assets/images/fieldzenpro-logo.png" alt="FieldZenPro" style="height:36px;"><span style="font-size:1.2rem;font-weight:800;"><span style="color:#1e3a8a;">Field</span><span style="color:#f97316;">Zen</span><span style="color:#1e3a8a;">Pro</span></span></a><a href="/signup" class="nav-cta">Start Free Trial</a></nav>
+<div class="hero" style="background:linear-gradient(135deg,#1a73e8,#0d47a1);">
+  <div class="container">
+    <h1>Field Service Software Cost Calculator</h1>
+    <p>Enter your technician count and instantly see what ServiceTitan, Jobber, Workiz, Housecall Pro, and FieldZenPro cost your business per month and per year.</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="calc-card">
+    <div style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;">How many technicians do you have?</div>
+    <div class="slider-row">
+      <label>Number of technicians</label>
+      <input type="range" id="ntech" min="1" max="100" value="10" oninput="document.getElementById('nt-val').textContent=this.value;calculate()">
+      <span class="slider-val" id="nt-val">10</span>
+    </div>
+    <button class="calc-btn" onclick="calculate()">Calculate Costs for My Team</button>
+
+    <div id="results-wrap" style="display:none;margin-top:2rem;">
+      <div style="font-size:1rem;font-weight:700;margin-bottom:1rem;">Monthly Software Cost Comparison</div>
+      <div class="results-grid">
+        <div class="res-card" id="rc-st"><div class="brand">ServiceTitan</div><div class="monthly" id="rv-st">-</div><div class="annual" id="ra-st">-</div></div>
+        <div class="res-card" id="rc-jb"><div class="brand">Jobber</div><div class="monthly" id="rv-jb">-</div><div class="annual" id="ra-jb">-</div></div>
+        <div class="res-card" id="rc-wz"><div class="brand">Workiz</div><div class="monthly" id="rv-wz">-</div><div class="annual" id="ra-wz">-</div></div>
+        <div class="res-card" id="rc-hcp"><div class="brand">Housecall Pro</div><div class="monthly" id="rv-hcp">-</div><div class="annual" id="ra-hcp">-</div></div>
+        <div class="res-card winner" id="rc-fzp"><div class="brand" style="color:var(--green);">&#10003; FieldZenPro</div><div class="monthly" id="rv-fzp"></div><div class="annual" id="ra-fzp">,988/yr</div></div>
+      </div>
+      <div class="savings-banner" id="savings-banner">
+        <div style="font-size:0.9rem;color:var(--muted);margin-bottom:0.25rem;">Your potential annual savings with FieldZenPro vs. the average competitor:</div>
+        <div class="saving-amt" id="saving-amt">-</div>
+        <a href="/signup" style="display:inline-block;margin-top:1rem;background:var(--primary);color:#fff;padding:0.75rem 2rem;border-radius:8px;text-decoration:none;font-weight:700;">Start Free Trial &rarr;</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section style="background:#fff;">
+  <div class="container">
+    <h2>FSM Software Pricing: How Each Platform Charges</h2>
+    <table class="ctbl">
+      <thead><tr><th>Platform</th><th>Pricing Model</th><th>Approx. Cost (10 techs)</th><th>Setup Fee</th><th>Free Trial</th></tr></thead>
+      <tbody>
+        <tr><td>ServiceTitan</td><td>Per user/month</td><td class="no">,250-2,000+/month</td><td class="no">,500-5,000+</td><td class="no">No</td></tr>
+        <tr><td>Jobber</td><td>Per user/month (tiered)</td><td class="no">-450/month</td><td class="yes"></td><td class="yes">14 days</td></tr>
+        <tr><td>Workiz</td><td>Per user/month</td><td class="no">-760+/month</td><td class="yes"></td><td class="yes">7 days</td></tr>
+        <tr><td>Housecall Pro</td><td>Per user/month (tiered)</td><td class="no">-600+/month</td><td class="yes"></td><td class="yes">14 days</td></tr>
+        <tr class="hl"><td><strong>FieldZenPro</strong></td><td><strong>Flat monthly rate</strong></td><td class="yes"><strong>/month flat</strong></td><td class="yes"><strong></strong></td><td class="yes"><strong>14 days</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item"><h3>How is this calculator different from software company websites?</h3><p>Most FSM software companies don't publish pricing on their websites. This calculator uses industry-reported pricing data from G2, Capterra, customer reviews, and public pricing pages to give you real estimates.</p></div>
+    <div class="faq-item"><h3>Why does FieldZenPro cost less?</h3><p>FieldZenPro uses a flat-rate pricing model instead of per-seat pricing. This keeps costs predictable and makes FSM software accessible to small-to-mid field service companies that enterprise platforms have priced out.</p></div>
+    <div class="faq-item"><h3>Is the FieldZenPro price really flat for any team size?</h3><p>Yes. /month covers unlimited technicians â€” whether you have 3 or 50. Add a technician and your monthly bill doesn't change.</p></div>
+    <div class="faq-item"><h3>What features does FieldZenPro include at /month?</h3><p>GPS live dispatch board, offline iOS/Android app, digital work orders, customer signatures, flat-rate price books, QuickBooks Online two-way sync, preventive maintenance scheduling, customer history, and US-based support. No add-on modules needed for core operations.</p></div>
+    <div class="faq-item"><h3>Can I try FieldZenPro before committing?</h3><p>Yes. FieldZenPro offers a 14-day free trial with full feature access. No credit card required. Setup takes under 2 hours with a US-based onboarding specialist.</p></div>
+  </div>
+</section>
+
+<div class="cta-section">
+  <div class="container">
+    <h2>Stop Overpaying for FSM Software</h2>
+    <p style="color:rgba(255,255,255,0.85);max-width:560px;margin:0 auto 2rem;">FieldZenPro is \/month flat for unlimited technicians. Full GPS dispatch, offline app, work orders, and QuickBooks sync. 14-day free trial.</p>
+    <a href="/signup" class="cta-btn">Start Free Trial &rarr;</a>
+  </div>
+</div>
+
+<footer><nav style='margin-bottom:1rem;'><a href="/">Home</a><a href="/servicetitan-alternative">ServiceTitan Alt</a><a href="/field-service-roi-calculator">ROI Calculator</a><a href="/privacy">Privacy</a></nav><p>&copy; 2026 FieldZenPro. All rights reserved.</p></footer>
+
+<script>
+function fmt(n){return '\$'+Math.round(n).toLocaleString();}
+function calculate(){
+  var t=parseInt(document.getElementById('ntech').value);
+  var st=Math.max(t*162.5,500);
+  var jb=t<=1?49:(t<=5?149:(t<=15?249:399));
+  var wz=t*50;
+  var hcp=t<=1?79:(t<=5?189:(t<=15?329:429));
+  var fzp=249;
+  var vals=[st,jb,wz,hcp];
+  var avgComp=vals.reduce(function(a,b){return a+b;},0)/vals.length;
+  var saving=Math.round((avgComp-fzp)*12);
+  document.getElementById('rv-st').textContent=fmt(st)+'/mo';
+  document.getElementById('ra-st').textContent=fmt(st*12)+'/yr';
+  document.getElementById('rv-jb').textContent=fmt(jb)+'/mo';
+  document.getElementById('ra-jb').textContent=fmt(jb*12)+'/yr';
+  document.getElementById('rv-wz').textContent=fmt(wz)+'/mo';
+  document.getElementById('ra-wz').textContent=fmt(wz*12)+'/yr';
+  document.getElementById('rv-hcp').textContent=fmt(hcp)+'/mo';
+  document.getElementById('ra-hcp').textContent=fmt(hcp*12)+'/yr';
+  document.getElementById('rv-fzp').textContent=fmt(fzp)+'/mo';
+  document.getElementById('ra-fzp').textContent=fmt(fzp*12)+'/yr';
+  document.getElementById('results-wrap').style.display='block';
+  if(saving>0){
+    document.getElementById('saving-amt').textContent=fmt(saving)+' per year';
+    document.getElementById('savings-banner').style.display='block';
+  }
+}
+window.onload=calculate;
+</script>
+</body>
+</html>
