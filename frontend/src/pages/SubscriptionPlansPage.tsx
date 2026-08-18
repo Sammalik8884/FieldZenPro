@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Loader2, Info, CheckCircle2, Zap, Shield } from "lucide-react";
+import { ArrowRight, Loader2, Info, CheckCircle2, Shield } from "lucide-react";
 import { subscriptionService, SubscriptionPlan, SubscriptionStatusResponse } from "../services/subscriptionService";
-import { useAuth } from "../auth/AuthContext";
 import toast from "react-hot-toast";
 
 export const SubscriptionPlansPage: React.FC = () => {
- const { user } = useAuth();
  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
  const [status, setStatus] = useState<SubscriptionStatusResponse | null>(null);
  const [isLoading, setIsLoading] = useState(true);
- const [isChekouingOut, setIsCheckingOut] = useState<string | null>(null);
 
  useEffect(() => {
  loadData();
@@ -31,7 +28,7 @@ export const SubscriptionPlansPage: React.FC = () => {
  }
  };
 
- const handleSubscribe = async (stripePriceId: string) => {
+ const handleSubscribe = async () => {
  toast("Contact fieldzenpro@gmail.com for the payments and support.", {
  icon: 'ℹ️',
  duration: 6000,
@@ -139,8 +136,8 @@ export const SubscriptionPlansPage: React.FC = () => {
  </div>
 
  <button
- onClick={() => handleSubscribe(plan.stripePriceId)}
- disabled={isChekouingOut !== null || (status?.hasSubscription && status?.plan?.id === plan.id && status?.status === "Active")}
+ onClick={() => handleSubscribe()}
+ disabled={status?.hasSubscription && status?.plan?.id === plan.id && status?.status === "Active"}
  className={`group relative flex h-14 w-full items-center justify-center overflow-hidden rounded-xl font-bold tracking-wide text-white transition-all ${
  status?.hasSubscription && status?.plan?.id === plan.id && status?.status === "Active"
  ? "bg-muted text-muted-foreground cursor-not-allowed"
@@ -149,9 +146,7 @@ export const SubscriptionPlansPage: React.FC = () => {
  : "bg-primary hover:bg-primary/90"
  }`}
  >
- {isChekouingOut === plan.stripePriceId ? (
- <Loader2 className="h-5 w-5 animate-spin" />
- ) : status?.hasSubscription && status?.plan?.id === plan.id && status?.status === "Active" ? (
+ {status?.hasSubscription && status?.plan?.id === plan.id && status?.status === "Active" ? (
  "Current Plan"
  ) : (
  <>
