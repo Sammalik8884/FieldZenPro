@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Plus, Shield, Mail, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Users, Plus, Shield, Mail, CheckCircle, XCircle, Loader2, Eye, EyeOff } from "lucide-react";
 import { authService } from "../services/authService";
 import { toast } from "react-hot-toast";
 
@@ -11,6 +11,7 @@ export const UsersPage = () => {
  // Modal State
  const [isModalOpen, setIsModalOpen] = useState(false);
  const [formLoading, setFormLoading] = useState(false);
+ const [showPassword, setShowPassword] = useState(false);
  const [formData, setFormData] = useState({
  fullName: "",
  email: "",
@@ -201,12 +202,21 @@ export const UsersPage = () => {
  </div>
  <div>
  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Temporary Password *</label>
+ <div className="relative group">
  <input
- type="password" required minLength={6}
+ type={showPassword ? "text" : "password"} required minLength={6}
  value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })}
- className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
+ className="w-full bg-background border border-border rounded-lg pl-3 pr-10 py-2 text-sm focus:outline-none focus:border-primary"
  placeholder="Min 6 chars, 1 uppercase, 1 symbol"
  />
+ <button
+ type="button"
+ onClick={() => setShowPassword(!showPassword)}
+ className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+ >
+ {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+ </button>
+ </div>
  <p className="text-[10px] text-muted-foreground mt-1">
  Password must contain an uppercase letter, lowercase letter, number, and special character.
  </p>
