@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { Navigate, useNavigate, Link } from "react-router-dom";
-import { Briefcase, KeyRound, Mail, User, Building, AlertCircle, Loader2 } from "lucide-react";
+import { Briefcase, KeyRound, Mail, User, Building, AlertCircle, Loader2, Phone } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -17,6 +17,8 @@ export const SignupPage = () => {
  const [password, setPassword] = useState("");
  const [fullName, setFullName] = useState("");
  const [companyName, setCompanyName] = useState("");
+ const [phone, setPhone] = useState("");
+ const [phoneApp, setPhoneApp] = useState("General");
  const [error, setError] = useState("");
  const [loading, setLoading] = useState(false);
  const [successMsg, setSuccessMsg] = useState("");
@@ -32,7 +34,7 @@ export const SignupPage = () => {
  setLoading(true);
 
  try {
- const data = await register({ email, password, fullName, companyName });
+ const data = await register({ email, password, fullName, companyName, phone, phoneApp });
  setSuccessMsg(data?.message || "Registration successful! You can now log in.");
  setTimeout(() => {
  navigate("/login");
@@ -108,6 +110,32 @@ export const SignupPage = () => {
  className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm shadow-inner"
  placeholder="Acme Corp"
  />
+ </div>
+ </div>
+
+ <div className="space-y-1.5">
+ <label className="text-sm font-medium text-foreground/80">Mobile Number</label>
+ <div className="flex space-x-2">
+ <div className="relative group flex-1">
+ <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+ <input
+ type="tel"
+ required
+ value={phone}
+ onChange={(e) => setPhone(e.target.value)}
+ className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm shadow-inner"
+ placeholder="+1 (555) 000-0000"
+ />
+ </div>
+ <select 
+ value={phoneApp}
+ onChange={(e) => setPhoneApp(e.target.value)}
+ className="bg-background border border-border rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm shadow-inner text-muted-foreground"
+ >
+ <option value="General">General</option>
+ <option value="WhatsApp">WhatsApp</option>
+ <option value="Other">Other</option>
+ </select>
  </div>
  </div>
 

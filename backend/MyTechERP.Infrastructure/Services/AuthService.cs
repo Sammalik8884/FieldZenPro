@@ -65,6 +65,7 @@ namespace MyTechERP.Infrastructure.Services
                 UserName = $"{request.Email}_{newTenant.Id}",
                 Email = request.Email,
                 FullName = request.FullName,
+                PhoneNumber = request.Phone,
                 TenantId = newTenant.Id, 
                 IsActive = true
             };
@@ -85,6 +86,7 @@ namespace MyTechERP.Infrastructure.Services
                                   $"<p><strong>Name:</strong> {request.FullName}</p>" +
                                   $"<p><strong>Email:</strong> {request.Email}</p>" +
                                   $"<p><strong>Company:</strong> {request.CompanyName}</p>" +
+                                  $"<p><strong>Phone:</strong> {request.Phone} ({request.PhoneApp})</p>" +
                                   $"<p><strong>Time:</strong> {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC</p>";
                                   
                     await _emailService.SendEmailAsync("fieldzenpro@gmail.com", subject, body, true);

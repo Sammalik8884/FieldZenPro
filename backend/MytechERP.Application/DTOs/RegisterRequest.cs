@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -17,6 +17,7 @@ namespace MytechERP.Application.DTOs
         public string FullName { get; set; } = string.Empty;
         [Required]
         public string CompanyName { get; set; }= string.Empty;
-
+        public string Phone { get; set; } = string.Empty;
+        public string PhoneApp { get; set; } = string.Empty;
     }
 }

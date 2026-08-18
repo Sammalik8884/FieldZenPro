@@ -17,6 +17,8 @@ export interface RegisterDto {
     password?: string;
     fullName?: string;
     companyName?: string;
+    phone?: string;
+    phoneApp?: string;
 }
 
 export interface UserDto {
