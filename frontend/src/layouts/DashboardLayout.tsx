@@ -27,8 +27,8 @@ export const DashboardLayout = () => {
 
                 <Header onMenuClick={() => setIsSidebarOpen(true)} />
                 <TrialBanner />
-                <main className="flex-1 overflow-y-auto p-4 md:p-8 relative z-10 custom-scrollbar">
-                    <div className="animate-fade-in">
+                <main className="flex-1 overflow-y-auto relative z-10 custom-scrollbar flex flex-col items-center">
+                    <div className="w-full max-w-7xl p-4 md:p-8 animate-fade-in">
                         <Outlet />
                     </div>
                 </main>

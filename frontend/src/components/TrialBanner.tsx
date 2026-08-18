@@ -86,36 +86,38 @@ export const TrialBanner: React.FC = () => {
     const urgency = status.daysRemaining <= 3;
 
     return (
-        <div className={`relative flex items-center justify-between px-4 py-2.5 text-sm font-medium ${
+        <div className={`relative w-full border-b flex justify-center ${
             urgency
-                ? "bg-destructive/15 border-b border-destructive/30 text-destructive"
-                : "bg-primary/10 border-b border-primary/20 text-primary"
+                ? "bg-destructive/15 border-destructive/30 text-destructive"
+                : "bg-primary/10 border-primary/20 text-primary"
         }`}>
-            <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 flex-shrink-0" />
-                <span>
-                    {status.daysRemaining > 0
-                        ? <>Free trial: <strong>{status.daysRemaining} day{status.daysRemaining !== 1 ? "s" : ""} remaining</strong></>
-                        : <strong>Your trial has expired</strong>
-                    }
-                </span>
-            </div>
-            <div className="flex items-center gap-3">
-                <button
-                    onClick={() => navigate("/subscription/plans")}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                        urgency
-                            ? "bg-destructive text-white hover:bg-destructive/90"
-                            : "bg-primary text-white hover:bg-primary/90"
-                    }`}
-                >
-                    Upgrade Now
-                </button>
-                {!urgency && (
-                    <button onClick={() => setDismissed(true)} className="opacity-60 hover:opacity-100 transition-opacity">
-                        <X className="w-4 h-4" />
+            <div className="w-full max-w-7xl flex items-center justify-between px-4 md:px-8 py-2.5 text-sm font-medium">
+                <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 flex-shrink-0" />
+                    <span>
+                        {status.daysRemaining > 0
+                            ? <>Free trial: <strong>{status.daysRemaining} day{status.daysRemaining !== 1 ? "s" : ""} remaining</strong></>
+                            : <strong>Your trial has expired</strong>
+                        }
+                    </span>
+                </div>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => navigate("/subscription/plans")}
+                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                            urgency
+                                ? "bg-destructive text-white hover:bg-destructive/90"
+                                : "bg-primary text-white hover:bg-primary/90"
+                        }`}
+                    >
+                        Upgrade Now
                     </button>
-                )}
+                    {!urgency && (
+                        <button onClick={() => setDismissed(true)} className="opacity-60 hover:opacity-100 transition-opacity">
+                            <X className="w-4 h-4" />
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
