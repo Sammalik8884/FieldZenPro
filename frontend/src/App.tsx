@@ -35,6 +35,7 @@ import { CustomerInvoicesPage } from "./pages/CustomerInvoicesPage";
 import { SubscriptionPlansPage } from "./pages/SubscriptionPlansPage";
 import { SubscriptionSuccessPage } from "./pages/SubscriptionSuccessPage";
 import { SubscriptionCancelPage } from "./pages/SubscriptionCancelPage";
+import { SupportPage } from "./pages/SupportPage";
 import { Toaster } from "react-hot-toast";
 import { useAuth } from "./auth/AuthContext";
 import { SyncProvider } from "./contexts/SyncContext";
@@ -101,6 +102,7 @@ function App() {
                                     <Route path="/sync-dashboard" element={<SyncDashboardPage />} />
                                 </Route>
                                 <Route path="/subscription/plans" element={<SubscriptionPlansPage />} />
+                                <Route path="/support" element={<SupportPage />} />
                             </Route>
                             {/* Operations / Dispatch - Manager/Admin Only */}
                             <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
