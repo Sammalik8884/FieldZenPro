@@ -456,7 +456,7 @@ export const WorkOrdersPage = () => {
 
  {/* Edit Modal / Assign Modal */}
  {isEditModalOpen && editingJob && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
  <div className="bg-secondary border border-border rounded-2xl w-full max-w-md shadow-md overflow-hidden relative">
  <div className="p-6">
  <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
@@ -556,7 +556,7 @@ export const WorkOrdersPage = () => {
 
  {/* Create Work Order Modal */}
  {isCreateModalOpen && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
  <div className="bg-card border border-border rounded-2xl w-full max-w-lg shadow-md overflow-hidden relative">
  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
  <div className="p-6">

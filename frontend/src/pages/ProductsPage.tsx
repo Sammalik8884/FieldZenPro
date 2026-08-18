@@ -333,7 +333,7 @@ export const ProductsPage = () => {
 
  {/* Modal */}
  {isModalOpen && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
  <div className="bg-secondary border border-border rounded-2xl w-full max-w-xl shadow-md overflow-hidden relative max-h-[90vh] overflow-y-auto">
  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent pointer-events-none" />
 
@@ -441,7 +441,7 @@ export const ProductsPage = () => {
  )}
  {/* Import Excel Modal */}
  {isImportModalOpen && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
  <div className="bg-secondary border border-border rounded-2xl w-full max-w-md shadow-md overflow-hidden relative">
  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-secondary to-accent pointer-events-none" />
 

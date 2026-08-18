@@ -495,7 +495,7 @@ export const PayrollPage = () => {
 
  {/* Glassmorphic Generate Payslip Modal */}
  {showGenerateModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-in fade-in duration-200">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center bg-black/60 animate-in fade-in duration-200">
  <div className="bg-card border border-border rounded-3xl w-[90%] max-w-lg overflow-hidden shadow-md relative">
  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
 
@@ -577,7 +577,7 @@ export const PayrollPage = () => {
 
  {/* Glassmorphic Create Profile Modal */}
  {showProfileModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-in fade-in duration-200">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center bg-black/60 animate-in fade-in duration-200">
  <div className="bg-card border border-border rounded-3xl w-[90%] max-w-lg overflow-hidden shadow-md relative">
  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-accent to-purple-500" />
 
@@ -681,7 +681,7 @@ export const PayrollPage = () => {
 
  {/* Glassmorphic Add Entry Modal */}
  {showEntryModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-in fade-in duration-200">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center bg-black/60 animate-in fade-in duration-200">
  <div className="bg-card border border-border rounded-3xl w-[90%] max-w-lg overflow-hidden shadow-md relative">
  <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r ${entryForm.type === 1 ? 'from-emerald-400 to-green-600' : 'from-rose-400 to-red-600'}`} />
 

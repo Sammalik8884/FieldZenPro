@@ -573,7 +573,7 @@ export const InventoryPage = () => {
 
  {/* Transfer Modal */}
  {showTransferModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4">
  <div className="absolute inset-0 bg-black/60 " onClick={() => !submittingTransfer && setShowTransferModal(false)} />
  <div className="bg-secondary/95 border border-primary/20 p-8 rounded-2xl w-full max-w-md relative z-10 shadow-md">
  <div className="flex justify-between items-center mb-6">
@@ -655,7 +655,7 @@ export const InventoryPage = () => {
 
  {/* Add Stock Modal */}
  {showAddStockModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4">
  <div className="absolute inset-0 bg-black/60 " onClick={() => !submittingAddStock && setShowAddStockModal(false)} />
  <div className="bg-secondary/95 border border-primary/20 p-8 rounded-2xl w-full max-w-md relative z-10 shadow-md">
  <div className="flex justify-between items-center mb-6">
@@ -721,7 +721,7 @@ export const InventoryPage = () => {
 
  {/* Create Warehouse Modal */}
  {showCreateWarehouseModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4">
  <div className="absolute inset-0 bg-black/60 " onClick={() => !creatingWarehouse && setShowCreateWarehouseModal(false)} />
  <div className="bg-secondary/95 border border-primary/20 p-8 rounded-2xl w-full max-w-md relative z-10 shadow-md">
  <div className="flex justify-between items-center mb-6">
@@ -784,7 +784,7 @@ export const InventoryPage = () => {
 
  {/* Edit Warehouse Modal */}
  {showEditWarehouseModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4">
  <div className="absolute inset-0 bg-black/60 " onClick={() => !updatingWarehouse && setShowEditWarehouseModal(false)} />
  <div className="bg-secondary/95 border border-primary/20 p-8 rounded-2xl w-full max-w-md relative z-10 shadow-md">
  <div className="flex justify-between items-center mb-6">
@@ -845,7 +845,7 @@ export const InventoryPage = () => {
 
  {/* Edit Stock Modal */}
  {showEditStockModal && (
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+ <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4">
  <div className="absolute inset-0 bg-black/60 " onClick={() => !submittingEditStock && setShowEditStockModal(false)} />
  <div className="bg-secondary/95 border border-primary/20 p-8 rounded-2xl w-full max-w-md relative z-10 shadow-md">
  <div className="flex justify-between items-center mb-6">
