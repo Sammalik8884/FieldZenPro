@@ -29,6 +29,39 @@ const fmt = (n: number) =>
  maximumFractionDigits: 0
  }).format(n);
 
+const CustomizationModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+ if (!isOpen) return null;
+ return (
+ <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 p-4">
+ <div className="bg-card w-full max-w-lg rounded-3xl p-8 shadow-2xl scale-100 animate-in zoom-in-95 duration-200 relative border border-border">
+ <div className="mb-6 text-center">
+ <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+ <Zap className="h-8 w-8" />
+ </div>
+ <h2 className="text-2xl font-bold">Custom ERP Setup Available!</h2>
+ </div>
+ <div className="text-center text-muted-foreground mb-8 space-y-4 leading-relaxed">
+ <p>
+ We know every business is unique. That's why we offer <strong>Customization tailored to your exact workflow</strong>. 
+ </p>
+ <p>
+ Whether you need specific modules, custom fields, specialized forms, or unique integrations, we can build the ERP system exactly according to your needs.
+ </p>
+ <p className="font-semibold text-foreground text-base">
+ Contact us at <a href="mailto:fieldzenpro@gmail.com" className="text-primary hover:underline font-bold">fieldzenpro@gmail.com</a> for any type of customization!
+ </p>
+ </div>
+ <button
+ onClick={onClose}
+ className="w-full rounded-xl bg-primary px-4 py-3.5 font-bold text-white transition-all hover:bg-primary/90"
+ >
+ I Understand
+ </button>
+ </div>
+ </div>
+ );
+};
+
 export const DashboardPage: React.FC = () => {
  const { user } = useAuth();
  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
@@ -39,6 +72,23 @@ export const DashboardPage: React.FC = () => {
  const [dateRange, setDateRange] = useState<'30days' | '6months' | '1year' | 'all' | 'custom'>('6months');
  const [customStartDate, setCustomStartDate] = useState(format(subMonths(new Date(), 1), 'yyyy-MM-dd'));
  const [customEndDate, setCustomEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+ const [showCustomizationModal, setShowCustomizationModal] = useState(false);
+
+ useEffect(() => {
+ if (user?.id) {
+ const hasSeen = localStorage.getItem(`hasSeenCustomizationPopup_${user.id}`);
+ if (!hasSeen) {
+ setShowCustomizationModal(true);
+ }
+ }
+ }, [user?.id]);
+
+ const closeCustomizationModal = () => {
+ if (user?.id) {
+ localStorage.setItem(`hasSeenCustomizationPopup_${user.id}`, 'true');
+ }
+ setShowCustomizationModal(false);
+ };
 
  const fetchMetrics = async () => {
  try {
@@ -88,7 +138,8 @@ export const DashboardPage: React.FC = () => {
 
  if (!user?.roles?.includes('Admin')) {
  return (
- <div className="min-h-screen p-8 animate-in fade-in duration-500">
+ <div className="min-h-screen p-8 animate-in fade-in duration-500 relative">
+ <CustomizationModal isOpen={showCustomizationModal} onClose={closeCustomizationModal} />
  <h1 className="text-4xl font-black tracking-tight text-foreground leading-tight">
  {greeting},&nbsp;
  <span className="text-primary">
@@ -104,8 +155,9 @@ export const DashboardPage: React.FC = () => {
  }
 
  return (
- <div className="min-h-screen pb-20 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
- {/* ── Header ─────────────────────────────────────────────── */}
+ <div className="min-h-screen pb-20 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
+ <CustomizationModal isOpen={showCustomizationModal} onClose={closeCustomizationModal} />
+ {/* ⚡⚡ Header ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡ */}
  <div className="flex items-end justify-between gap-4">
  <div>
  <h1 className="text-4xl font-black tracking-tight text-foreground leading-tight">
