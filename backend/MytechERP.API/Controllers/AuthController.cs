@@ -94,6 +94,44 @@ namespace MytechERP.API.Controllers
             }
         }
 
+        [HttpPut("users/{id}")]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager)]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserRequest request)
+        {
+            try
+            {
+                var tenantIdClaim = User.Claims.FirstOrDefault(c => c.Type == "TenantId");
+                if (tenantIdClaim == null)
+                    return Unauthorized(new { error = "Security Token is missing Tenant ID." });
+
+                var result = await _authService.UpdateUserAsync(id, request, tenantIdClaim.Value);
+                return Ok(new { message = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpDelete("users/{id}")]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager)]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            try
+            {
+                var tenantIdClaim = User.Claims.FirstOrDefault(c => c.Type == "TenantId");
+                if (tenantIdClaim == null)
+                    return Unauthorized(new { error = "Security Token is missing Tenant ID." });
+
+                var result = await _authService.DeleteUserAsync(id, tenantIdClaim.Value);
+                return Ok(new { message = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
        
         [HttpGet("me")]
         [Authorize]

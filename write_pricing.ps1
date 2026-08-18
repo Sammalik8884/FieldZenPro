@@ -1,0 +1,171 @@
+$enc=[System.Text.Encoding]::UTF8
+
+# ============================================================
+# PAGE 1: servicetitan-pricing.html  (high search volume)
+# ============================================================
+$p1 = @'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ServiceTitan Pricing 2026: True Costs Revealed + Cheaper Alternative</title>
+<meta name="description" content="ServiceTitan pricing revealed: $125-200+/user/month plus $1,500-5,000 setup fees. See what a 10-tech team actually pays — and the $249/month flat alternative."/>
+<link rel="canonical" href="https://fieldzenpro.com/servicetitan-pricing"/>
+<meta property="og:title" content="ServiceTitan Pricing 2026: True Costs + Cheaper Alternative | FieldZenPro"/>
+<meta property="og:description" content="ServiceTitan is $125-200+/user/month with hidden fees. A 10-tech team pays $15,000-24,000/year. FieldZenPro is $249/month flat for unlimited technicians."/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://fieldzenpro.com/servicetitan-pricing"/>
+<meta property="og:image" content="https://fieldzenpro.com/og-image.png"/>
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>
+<link rel="icon" type="image/png" href="/favicon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#1a73e8;--accent:#f97316;--green:#137333;--red:#d93025;--text:#202124;--muted:#5f6368;--bg:#f8f9fa;--white:#fff;--border:#e0e0e0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.nav-cta{background:var(--primary);color:#fff;padding:0.5rem 1.25rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:0.9rem;}
+.container{max-width:900px;margin:0 auto;padding:0 1.5rem;}
+.hero{background:linear-gradient(135deg,#b71c1c,#c62828);color:#fff;padding:7rem 0 3rem;text-align:center;margin-top:64px;}
+.hero h1{font-size:2.4rem;font-weight:800;margin-bottom:0.75rem;line-height:1.2;}
+.hero p{font-size:1.05rem;opacity:0.9;max-width:620px;margin:0 auto;}
+section{padding:3.5rem 0;}
+h2{font-size:1.75rem;font-weight:700;margin-bottom:1rem;}
+h3{font-size:1.1rem;font-weight:600;margin-bottom:0.5rem;}
+p{margin-bottom:1rem;color:var(--muted);}
+.cost-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:2rem 0;}
+.cost-card{background:var(--white);border-radius:10px;padding:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);text-align:center;}
+.cost-card .amt{font-size:1.8rem;font-weight:800;margin-bottom:0.25rem;}
+.cost-card.red .amt{color:var(--red);}
+.cost-card.green .amt{color:var(--green);}
+.cost-card .lbl{font-size:0.85rem;color:var(--muted);}
+.price-table{width:100%;border-collapse:collapse;margin:2rem 0;background:var(--white);border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.08);}
+.price-table th{background:#b71c1c;color:#fff;padding:1rem;text-align:left;font-weight:600;}
+.price-table td{padding:0.85rem 1rem;border-bottom:1px solid #f0f0f0;font-size:0.95rem;}
+.price-table tr:last-child td{border-bottom:none;}
+.price-table tr:nth-child(even){background:#fafafa;}
+.price-table .hl{background:#fff9c4 !important;font-weight:700;}
+.yes{color:var(--green);font-weight:600;}
+.no{color:var(--red);}
+.alt-box{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:2px solid var(--primary);border-radius:12px;padding:2rem;text-align:center;margin:2rem 0;}
+.alt-box .price{font-size:3rem;font-weight:800;color:var(--primary);}
+.alt-box p{color:var(--text);}
+.faq-item{background:var(--white);border-radius:8px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.faq-item h3{color:var(--text);margin-bottom:0.5rem;}
+.cta-section{background:var(--primary);color:#fff;padding:4rem 0;text-align:center;}
+.cta-section h2{color:#fff;margin-bottom:1rem;}
+.cta-btn{display:inline-block;background:var(--accent);color:#fff;padding:1rem 2.5rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:1.05rem;}
+footer{background:#202124;color:#9aa0a6;padding:2rem;text-align:center;font-size:0.85rem;}
+footer a{color:#8ab4f8;text-decoration:none;margin:0 0.5rem;}
+@media(max-width:768px){.cost-grid{grid-template-columns:1fr;}.hero h1{font-size:1.9rem;}}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much does ServiceTitan cost per month?","acceptedAnswer":{"@type":"Answer","text":"ServiceTitan pricing is not publicly listed, but based on industry reports and customer accounts, it costs $125-200+ per user per month, plus a $1,500-5,000 setup/onboarding fee and an annual contract. A 10-technician team typically pays $1,250-2,000+ per month ($15,000-24,000/year)."}},{"@type":"Question","name":"Does ServiceTitan have a free trial?","acceptedAnswer":{"@type":"Answer","text":"No. ServiceTitan does not offer a free trial. They require a demo call and sales process before any pricing is provided, followed by signing an annual contract."}},{"@type":"Question","name":"What is a cheaper alternative to ServiceTitan?","acceptedAnswer":{"@type":"Answer","text":"FieldZenPro is the leading ServiceTitan alternative at $249/month flat for unlimited technicians — saving a 10-tech team $12,000-21,000 per year while offering the same core features: GPS dispatch, digital work orders, offline app, and QuickBooks sync."}},{"@type":"Question","name":"Why is ServiceTitan so expensive?","acceptedAnswer":{"@type":"Answer","text":"ServiceTitan is priced for large enterprise operations with 50+ technicians, dedicated office staff, and complex commercial service operations. Companies with under 50 technicians typically pay for enterprise features they don't use."}},{"@type":"Question","name":"Is there an annual contract with ServiceTitan?","acceptedAnswer":{"@type":"Answer","text":"Yes. ServiceTitan typically requires an annual contract. Early cancellation penalties apply. FieldZenPro is month-to-month with no cancellation fees."}},{"@type":"Question","name":"What does ServiceTitan charge for onboarding?","acceptedAnswer":{"@type":"Answer","text":"ServiceTitan's implementation and onboarding fee ranges from $1,500-5,000+ depending on company size and data migration complexity. FieldZenPro charges $0 for onboarding and setup."}},{"@type":"Question","name":"How long does ServiceTitan implementation take?","acceptedAnswer":{"@type":"Answer","text":"ServiceTitan implementation typically takes 6-12 months. FieldZenPro onboarding takes under 2 hours with a US-based specialist."}}]}
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H54SMK14ZK"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-H54SMK14ZK');</script>
+</head>
+<body>
+<nav>
+  <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
+    <img src="/assets/images/fieldzenpro-logo.png" alt="FieldZenPro" style="height:36px;">
+    <span style="font-size:1.2rem;font-weight:800;"><span style="color:#1e3a8a;">Field</span><span style="color:#f97316;">Zen</span><span style="color:#1e3a8a;">Pro</span></span>
+  </a>
+  <a href="/signup" class="nav-cta">Start Free Trial</a>
+</nav>
+
+<div class="hero">
+  <div class="container">
+    <h1>ServiceTitan Pricing 2026:<br>The True Cost Revealed</h1>
+    <p>ServiceTitan does not publish its pricing. Here is what a 10-technician field service company actually pays &mdash; and a $249/month flat alternative that delivers the same core features.</p>
+  </div>
+</div>
+
+<section style="background:#fff;">
+  <div class="container">
+    <h2>ServiceTitan Pricing: What You Actually Pay</h2>
+    <p>ServiceTitan keeps its pricing off its website and requires a demo + sales call before revealing any numbers. Based on customer reports, G2/Capterra reviews, and industry analysis, here is what companies are paying:</p>
+    <div class="cost-grid">
+      <div class="cost-card red"><div class="amt">$125-200+</div><div class="lbl">per user / per month (base)</div></div>
+      <div class="cost-card red"><div class="amt">$1,500-5,000+</div><div class="lbl">one-time setup &amp; onboarding fee</div></div>
+      <div class="cost-card red"><div class="amt">Annual</div><div class="lbl">contract required — no month-to-month</div></div>
+    </div>
+    <table class="price-table">
+      <thead><tr><th>Cost Item</th><th>ServiceTitan (10 techs)</th><th>FieldZenPro</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td><strong>Monthly software cost</strong></td><td class="no">$1,250 - $2,000+/month</td><td class="yes">$249/month flat</td></tr>
+        <tr><td>Annual software cost</td><td class="no">$15,000 - $24,000+</td><td class="yes">$2,988</td></tr>
+        <tr><td>Setup / onboarding fee</td><td class="no">$1,500 - $5,000+</td><td class="yes">$0</td></tr>
+        <tr><td>Year 1 total cost</td><td class="no">$16,500 - $29,000+</td><td class="yes">$2,988</td></tr>
+        <tr><td>Annual contract required</td><td class="no">Yes</td><td class="yes">No — month to month</td></tr>
+        <tr><td>Free trial available</td><td class="no">No</td><td class="yes">14-day free trial</td></tr>
+        <tr><td>Implementation time</td><td class="no">6-12 months</td><td class="yes">Under 2 hours</td></tr>
+        <tr><td>Add 5 more technicians</td><td class="no">+$625-1,000/month</td><td class="yes">$0 — unlimited included</td></tr>
+      </tbody>
+    </table>
+
+    <div class="alt-box">
+      <h2 style="margin-bottom:0.5rem;">The FieldZenPro Alternative</h2>
+      <div class="price">$249/month</div>
+      <p style="margin:0.5rem 0 1.5rem;">Flat rate for unlimited technicians &mdash; GPS dispatch, offline app, work orders, invoicing, QuickBooks sync. No setup fees. No annual contract. Cancel anytime.</p>
+      <a href="/signup" style="display:inline-block;background:var(--primary);color:#fff;padding:0.85rem 2rem;border-radius:8px;text-decoration:none;font-weight:700;">Start Free 14-Day Trial &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Why Is ServiceTitan So Expensive?</h2>
+    <p>ServiceTitan was built for large, multi-location HVAC and plumbing businesses with 50-500+ technicians, full call center operations, and dedicated software administrators. Its pricing reflects that enterprise customer profile — not the 10-technician plumbing company in Kansas City.</p>
+    <p>The features that drive ServiceTitan's price — enterprise marketing automation, advanced commercial job costing, multi-location franchise management, Salesforce integration — are things most small-to-mid field service companies never use.</p>
+    <p>FieldZenPro is purpose-built for the 2-50 technician company. You get the same core operational features at a price that makes business sense for your scale.</p>
+
+    <h2 style="margin-top:2rem;">Hidden Costs People Miss with ServiceTitan</h2>
+    <ul style="list-style:none;padding:0;">
+      <li style="padding:0.6rem 0;border-bottom:1px solid var(--border);color:var(--muted);">&#9888; <strong style="color:var(--text);">Annual contract lock-in:</strong> Cancelling early typically results in full remaining contract balance being due.</li>
+      <li style="padding:0.6rem 0;border-bottom:1px solid var(--border);color:var(--muted);">&#9888; <strong style="color:var(--text);">Add-on module costs:</strong> Marketing Pro, Scheduling Pro, and other modules add $100-500+/month on top of base price.</li>
+      <li style="padding:0.6rem 0;border-bottom:1px solid var(--border);color:var(--muted);">&#9888; <strong style="color:var(--text);">Training and adoption:</strong> ServiceTitan has a steep learning curve. Companies report spending 2-4 weeks getting staff up to speed, during which productivity drops.</li>
+      <li style="padding:0.6rem 0;border-bottom:1px solid var(--border);color:var(--muted);">&#9888; <strong style="color:var(--text);">IT/admin overhead:</strong> Managing a complex enterprise platform requires dedicated admin time that smaller companies don't budget for.</li>
+      <li style="padding:0.6rem 0;color:var(--muted);">&#9888; <strong style="color:var(--text);">Price increases at renewal:</strong> Multiple ServiceTitan customers on G2 report 15-25% price increases at annual renewal with minimal notice.</li>
+    </ul>
+  </div>
+</section>
+
+<section style="background:#fff;">
+  <div class="container">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item"><h3>How much does ServiceTitan cost per month?</h3><p>ServiceTitan pricing is not publicly listed. Based on G2 reviews and industry reports, it costs $125-200+ per user per month plus a $1,500-5,000 setup fee and annual contract. A 10-technician team pays $1,250-2,000+/month.</p></div>
+    <div class="faq-item"><h3>Does ServiceTitan have a free trial?</h3><p>No. ServiceTitan does not offer a free trial. They require a demo call and sales process, then an annual contract must be signed before access is granted.</p></div>
+    <div class="faq-item"><h3>What is a cheaper alternative to ServiceTitan?</h3><p>FieldZenPro is $249/month flat for unlimited technicians &mdash; saving a 10-tech team $12,000-21,000/year. Same core features: GPS dispatch, digital work orders, offline app, QuickBooks sync. 14-day free trial available.</p></div>
+    <div class="faq-item"><h3>Why is ServiceTitan so expensive?</h3><p>ServiceTitan is priced for enterprise field service operations (50-500+ technicians) with complex commercial operations. Small-to-mid companies pay enterprise prices for features they don't use.</p></div>
+    <div class="faq-item"><h3>Is there an annual contract with ServiceTitan?</h3><p>Yes. ServiceTitan requires annual contracts. FieldZenPro is month-to-month with no cancellation fees.</p></div>
+    <div class="faq-item"><h3>What does ServiceTitan charge for onboarding?</h3><p>$1,500-5,000+ depending on company size and data migration needs. FieldZenPro charges $0 for setup and onboarding, completed in under 2 hours.</p></div>
+    <div class="faq-item"><h3>How long does ServiceTitan implementation take?</h3><p>6-12 months typically. FieldZenPro onboarding takes under 2 hours with a US-based specialist guiding you through setup.</p></div>
+  </div>
+</section>
+
+<div class="cta-section">
+  <div class="container">
+    <h2>$249/Month Flat &mdash; Everything ServiceTitan Does For Small Teams</h2>
+    <p style="color:rgba(255,255,255,0.85);max-width:560px;margin:0 auto 2rem;">GPS dispatch, offline app, digital work orders, QuickBooks sync. Unlimited technicians. No setup fee. No annual contract. Start your free trial in minutes.</p>
+    <a href="/signup" class="cta-btn">Start Free 14-Day Trial &rarr;</a>
+  </div>
+</div>
+
+<footer>
+  <nav style="margin-bottom:1rem;">
+    <a href="/servicetitan-alternative">ServiceTitan Alternative</a>
+    <a href="/field-service-roi-calculator">ROI Calculator</a>
+    <a href="/jobber-alternative">Jobber Alternative</a>
+    <a href="/">Home</a>
+    <a href="/privacy">Privacy</a>
+  </nav>
+  <p>&copy; 2026 FieldZenPro. All rights reserved.</p>
+</footer>
+</body>
+</html>
+'@
+[System.IO.File]::WriteAllText("frontend/public/servicetitan-pricing.html", $p1, $enc)
+Write-Host "servicetitan-pricing.html: $((Get-Item 'frontend/public/servicetitan-pricing.html').Length) bytes"

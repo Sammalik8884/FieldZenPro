@@ -5,6 +5,7 @@ using MytechERP.Application.DTOs;
 using MytechERP.Application.DTOs.CRM;
 using MytechERP.Application.Interfaces;
 using MytechERP.domain.Entities;
+using MytechERP.domain.Roles;
 using MytechERP.Infrastructure.Persistance;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -380,6 +381,62 @@ namespace MyTechERP.Infrastructure.Services
             await EnsureRolesExist();
             var roles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
             return roles;
+        }
+
+        public async Task<string> UpdateUserAsync(string userId, UpdateUserRequest request, string currentAdminTenantId)
+        {
+            int tenantId = int.Parse(currentAdminTenantId);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null || user.TenantId != tenantId)
+                throw new Exception("User not found.");
+
+            user.FullName = request.FullName;
+            user.Email = request.Email;
+            user.UserName = request.Email;
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                var errors = string.Join(",", updateResult.Errors.Select(e => e.Description));
+                throw new Exception(errors);
+            }
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.FirstOrDefault() != request.Role)
+            {
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                await _userManager.AddToRoleAsync(user, request.Role);
+            }
+
+            return "User updated successfully.";
+        }
+
+        public async Task<string> DeleteUserAsync(string userId, string currentAdminTenantId)
+        {
+            int tenantId = int.Parse(currentAdminTenantId);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null || user.TenantId != tenantId)
+                throw new Exception("User not found.");
+
+            // Check if the user is the only admin
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains(Roles.Admin))
+            {
+                var adminUsers = await _userManager.GetUsersInRoleAsync(Roles.Admin);
+                if (adminUsers.Count(u => u.TenantId == tenantId) <= 1)
+                {
+                    throw new Exception("Cannot delete the only admin in the organization.");
+                }
+            }
+
+            var deleteResult = await _userManager.DeleteAsync(user);
+            if (!deleteResult.Succeeded)
+            {
+                var errors = string.Join(",", deleteResult.Errors.Select(e => e.Description));
+                throw new Exception(errors);
+            }
+
+            return "User deleted successfully.";
         }
     }
 }

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Users, Plus, Shield, Mail, CheckCircle, XCircle, Loader2, Eye, EyeOff } from "lucide-react";
+import { Users, Plus, Shield, Mail, CheckCircle, XCircle, Loader2, Eye, EyeOff, Edit2, Trash2 } from "lucide-react";
 import { authService } from "../services/authService";
 import { toast } from "react-hot-toast";
+import { ConfirmModal } from "../components/common/ConfirmModal";
 
 export const UsersPage = () => {
  const [users, setUsers] = useState<any[]>([]);
@@ -10,6 +11,8 @@ export const UsersPage = () => {
 
  // Modal State
  const [isModalOpen, setIsModalOpen] = useState(false);
+ const [isEditMode, setIsEditMode] = useState(false);
+ const [editingUserId, setEditingUserId] = useState<string | null>(null);
  const [formLoading, setFormLoading] = useState(false);
  const [showPassword, setShowPassword] = useState(false);
  const [formData, setFormData] = useState({
@@ -18,6 +21,18 @@ export const UsersPage = () => {
  password: "",
  role: ""
  });
+
+ const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; title: string; message: string; type: 'info'|'warning'|'danger'; confirmText: string; onConfirm: () => void }>({ isOpen: false, title: "", message: "", type: "info", confirmText: "Confirm", onConfirm: () => {} });
+
+ const confirmAction = (title: string, message: string, type: 'info' | 'warning' | 'danger', confirmText: string, action: () => Promise<void>) => {
+ setConfirmModal({
+ isOpen: true, title, message, type, confirmText,
+ onConfirm: async () => {
+ setConfirmModal(prev => ({ ...prev, isOpen: false }));
+ await action();
+ }
+ });
+ };
 
  const fetchData = async () => {
  try {
@@ -46,6 +61,8 @@ export const UsersPage = () => {
  }, []);
 
  const handleOpenModal = () => {
+ setIsEditMode(false);
+ setEditingUserId(null);
  setFormData({
  fullName: "",
  email: "",
@@ -55,25 +72,62 @@ export const UsersPage = () => {
  setIsModalOpen(true);
  };
 
+ const handleEditUser = (user: any) => {
+ setIsEditMode(true);
+ setEditingUserId(user.id);
+ setFormData({
+ fullName: user.fullName || "",
+ email: user.email || "",
+ password: "",
+ role: (user.roles && user.roles.length > 0) ? user.roles[0] : (roles.length > 0 ? roles[0] : "")
+ });
+ setIsModalOpen(true);
+ };
+
+ const handleDeleteUser = (user: any) => {
+ confirmAction(
+ "Delete User",
+ `Are you sure you want to delete ${user.fullName || user.email}? This action cannot be undone.`,
+ "danger",
+ "Delete",
+ async () => {
+ try {
+ await authService.deleteUser(user.id);
+ toast.success("User deleted successfully.");
+ fetchData();
+ } catch (error: any) {
+ const data = error.response?.data;
+ const msg = data?.error || data?.Error || data?.message || data?.Message || error.message || "Failed to delete user.";
+ toast.error(msg);
+ }
+ }
+ );
+ };
+
  const handleSubmit = async (e: React.FormEvent) => {
  e.preventDefault();
  setFormLoading(true);
  try {
+ if (isEditMode && editingUserId) {
+ await authService.updateUser(editingUserId, formData);
+ toast.success("User updated successfully");
+ } else {
  const res = await authService.createUser(formData);
  toast.success(res.message || "User created successfully");
+ }
  setIsModalOpen(false);
  fetchData();
  } catch (error: any) {
  const status = error.response?.status;
  const data = error.response?.data;
  if (status === 403) {
- toast.error("You don't have permission to create users. Please log out and back in.");
+ toast.error("You don't have permission to modify users.");
  } else if (status === 401) {
  toast.error("Your session has expired. Please log in again.");
  } else {
  const msg = data?.error || data?.Error || data?.message || data?.Message ||
  (Array.isArray(data?.errors) ? data.errors.join(", ") : null) ||
- error.message || "Error creating user. Check the password meets complexity requirements.";
+ error.message || "An error occurred.";
  toast.error(msg);
  }
  } finally {
@@ -105,18 +159,19 @@ export const UsersPage = () => {
  <th className="px-6 py-4 font-medium">User</th>
  <th className="px-6 py-4 font-medium">Role(s)</th>
  <th className="px-6 py-4 font-medium text-center">Status</th>
+ <th className="px-6 py-4 font-medium text-right">Actions</th>
  </tr>
  </thead>
  <tbody className="divide-y divide-border/30">
  {loading ? (
  <tr>
- <td colSpan={3} className="px-6 py-12 text-center">
+ <td colSpan={4} className="px-6 py-12 text-center">
  <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary opacity-50" />
  </td>
  </tr>
  ) : users.length === 0 ? (
  <tr>
- <td colSpan={3} className="px-6 py-12 text-center text-muted-foreground">
+ <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">
  No users found.
  </td>
  </tr>
@@ -161,6 +216,24 @@ export const UsersPage = () => {
  </span>
  )}
  </td>
+ <td className="px-6 py-4 text-right">
+ <div className="flex justify-end space-x-2">
+ <button
+ onClick={() => handleEditUser(user)}
+ className="p-2 border border-border text-muted-foreground hover:bg-secondary/50 rounded-lg transition-colors flex items-center space-x-1"
+ title="Edit User"
+ >
+ <Edit2 className="h-4 w-4" />
+ </button>
+ <button
+ onClick={() => handleDeleteUser(user)}
+ className="p-2 border border-destructive/30 text-destructive hover:bg-destructive/10 rounded-lg transition-colors flex items-center space-x-1"
+ title="Delete User"
+ >
+ <Trash2 className="h-4 w-4" />
+ </button>
+ </div>
+ </td>
  </tr>
  ))
  )}
@@ -169,7 +242,7 @@ export const UsersPage = () => {
  </div>
  </div>
 
- {/* Create User Modal */}
+ {/* Create/Edit User Modal */}
  {isModalOpen && (
  <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
  <div className="bg-secondary border border-border rounded-2xl w-full max-w-md shadow-md overflow-hidden relative">
@@ -178,7 +251,7 @@ export const UsersPage = () => {
  <div className="p-6">
  <h2 className="text-xl font-bold mb-6 flex items-center space-x-2">
  <Users className="h-5 w-5 text-primary" />
- <span>Invite New User</span>
+ <span>{isEditMode ? "Edit User" : "Invite New User"}</span>
  </h2>
 
  <form onSubmit={handleSubmit} className="space-y-4">
@@ -200,6 +273,7 @@ export const UsersPage = () => {
  placeholder="john@example.com"
  />
  </div>
+ {!isEditMode && (
  <div>
  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Temporary Password *</label>
  <div className="relative group">
@@ -221,6 +295,7 @@ export const UsersPage = () => {
  Password must contain an uppercase letter, lowercase letter, number, and special character.
  </p>
  </div>
+ )}
  <div>
  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Assign Role *</label>
  <select
@@ -250,7 +325,7 @@ export const UsersPage = () => {
  className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:-translate-y-0.5 transition-transform flex items-center space-x-2"
  >
  {formLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
- <span>Create User</span>
+ <span>{isEditMode ? "Save Changes" : "Create User"}</span>
  </button>
  </div>
  </form>
@@ -258,6 +333,16 @@ export const UsersPage = () => {
  </div>
  </div>
  )}
+
+ <ConfirmModal
+ isOpen={confirmModal.isOpen}
+ title={confirmModal.title}
+ message={confirmModal.message}
+ type={confirmModal.type}
+ confirmText={confirmModal.confirmText}
+ onConfirm={confirmModal.onConfirm}
+ onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+ />
  </div>
  );
 };
