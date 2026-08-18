@@ -32,15 +32,12 @@ export const SubscriptionPlansPage: React.FC = () => {
  };
 
  const handleSubscribe = async (stripePriceId: string) => {
- try {
- setIsCheckingOut(stripePriceId);
- const checkoutUrl = await subscriptionService.createCheckoutSession(stripePriceId, user?.email || "");
- window.location.href = checkoutUrl;
- } catch (error: any) {
- toast.error(error.response?.data?.error || "Failed to start checkout session.");
- setIsCheckingOut(null);
- }
+ toast("Contact fieldzenpro@gmail.com for the payments and support.", {
+ icon: 'ℹ️',
+ duration: 6000,
+ });
  };
+
 
  if (isLoading) {
  return (
@@ -167,11 +164,6 @@ export const SubscriptionPlansPage: React.FC = () => {
  </button>
  </motion.div>
  ))}
- </div>
- 
- <div className="mt-16 text-center text-sm tracking-wide flex items-center justify-center gap-2 text-muted-foreground">
- <Zap className="h-4 w-4 text-emerald-500" />
- <p>Payments are securely encrypted and processed by Stripe.</p>
  </div>
  </div>
  );
