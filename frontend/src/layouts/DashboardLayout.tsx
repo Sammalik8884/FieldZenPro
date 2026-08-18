@@ -13,10 +13,10 @@ export const DashboardLayout = () => {
             {/* Blocking wall for expired trials */}
             {isTrialExpired && <TrialExpiredWall />}
 
-            {/* Mobile Sidebar Overlay */}
+            {/* Sidebar Overlay */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden transition-all duration-300"
+                    className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 transition-all duration-300"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
