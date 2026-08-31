@@ -47,6 +47,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
 
     { label: "Financials", isHeader: true, allowedRoles: ["Admin", "Manager"] },
     { label: "Invoices", href: "/invoices", icon: Receipt, allowedRoles: ["Admin", "Manager"] },
+    { label: "Weekly Report", href: "/weekly-report", icon: FileText, allowedRoles: ["Admin", "Manager"] },
     { label: "HR & Payroll", href: "/payroll", icon: DollarSign, allowedRoles: ["Admin", "Manager"], requiredFeature: PlanFeature.HrPayroll },
 
     { label: "System", isHeader: true, allowedRoles: ["Admin", "Manager"] },

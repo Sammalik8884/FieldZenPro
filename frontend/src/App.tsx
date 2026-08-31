@@ -11,6 +11,7 @@ import { SignupPage } from "./pages/SignupPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { WeeklyReportPage } from "./pages/WeeklyReportPage";
 import { CustomersPage } from "./pages/CustomersPage";
 import { SitesPage } from "./pages/SitesPage";
 import { CategoriesPage } from "./pages/CategoriesPage";
@@ -115,6 +116,7 @@ function App() {
                             {/* Finance & Invoicing - Manager/Admin Only */}
                             <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
                                 <Route path="/invoices" element={<InvoicesPage />} />
+                                <Route path="/weekly-report" element={<WeeklyReportPage />} />
                             </Route>
 
                             {/* Field Services - Anyone with a Job (Engineer/Worker/Tech/Admin) */}
