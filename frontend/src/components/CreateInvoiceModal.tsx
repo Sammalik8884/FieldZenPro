@@ -170,18 +170,25 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
                                 <label className="block text-sm font-medium text-muted-foreground mb-1">Customer</label>
-                                <select
+                                <input
+                                    list="customer-options"
                                     required
-                                    value={customerId}
-                                    onChange={(e) => setCustomerId(Number(e.target.value) || "")}
+                                    placeholder="Search or select a Customer..."
+                                    value={customerSearch}
+                                    onChange={(e) => {
+                                        setCustomerSearch(e.target.value);
+                                        const matched = customers.find(c => c.name === e.target.value);
+                                        if (matched) setCustomerId(matched.id);
+                                        else setCustomerId(0);
+                                    }}
                                     className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary/50 disabled:opacity-50"
                                     disabled={dataLoading}
-                                >
-                                    <option value="" className="bg-card text-foreground">Select a Customer...</option>
+                                />
+                                <datalist id="customer-options">
                                     {customers.map(c => (
-                                        <option key={c.id} value={c.id} className="bg-card text-foreground">{c.name}</option>
+                                        <option key={c.id} value={c.name} />
                                     ))}
-                                </select>
+                                </datalist>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-muted-foreground mb-1">Issue Date</label>
@@ -244,15 +251,29 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
                                                 {item.type === "product" ? "Product" : item.type === "asset" ? "Asset" : "Service Description"}
                                             </label>
                                             {item.type === "product" ? (
-                                                <select
-                                                    required
-                                                    value={item.itemId || ""}
-                                                    onChange={(e) => handleSelectOption(index, Number(e.target.value), "product")}
-                                                    className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
-                                                >
-                                                    <option value="" className="bg-card text-foreground">Select Product...</option>
-                                                    {products.map(p => <option key={p.id} value={p.id} className="bg-card text-foreground">{p.name} - ${p.price}</option>)}
-                                                </select>
+                                                <>
+                                                    <input
+                                                        list={`product-options-${index}`}
+                                                        required
+                                                        value={item.description}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value;
+                                                            const matched = products.find(p => p.name === val);
+                                                            const newItems = [...items];
+                                                            if (matched) {
+                                                                newItems[index] = { ...newItems[index], itemId: matched.id, description: matched.name, unitPrice: matched.price || 0 };
+                                                            } else {
+                                                                newItems[index] = { ...newItems[index], itemId: undefined, description: val };
+                                                            }
+                                                            setItems(newItems);
+                                                        }}
+                                                        placeholder="Type or select a product..."
+                                                        className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                                    />
+                                                    <datalist id={`product-options-${index}`}>
+                                                        {products.map(p => <option key={p.id} value={p.name} />)}
+                                                    </datalist>
+                                                </>
                                             ) : item.type === "asset" ? (
                                                 <select
                                                     required
