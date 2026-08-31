@@ -3,10 +3,7 @@ import { BarChart2, Download, Mail, RefreshCw, Wrench, Package, ChevronDown, Che
 import toast from "react-hot-toast";
 import { apiClient } from "../services/apiClient";
 
-// Helper to get the stored JWT token
-function getAuthToken(): string {
-    return sessionStorage.getItem("token") ?? "";
-}
+
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -183,7 +180,7 @@ export function WeeklyReportPage() {
         if (!sendEmail) { toast.error("Enter an email address first."); return; }
         setSending(true);
         try {
-            const res = await apiClient.post(`/invoice/weekly-report/send?start=${weekStart}&end=${weekEnd}`, 
+            await apiClient.post(`/invoice/weekly-report/send?start=${weekStart}&end=${weekEnd}`, 
                 `"${sendEmail}"`, 
                 { headers: { "Content-Type": "application/json" } }
             );
