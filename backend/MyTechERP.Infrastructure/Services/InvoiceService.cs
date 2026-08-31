@@ -223,6 +223,7 @@ namespace MyTechERP.Infrastructure.Services
             if (invoice == null) return false;
 
             invoice.Status = (InvoiceStatus)status;
+            if (invoice.Status == InvoiceStatus.Paid) { invoice.AmountPaid = invoice.TotalAmount; }
             await _context.SaveChangesAsync();
             return true;
         }
