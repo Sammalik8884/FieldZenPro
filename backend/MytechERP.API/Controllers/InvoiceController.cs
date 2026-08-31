@@ -135,6 +135,27 @@ namespace MytechERP.API.Controllers
                 return BadRequest(new { Error = ex.Message });
             }
         }
+    
+    [HttpGet("weekly-report")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> GetWeeklyReport([FromQuery] DateTime start, [FromQuery] DateTime end)
+    {
+        var tenantId = User.FindFirst("TenantId")?.Value ?? "1";
+        if (string.IsNullOrEmpty(tenantId)) return Unauthorized();
+
+        var report = await _service.GetWeeklyAccountingReportAsync(tenantId, start, end);
+        return Ok(report);
+    }
+
+    [HttpPost("weekly-report/send")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> SendWeeklyReportEmail([FromQuery] DateTime start, [FromQuery] DateTime end, [FromBody] string recipientEmail)
+    {
+        var tenantId = User.FindFirst("TenantId")?.Value ?? "1";
+        if (string.IsNullOrEmpty(tenantId)) return Unauthorized();
+
+        await _service.SendWeeklyReportEmailAsync(tenantId, start, end, recipientEmail);
+        return Ok(new { message = "Weekly report sent successfully" });
+    }
     }
 }
-

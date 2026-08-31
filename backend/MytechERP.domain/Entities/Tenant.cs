@@ -19,6 +19,7 @@ namespace MytechERP.domain.Entities
         public DateTime SubscriptionExpiresAt { get; set; }
         public DateTime? TrialStartedAt { get; set; }
         public bool IsActive { get; set; }=true;
+        public string? WeeklyReportEmail { get; set; }
 
         
     }

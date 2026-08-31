@@ -16,11 +16,13 @@ namespace MyTechERP.Infrastructure.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly ITimeTrackingService _timeService; 
+        private readonly IEmailService _emailService;
 
-        public InvoiceService(ApplicationDbContext context , ITimeTrackingService timeTrackingService)
+        public InvoiceService(ApplicationDbContext context , ITimeTrackingService timeTrackingService, IEmailService emailService)
         {
             _timeService = timeTrackingService;
             _context = context;
+            _emailService = emailService;
         }
 
         public async Task<Invoice> CreateFromQuotationAsync(int quotationId)
@@ -266,6 +268,96 @@ namespace MyTechERP.Infrastructure.Services
                 }).ToList()
             });
         }
+    
+        public async Task<WeeklyAccountingReportDto> GetWeeklyAccountingReportAsync(string tenantId, DateTime weekStart, DateTime weekEnd)
+        {
+            var tId = int.Parse(tenantId);
+            
+            var paidInvoices = await _context.Invoices
+                .IgnoreQueryFilters()
+                .Include(i => i.Items)
+                .Include(i => i.Customer)
+                .Where(i => i.TenantId == tId && 
+                            i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Paid &&
+                            i.IssueDate.Date >= weekStart.Date && 
+                            i.IssueDate.Date <= weekEnd.Date)
+                .ToListAsync();
+
+            var report = new WeeklyAccountingReportDto
+            {
+                DateFrom = weekStart,
+                DateTo = weekEnd,
+                PaidInvoiceCount = paidInvoices.Count,
+                MaterialsBreakdown = new List<ReportLineItemDto>(),
+                LaborServicesBreakdown = new List<ReportLineItemDto>()
+            };
+
+            foreach (var inv in paidInvoices)
+            {
+                foreach (var item in inv.Items)
+                {
+                    var line = new ReportLineItemDto
+                    {
+                        InvoiceNumber = inv.InvoiceNumber,
+                        CustomerName = inv.Customer?.Name ?? "",
+                        Description = item.Description ?? "",
+                        Quantity = item.Quantity,
+                        UnitPrice = item.UnitPrice,
+                        LineTotal = item.TotalPrice,
+                        InvoiceDate = inv.IssueDate
+                    };
+
+                    if (item.ItemCategory == MytechERP.domain.Enums.ItemCategory.Material)
+                    {
+                        report.MaterialsBreakdown.Add(line);
+                        report.MaterialsSalesTotal += line.LineTotal;
+                    }
+                    else
+                    {
+                        report.LaborServicesBreakdown.Add(line);
+                        report.LaborServicesSalesTotal += line.LineTotal;
+                    }
+                }
+            }
+
+            return report;
+        }
+
+        public async Task SendWeeklyReportEmailAsync(string tenantId, DateTime weekStart, DateTime weekEnd, string recipientEmail)
+        {
+            var report = await GetWeeklyAccountingReportAsync(tenantId, weekStart, weekEnd);
+
+            var csv = new StringBuilder();
+            csv.AppendLine("Category,Invoice Number,Date,Customer,Description,Quantity,Unit Price,Total");
+            
+            foreach(var m in report.MaterialsBreakdown)
+                csv.AppendLine($"Material,{m.InvoiceNumber},{m.InvoiceDate:yyyy-MM-dd},\"{m.CustomerName.Replace("\"", "\"\"")}\",\"{m.Description.Replace("\"", "\"\"")}\",{m.Quantity},{m.UnitPrice},{m.LineTotal}");
+            
+            foreach(var l in report.LaborServicesBreakdown)
+                csv.AppendLine($"Labor/Service,{l.InvoiceNumber},{l.InvoiceDate:yyyy-MM-dd},\"{l.CustomerName.Replace("\"", "\"\"")}\",\"{l.Description.Replace("\"", "\"\"")}\",{l.Quantity},{l.UnitPrice},{l.LineTotal}");
+            
+            csv.AppendLine($"SUMMARY,,,,,,Total Material,{report.MaterialsSalesTotal}");
+            csv.AppendLine($"SUMMARY,,,,,,Total Labor,{report.LaborServicesSalesTotal}");
+            csv.AppendLine($"SUMMARY,,,,,,TOTAL,{report.GrandTotal}");
+
+            byte[] fileBytes = Encoding.UTF8.GetBytes(csv.ToString());
+
+            string body = $@"
+                <h2>Weekly Accounting Report</h2>
+                <p>Week: {weekStart:MMM dd, yyyy} - {weekEnd:MMM dd, yyyy}</p>
+                <p>Total Material Revenue: {report.MaterialsSalesTotal:C}</p>
+                <p>Total Labor/Service Revenue: {report.LaborServicesSalesTotal:C}</p>
+                <h3>Total Revenue: {report.GrandTotal:C}</h3>
+                <p>Please find the detailed breakdown attached as a CSV.</p>
+            ";
+
+            await _emailService.SendEmailWithAttachmentAsync(
+                recipientEmail, 
+                $"Weekly Accounting Report ({weekStart:MMM dd} - {weekEnd:MMM dd})", 
+                body, 
+                fileBytes, 
+                $"WeeklyReport_{weekStart:yyyyMMdd}.csv"
+            );
+        }
     }
 }
-

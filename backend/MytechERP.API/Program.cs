@@ -88,6 +88,7 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddTransient<MyTechERP.Infrastructure.BackgroundJobs.WeeklyReportEmailJob>();
 builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
 builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
 builder.Services.AddScoped<IPaymentGatewayService, StripePaymentService>();
@@ -339,6 +340,12 @@ catch (Exception ex)
 
 app.UseStaticFiles();
 app.MapControllers();
+
+// Register recurring job for Monday 6 AM UTC
+RecurringJob.AddOrUpdate<MyTechERP.Infrastructure.BackgroundJobs.WeeklyReportEmailJob>(
+    "weekly-accounting-report",
+    job => job.RunAsync(),
+    "0 6 * * 1");
 app.MapHub<MytechERP.API.Hubs.SyncHub>("/hubs/sync");
 
 // Lightweight health endpoint — used by Azure "Always On" and frontend pre-warming
