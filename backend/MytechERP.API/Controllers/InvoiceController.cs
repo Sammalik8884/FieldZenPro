@@ -147,6 +147,17 @@ namespace MytechERP.API.Controllers
         return Ok(report);
     }
 
+        [HttpPost("{id}/send")]
+    [Authorize(Roles = "Admin,Manager,Engineer")]
+    public async Task<IActionResult> SendInvoiceEmail(int id, [FromBody] string recipientEmail)
+    {
+        var tenantId = User.FindFirst("TenantId")?.Value ?? "1";
+        if (string.IsNullOrEmpty(tenantId)) return Unauthorized();
+
+        await _service.SendInvoiceEmailAsync(id, tenantId, recipientEmail);
+        return Ok(new { message = "Invoice sent successfully" });
+    }
+
     [HttpPost("weekly-report/send")]
     [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> SendWeeklyReportEmail([FromQuery] DateTime start, [FromQuery] DateTime end, [FromBody] string recipientEmail)

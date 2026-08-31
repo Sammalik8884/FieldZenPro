@@ -19,6 +19,7 @@ namespace MytechERP.Application.Interfaces
         Task<IEnumerable<InvoiceDto>> GetByCustomerEmailAsync(string email);
 
         Task<WeeklyAccountingReportDto> GetWeeklyAccountingReportAsync(string tenantId, DateTime weekStart, DateTime weekEnd);
+        Task SendInvoiceEmailAsync(int id, string tenantId, string recipientEmail);
         Task SendWeeklyReportEmailAsync(string tenantId, DateTime weekStart, DateTime weekEnd, string recipientEmail);
     }
 }

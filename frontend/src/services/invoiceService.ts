@@ -22,6 +22,13 @@ export const invoiceService = {
         return response.data;
     },
 
+    sendEmail: async (id: number, email: string): Promise<any> => {
+        const response = await apiClient.post<any>(`/Invoice/${id}/send`, `"${email}"`, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.data;
+    },
+
     markAsIssued: async (id: number): Promise<any> => {
         // Assuming hitting an endpoint to update status, or similar
         const response = await apiClient.put<any>(`/Invoice/${id}/status`, 1, {

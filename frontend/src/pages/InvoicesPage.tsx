@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Loader2, Search, Receipt, Eye, Send, Plus, Copy, DollarSign, AlertTriangle, FileText } from "lucide-react";
 import { StatCard } from "../components/dashboard/StatCard";
 import { invoiceService } from "../services/invoiceService";
+import { customerService } from "../services/customerService";
 import { InvoiceDto } from "../types/finance";
 import { CreateInvoiceModal } from "../components/CreateInvoiceModal";
 import { ConfirmModal } from "../components/common/ConfirmModal";
@@ -58,21 +59,31 @@ export const InvoicesPage = () => {
  (inv.customerName && inv.customerName.toLowerCase().includes(searchQuery.toLowerCase()))
  );
 
- const handlePublishInvoice = (id: number) => {
- confirmAction("Issue Invoice", "Are you sure you want to officially issue this invoice? It will become payable.", "warning", "Issue", async () => {
+ const handlePublishInvoice = (inv: InvoiceDto) => {
+ confirmAction("Issue Invoice", "Are you sure you want to officially issue this invoice? We will also try to send an email to the customer.", "warning", "Issue", async () => {
  try {
- setProcessingId(id);
- await invoiceService.markAsIssued(id);
- toast.success("Invoice officially issued!");
+ setProcessingId(inv.id);
+ const customer = await customerService.getById(inv.customerId);
+ let email = customer.email;
+ if (!email) {
+ email = window.prompt("The customer doesn't have an email address saved. Enter an email address to send the invoice to:") || "";
+ if (!email) {
+ toast.error("An email address is required to send the invoice.");
+ setProcessingId(null);
+ return;
+ }
+ }
+ await invoiceService.sendEmail(inv.id, email);
+ await invoiceService.markAsIssued(inv.id);
+ toast.success(`Invoice sent to ${email} and officially issued!`);
  fetchInvoices();
- } catch (error) {
- toast.error((error as any).response?.data?.Error || (error as any).response?.data?.Message || "Failed to issue invoice.");
+ } catch (error: any) {
+ toast.error(error.response?.data?.Error || error.response?.data?.Message || "Failed to issue invoice.");
  } finally {
  setProcessingId(null);
  }
  });
  };
-
  const handleMarkAsPaid = async (id: number) => {
  try {
  setProcessingId(id);
@@ -258,7 +269,7 @@ export const InvoicesPage = () => {
  {/* If Draft, allow Issuing */}
  {inv.status === 0 && (
  <button
- onClick={() => handlePublishInvoice(inv.id)}
+ onClick={() => handlePublishInvoice(inv)}
  disabled={processingId === inv.id}
  className="p-2 border border-blue-500/30 text-blue-500 hover:bg-blue-500/20 rounded-lg transition-colors flex items-center space-x-1 font-medium bg-blue-500/10 disabled:opacity-50"
  title="Issue Invoice"

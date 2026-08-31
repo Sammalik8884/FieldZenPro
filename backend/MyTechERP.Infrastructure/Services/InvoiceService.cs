@@ -324,6 +324,24 @@ namespace MyTechERP.Infrastructure.Services
             return report;
         }
 
+                public async Task SendInvoiceEmailAsync(int id, string tenantId, string recipientEmail)
+        {
+            int tId = int.Parse(tenantId);
+            var invoice = await _context.Invoices.Include(i => i.Customer).FirstOrDefaultAsync(i => i.Id == id && i.TenantId == tId);
+            if (invoice == null) throw new Exception("Invoice not found.");
+
+            string subject = $"Invoice {invoice.InvoiceNumber} from FieldZenPro";
+            string body = $@"
+                <h2>Hello {invoice.Customer?.Name},</h2>
+                <p>Your invoice <strong>{invoice.InvoiceNumber}</strong> has been issued.</p>
+                <p><strong>Total Amount:</strong> </p>
+                <p><strong>Due Date:</strong> {invoice.DueDate:yyyy-MM-dd}</p>
+                <p>Thank you for your business!</p>
+            ";
+
+            await _emailService.SendEmailAsync(recipientEmail, subject, body);
+        }
+
         public async Task SendWeeklyReportEmailAsync(string tenantId, DateTime weekStart, DateTime weekEnd, string recipientEmail)
         {
             var report = await GetWeeklyAccountingReportAsync(tenantId, weekStart, weekEnd);
