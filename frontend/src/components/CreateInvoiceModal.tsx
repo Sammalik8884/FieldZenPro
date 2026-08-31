@@ -32,6 +32,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
 
     // Form State
     const [customerId, setCustomerId] = useState<number | "">("");
+    const [customerSearch, setCustomerSearch] = useState("");
     const [issueDate, setIssueDate] = useState(new Date().toISOString().split("T")[0]);
     const [dueDate, setDueDate] = useState(new Date(Date.now() + 15 * 86400000).toISOString().split("T")[0]); // 15 days default
     const [items, setItems] = useState<InvoiceLineItem[]>([
