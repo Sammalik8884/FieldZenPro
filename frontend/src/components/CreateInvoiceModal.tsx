@@ -134,7 +134,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
                 description: i.description,
                 quantity: i.quantity,
                 unitPrice: i.unitPrice,
-                itemCategory: i.type === "product" ? 1 : 2
+                itemCategory: i.type === "product" ? 0 : 1
             }))
         };
 

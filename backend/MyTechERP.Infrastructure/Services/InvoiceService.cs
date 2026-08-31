@@ -60,6 +60,7 @@ namespace MyTechERP.Infrastructure.Services
                     Quantity = item.Quantity,
                     UnitPrice = item.UnitPrice,
                     TotalPrice = item.Quantity * item.UnitPrice,
+                    ItemCategory = item.ItemCategory,
                     TenantId = quote.TenantId
                 });
             }
@@ -94,6 +95,7 @@ namespace MyTechERP.Infrastructure.Services
                     Quantity = item.Quantity,
                     UnitPrice = item.UnitPrice,
                     TotalPrice = item.Quantity * item.UnitPrice,
+                    ItemCategory = item.ItemCategory,
                     TenantId = tId
                 });
             }
