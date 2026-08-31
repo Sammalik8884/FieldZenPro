@@ -26,6 +26,7 @@
     { "source": "/inventory", "destination": "/" },
     { "source": "/procurement", "destination": "/" },
     { "source": "/invoices", "destination": "/" },
+    { "source": "/weekly-report", "destination": "/" },
     { "source": "/my-jobs", "destination": "/" },
     { "source": "/job/:path*", "destination": "/" },
     { "source": "/portal", "destination": "/" },
