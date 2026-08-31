@@ -17,12 +17,14 @@ namespace MyTechERP.Infrastructure.Services
         private readonly ApplicationDbContext _context;
         private readonly ITimeTrackingService _timeService; 
         private readonly IEmailService _emailService;
+        private readonly IPdfService _pdfService;
 
-        public InvoiceService(ApplicationDbContext context , ITimeTrackingService timeTrackingService, IEmailService emailService)
+        public InvoiceService(ApplicationDbContext context, ITimeTrackingService timeTrackingService, IEmailService emailService, IPdfService pdfService)
         {
             _timeService = timeTrackingService;
             _context = context;
             _emailService = emailService;
+            _pdfService = pdfService;
         }
 
         public async Task<Invoice> CreateFromQuotationAsync(int quotationId)
@@ -60,7 +62,7 @@ namespace MyTechERP.Infrastructure.Services
                     Quantity = item.Quantity,
                     UnitPrice = item.UnitPrice,
                     TotalPrice = item.Quantity * item.UnitPrice,
-                    ItemCategory = item.ItemCategory,
+
                     TenantId = quote.TenantId
                 });
             }
@@ -336,12 +338,14 @@ namespace MyTechERP.Infrastructure.Services
             string body = $@"
                 <h2>Hello {invoice.Customer?.Name},</h2>
                 <p>Your invoice <strong>{invoice.InvoiceNumber}</strong> has been issued.</p>
-                <p><strong>Total Amount:</strong> </p>
+                <p><strong>Total Amount:</strong> ${invoice.TotalAmount:F2}</p>
                 <p><strong>Due Date:</strong> {invoice.DueDate:yyyy-MM-dd}</p>
+                <p>Please find the PDF copy of your invoice attached to this email.</p>
                 <p>Thank you for your business!</p>
             ";
 
-            await _emailService.SendEmailAsync(recipientEmail, subject, body);
+            var pdfBytes = await _pdfService.GenerateInvoicePdfAsync(id);
+            await _emailService.SendEmailWithAttachmentAsync(recipientEmail, subject, body, pdfBytes, $"Invoice_{invoice.InvoiceNumber}.pdf");
         }
 
         public async Task SendWeeklyReportEmailAsync(string tenantId, DateTime weekStart, DateTime weekEnd, string recipientEmail)
