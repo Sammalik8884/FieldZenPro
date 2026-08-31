@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { BarChart2, Download, Mail, RefreshCw, Wrench, Package, ChevronDown, ChevronUp } from "lucide-react";
 import toast from "react-hot-toast";
+import { apiClient } from "../services/apiClient";
 
 // Helper to get the stored JWT token
 function getAuthToken(): string {
@@ -152,8 +153,6 @@ function BreakdownTable({ title, icon, items, total, color }: {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export function WeeklyReportPage() {
-    const API = import.meta.env.VITE_API_URL ?? "";
-
     // Default week range: current Mon–Sun
     const today  = new Date();
     const monday = getMonday(new Date(today));
@@ -169,18 +168,14 @@ export function WeeklyReportPage() {
     const fetchReport = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch(
-                `${API}/api/invoice/weekly-report?weekStart=${weekStart}&weekEnd=${weekEnd}`,
-                { headers: { Authorization: `Bearer ${getAuthToken()}` } }
-            );
-            if (!res.ok) throw new Error(await res.text());
-            setReport(await res.json());
-        } catch (e: any) {
-            toast.error("Failed to load report: " + (e.message ?? "Unknown error"));
+            const res = await apiClient.get(`/invoice/weekly-report?start=${weekStart}&end=${weekEnd}`);
+            setReport(res.data);
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || err.message || "Failed to load report");
         } finally {
             setLoading(false);
         }
-    }, [weekStart, weekEnd, API]);
+    }, [weekStart, weekEnd]);
 
     useEffect(() => { fetchReport(); }, [fetchReport]);
 
@@ -188,15 +183,13 @@ export function WeeklyReportPage() {
         if (!sendEmail) { toast.error("Enter an email address first."); return; }
         setSending(true);
         try {
-            const res = await fetch(`${API}/api/invoice/weekly-report/send`, {
-                method:  "POST",
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${getAuthToken()}` },
-                body:    JSON.stringify({ recipientEmail: sendEmail, weekStart, weekEnd }),
-            });
-            if (!res.ok) throw new Error(await res.text());
-            toast.success(`Report emailed to ${sendEmail}!`);
-        } catch (e: any) {
-            toast.error("Failed to send email: " + (e.message ?? "Unknown error"));
+            const res = await apiClient.post(`/invoice/weekly-report/send?start=${weekStart}&end=${weekEnd}`, 
+                `"${sendEmail}"`, 
+                { headers: { "Content-Type": "application/json" } }
+            );
+            toast.success("Email sent successfully!");
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || err.message || "Failed to send email");
         } finally {
             setSending(false);
         }
