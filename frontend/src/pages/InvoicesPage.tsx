@@ -66,16 +66,16 @@ export const InvoicesPage = () => {
  const customer = await customerService.getById(inv.customerId);
  let email = customer.email;
  if (!email) {
- email = window.prompt("The customer doesn't have an email address saved. Enter an email address to send the invoice to:") || "";
- if (!email) {
- toast.error("An email address is required to send the invoice.");
- setProcessingId(null);
- return;
+ email = window.prompt("The customer doesn't have an email address saved. Enter an email address to send the invoice to (or leave blank to skip):") || "";
  }
- }
+ if (email && email.trim() !== "") {
  await invoiceService.sendEmail(inv.id, email);
  await invoiceService.markAsIssued(inv.id);
  toast.success(`Invoice sent to ${email} and officially issued!`);
+ } else {
+ await invoiceService.markAsIssued(inv.id);
+ toast.success("Invoice officially issued! (No email sent)");
+ }
  fetchInvoices();
  } catch (error: any) {
  toast.error(error.response?.data?.Error || error.response?.data?.Message || "Failed to issue invoice.");
