@@ -132,7 +132,8 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
             items: items.map(i => ({
                 description: i.description,
                 quantity: i.quantity,
-                unitPrice: i.unitPrice
+                unitPrice: i.unitPrice,
+                itemCategory: i.type === "product" ? 1 : 2
             }))
         };
 
