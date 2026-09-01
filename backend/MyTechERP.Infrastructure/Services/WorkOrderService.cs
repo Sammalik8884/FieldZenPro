@@ -85,7 +85,7 @@ namespace MyTechERP.Infrastructure.Services
                 SiteId = finalSiteId,
                 ScheduledDate = request.ScheduledDate,
                 TechnicianId = request.TechnicianId,
-                Status = WorkOrderStatus.Created,
+                Status = string.IsNullOrEmpty(request.TechnicianId) ? WorkOrderStatus.Created : WorkOrderStatus.Assigned,
                 TenantId = userTenantId.Value,
                 AssetId = request.AssetId > 0 ? request.AssetId : null
             };
@@ -187,33 +187,30 @@ namespace MyTechERP.Infrastructure.Services
                 throw new UnauthorizedAccessException("Access Denied: This Work Order belongs to another Tenant.");
             }
 
-            if (workorder.Asset == null)
-            {
-               
-                throw new Exception("This Work Order is not linked to an Asset, so inspection cannot be initialized.");
-            }
-
             bool alreadyinitialzed = await _context.WorkOrderChecklistResults.AnyAsync(r => r.WorkOrderId == workOrderId);
             if (alreadyinitialzed) return MapToDto(workorder);
 
-            var templateQuestions = await _checklistRepository.GetByCategoryIdAsync(workorder.Asset.CategoryId);
-
-            if (!templateQuestions.Any())
-                throw new Exception($"No checklist questions found for Category: {workorder.Asset.CategoryId}");
-
-            var newResults = templateQuestions.Select(q => new WorkOrderChecklistResult
+            if (workorder.Asset != null)
             {
-                WorkOrderId = workOrderId,
-                ChecklistQuestionId = q.Id,
-                SnapshotText = q.Text,
-                SnapshotJson = q.ConfigJson,
-                QuestionText = q.Text,
-                Value = string.Empty,
-                IsPass = true,
-                TenantId = workorder.TenantId
-            }).ToList();
+                var templateQuestions = await _checklistRepository.GetByCategoryIdAsync(workorder.Asset.CategoryId);
+                
+                if (templateQuestions.Any())
+                {
+                    var newResults = templateQuestions.Select(q => new WorkOrderChecklistResult
+                    {
+                        WorkOrderId = workOrderId,
+                        ChecklistQuestionId = q.Id,
+                        SnapshotText = q.Text,
+                        SnapshotJson = q.ConfigJson,
+                        QuestionText = q.Text,
+                        Value = string.Empty,
+                        IsPass = true,
+                        TenantId = workorder.TenantId
+                    }).ToList();
 
-            _context.WorkOrderChecklistResults.AddRange(newResults);
+                    _context.WorkOrderChecklistResults.AddRange(newResults);
+                }
+            }
 
             _workflowService.ValidateTransition(workorder.Status, WorkOrderStatus.Initialized);
             workorder.Status = WorkOrderStatus.Initialized;

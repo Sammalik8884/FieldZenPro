@@ -206,7 +206,7 @@ export const JobExecutionPage = () => {
 
  if (!job) return null;
 
- const isJobActive = job.status === 'Initialized' || job.status === 'InProgress';
+ const isJobActive = job.status === 'Initialized' || job.status === 'InProgress' || job.status === 'Assigned' || job.checkInTime != null;
 
  return (
  <div className="p-4 md:p-8 max-w-3xl mx-auto animate-in fade-in duration-500 pb-24">
