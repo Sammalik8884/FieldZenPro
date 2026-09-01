@@ -5,8 +5,10 @@ import { ConfirmModal } from "../components/common/ConfirmModal";
 import { workOrderService } from "../services/workOrderService";
 import { invoiceService } from "../services/invoiceService";
 import { contractService } from "../services/contractService";
+import { customerService } from "../services/customerService";
 import { WorkOrderDto, UpdateWorkOrderDto, AssetDto, CreateWorkOrderDto } from "../types/field";
 import { ContractDto } from "../types/contract";
+import { CustomerDto } from "../types/customer";
 import { toast } from "react-hot-toast";
 import { authService } from "../services/authService";
 import { apiClient } from "../services/apiClient";
@@ -51,11 +53,13 @@ export const WorkOrdersPage = () => {
  const [technicians, setTechnicians] = useState<any[]>([]);
  const [assets, setAssets] = useState<AssetDto[]>([]);
  const [contracts, setContracts] = useState<ContractDto[]>([]);
+ const [customers, setCustomers] = useState<CustomerDto[]>([]);
 
  // Create modal state
  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
  const [createForm, setCreateForm] = useState<CreateWorkOrderDto>({
  description: "",
+ customerId: 0,
  contractId: 0,
  scheduledDate: new Date().toISOString().split('T')[0],
  technicianId: null,
@@ -82,16 +86,18 @@ export const WorkOrdersPage = () => {
  const fetchData = async () => {
  try {
  setLoading(true);
- const [woData, usersData, assetData, contractData] = await Promise.all([
+ const [woData, usersData, assetData, contractData, custData] = await Promise.all([
  workOrderService.getAll(),
  authService.getUsers().catch(() => []),
  apiClient.get<AssetDto[]>("/Assets").then(r => r.data).catch(() => []),
- contractService.getAll().catch(() => [])
+ contractService.getAll().catch(() => []),
+ customerService.getAll().catch(() => [])
  ]);
  setWorkOrders(woData);
  setTechnicians(usersData.filter((u: any) => u.roles && (u.roles.includes("Tech") || u.roles.includes("Worker") || u.roles.includes("Technician"))));
  setAssets(Array.isArray(assetData) ? assetData : []);
  setContracts(Array.isArray(contractData) ? contractData : []);
+ setCustomers(Array.isArray(custData) ? custData : []);
  } catch (error) {
  toast.error("Failed to load work orders.");
  } finally {
@@ -185,28 +191,32 @@ export const WorkOrdersPage = () => {
  };
 
 
- const handleCreateSubmit = async (e: React.FormEvent) => {
- e.preventDefault();
- if (!createForm.contractId) { toast.error("Please select a Contract."); return; }
- try {
- setProcessingId(-10);
- await workOrderService.create({
- description: createForm.description,
- contractId: createForm.contractId,
- scheduledDate: new Date(createForm.scheduledDate).toISOString(),
- technicianId: createForm.technicianId || null,
- assetId: createForm.assetId || undefined
- });
- toast.success("Work Order created successfully!");
- setIsCreateModalOpen(false);
- setCreateForm({ description: "", contractId: 0, scheduledDate: new Date().toISOString().split('T')[0], technicianId: null, assetId: undefined });
- fetchData();
- } catch (error: any) {
- toast.error(extractApiError(error, "Failed to create work order."));
- } finally {
- setProcessingId(null);
- }
- };
+    const handleCreateSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!createForm.customerId && !createForm.contractId) { 
+            toast.error("Please select a Customer."); 
+            return; 
+        }
+        try {
+            setProcessingId(-10);
+            await workOrderService.create({
+                description: createForm.description,
+                customerId: createForm.customerId,
+                contractId: createForm.contractId || undefined,
+                scheduledDate: new Date(createForm.scheduledDate).toISOString(),
+                technicianId: createForm.technicianId || null,
+                assetId: createForm.assetId || undefined
+            });
+            toast.success("Work Order created successfully!");
+            setIsCreateModalOpen(false);
+            setCreateForm({ description: "", customerId: 0, contractId: 0, scheduledDate: new Date().toISOString().split('T')[0], technicianId: null, assetId: undefined });
+            fetchData();
+        } catch (error: any) {
+            toast.error(extractApiError(error, "Failed to create work order."));
+        } finally {
+            setProcessingId(null);
+        }
+    };
 
  const handleOpenEdit = (wo: WorkOrderDto) => {
  setEditingJob(wo);
@@ -571,14 +581,27 @@ export const WorkOrdersPage = () => {
  </div>
  <form onSubmit={handleCreateSubmit} className="space-y-4">
  <div>
- <label className="text-xs font-semibold text-muted-foreground mb-1 block">Contract *</label>
+ <label className="text-xs font-semibold text-muted-foreground mb-1 block">Customer *</label>
  <select
  required
+ value={createForm.customerId || 0}
+ onChange={e => setCreateForm({ ...createForm, customerId: Number(e.target.value) })}
+ className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 text-foreground"
+ >
+ <option value={0} disabled>-- Select Customer --</option>
+ {customers.map(c => (
+ <option key={c.id} value={c.id}>{c.companyName || c.name}</option>
+ ))}
+ </select>
+ </div>
+ <div>
+ <label className="text-xs font-semibold text-muted-foreground mb-1 block">Contract (Optional)</label>
+ <select
  value={createForm.contractId || 0}
  onChange={e => setCreateForm({ ...createForm, contractId: Number(e.target.value) })}
  className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 text-foreground"
  >
- <option value={0} disabled>-- Select Contract --</option>
+ <option value={0}>-- No Contract --</option>
  {contracts.map(c => (
  <option key={c.id} value={c.id}>{c.description} — {c.customerName}</option>
  ))}

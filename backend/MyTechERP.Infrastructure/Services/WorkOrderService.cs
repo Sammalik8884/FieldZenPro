@@ -59,9 +59,12 @@ namespace MyTechERP.Infrastructure.Services
             if (userTenantId == null)
                 throw new UnauthorizedAccessException("Security Error: No Tenant ID found in user token.");
 
+            int finalCustomerId = request.CustomerId;
+            int? finalSiteId = request.SiteId;
+
             if (request.ContractId > 0)
             {
-                var contract = await _contractRepository.GetByIdAsync(request.ContractId);
+                var contract = await _contractRepository.GetByIdAsync(request.ContractId.Value);
                 if (contract == null)
                 {
                     throw new KeyNotFoundException($"Contract with ID {request.ContractId} not found.");
@@ -70,18 +73,21 @@ namespace MyTechERP.Infrastructure.Services
                 {
                     throw new UnauthorizedAccessException("Access Denied: You cannot create Work Orders for a different Tenant's contract.");
                 }
+                finalCustomerId = contract.CustomerId;
+                // Contracts don't have a single SiteId, so we keep request.SiteId or null
             }
 
             var workOrder = new WorkOrder
             {
                 Description = request.Description,
                 ContractId = request.ContractId > 0 ? request.ContractId : null,
+                CustomerId = finalCustomerId,
+                SiteId = finalSiteId,
                 ScheduledDate = request.ScheduledDate,
                 TechnicianId = request.TechnicianId,
                 Status = WorkOrderStatus.Created,
                 TenantId = userTenantId.Value,
                 AssetId = request.AssetId > 0 ? request.AssetId : null
-
             };
 
             var createdEntity = await _repository.AddAsync(workOrder);
@@ -146,10 +152,14 @@ namespace MyTechERP.Infrastructure.Services
                 ScheduledDate = w.ScheduledDate,
                 CompletedDate = w.CompletedDate,
                 ContractId = w.ContractId ?? 0,
-                CustomerName = w.Contract?.Customer?.CompanyName
+                CustomerName = w.Customer?.CompanyName
+                               ?? w.Customer?.Name
+                               ?? w.Contract?.Customer?.CompanyName
                                ?? w.ReferenceQuotation?.Customer?.Name
                                ?? "Unknown",
-                SiteName = w.Contract?.Customer?.SiteName
+                SiteName = w.Site?.Name
+                           ?? w.Customer?.SiteName
+                           ?? w.Contract?.Customer?.SiteName
                            ?? w.Asset?.Site?.Name
                            ?? "Unknown",
                 TechnicianId = w.TechnicianId,

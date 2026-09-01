@@ -112,7 +112,28 @@ export const JobExecutionPage = () => {
  };
  }, []);
 
- // Check-In is handled on the MyJobsPage.
+    const handleCheckIn = async () => {
+        setActionLoading(true);
+        try {
+            const loc = currentLocation;
+            if (!loc) {
+                toast.error("GPS location not yet acquired. Please wait a moment and try again.");
+                setActionLoading(false);
+                return;
+            }
+            await timeTrackingService.checkIn({
+                workOrderId: Number(id),
+                latitude: loc.lat,
+                longitude: loc.lng
+            });
+            toast.success(`Checked in successfully at ${loc.lat.toFixed(5)}, ${loc.lng.toFixed(5)}`);
+            await fetchJob();
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || error.message || "Failed to check in.");
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
  const handleCheckOut = async () => {
  setActionLoading(true);
@@ -268,11 +289,14 @@ export const JobExecutionPage = () => {
  </div>
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  {!job.checkInTime && (
- <div className="col-span-1 sm:col-span-2 bg-yellow-500/10 border border-yellow-500/30 text-yellow-600 
- font-semibold py-4 rounded-xl flex flex-col items-center justify-center gap-2">
- <Clock className="h-6 w-6" />
- <span>Please Check-In via the My Jobs dashboard before proceeding.</span>
- </div>
+ <button
+ onClick={handleCheckIn}
+ disabled={actionLoading || gpsStatus === 'error' || gpsStatus === 'acquiring'}
+ className="col-span-1 sm:col-span-2 bg-primary/10 border border-primary/30 text-primary hover:bg-primary hover:text-white font-semibold py-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:hover:bg-primary/10 disabled:hover:text-primary"
+ >
+ <MapPin className="h-6 w-6" />
+ <span>{gpsStatus === 'acquiring' ? 'Acquiring GPS...' : 'Check In & Start Job'}</span>
+ </button>
  )}
 
  {job.checkInTime && (

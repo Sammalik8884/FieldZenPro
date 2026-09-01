@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using MytechERP.domain.Common;
 using MytechERP.domain.Entities.CRM;
 using MytechERP.domain.Enums;
@@ -47,8 +47,17 @@ namespace MytechERP.domain.Entities
         
         [ForeignKey("ReferenceQuotationId")]
         public Quotation? ReferenceQuotation { get; set; }
+        
         public int CustomerId { get; set; }
+        
+        [ForeignKey("CustomerId")]
+        public Customer? Customer { get; set; }
+        
         public int? SiteId { get; set; }
+        
+        [ForeignKey("SiteId")]
+        public Site? Site { get; set; }
+        
         public int? ReferenceQuotationId { get; set; }
         public InspectionResult Result { get; set; } = InspectionResult.Pending;
         public string? JobNumber { get; set; } = string.Empty;

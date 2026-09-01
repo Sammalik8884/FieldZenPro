@@ -51,7 +51,9 @@ export interface WorkOrderDto {
 export interface CreateWorkOrderDto {
     description: string;
     scheduledDate: string;
-    contractId: number;
+    customerId: number;
+    siteId?: number;
+    contractId?: number;
     technicianId?: string | null;
     assetId?: number;
 }

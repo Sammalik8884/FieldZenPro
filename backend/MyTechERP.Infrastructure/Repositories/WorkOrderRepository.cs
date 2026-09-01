@@ -30,7 +30,9 @@ namespace MyTechERP.Infrastructure.Repositories
         {
             return await _context.WorkOrders
                 .Include(w => w.Contract)              
-                .ThenInclude(c => c.Customer)          
+                .ThenInclude(c => c.Customer)
+                .Include(w => w.Customer)
+                .Include(w => w.Site)
                 .Include(w => w.Technician)            
                 .Include(w => w.TimeLogs)
                 .FirstOrDefaultAsync(w => w.Id == id);
@@ -41,6 +43,8 @@ namespace MyTechERP.Infrastructure.Repositories
             return await _context.WorkOrders
                 .Include(w => w.Contract)
                     .ThenInclude(c => c.Customer)
+                .Include(w => w.Customer)
+                .Include(w => w.Site)
                 .Include(w => w.ReferenceQuotation)
                     .ThenInclude(q => q.Customer)
                 .Include(w => w.Asset)
@@ -76,7 +80,9 @@ namespace MyTechERP.Infrastructure.Repositories
             return await _context.WorkOrders
                 .Where(w => w.TechnicianId == technicianId)
                 .Include(w => w.Contract)
-                .ThenInclude(c => c.Customer) 
+                .ThenInclude(c => c.Customer)
+                .Include(w => w.Customer)
+                .Include(w => w.Site)
                 .Include(w => w.TimeLogs)
                 .OrderBy(w => w.ScheduledDate)
                 .ToListAsync();
