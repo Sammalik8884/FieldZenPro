@@ -135,7 +135,15 @@ namespace MyTechERP.Infrastructure.Services
 
             if (invoice == null) throw new Exception("Invoice not found.");
 
-            var document = new MyTechERP.Infrastructure.PDF.InvoiceDocument(invoice);
+            IDocument document;
+            if (invoice.TenantId == 19 || invoice.TenantId == 1)
+            {
+                document = new MyTechERP.Infrastructure.PDF.MarkInvoiceDocument(invoice);
+            }
+            else
+            {
+                document = new MyTechERP.Infrastructure.PDF.InvoiceDocument(invoice);
+            }
 
             return document.GeneratePdf();
         }
