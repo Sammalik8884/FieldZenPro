@@ -418,7 +418,7 @@ export const ProductsPage = () => {
  className="w-4 h-4 accent-primary cursor-pointer"
  />
  <div>
- <label htmlFor="isTaxable" className="text-sm font-semibold cursor-pointer">Taxable (5.5% Sales Tax)</label>
+ <label htmlFor="isTaxable" className="text-sm font-semibold cursor-pointer">Taxable (Applies Default Sales Tax)</label>
  <p className="text-xs text-muted-foreground">Check for materials/parts. Leave unchecked for labor &amp; flat-rate services.</p>
  </div>
  </div>

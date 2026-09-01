@@ -75,8 +75,8 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
         } else {
             // Reset form when closed
             setCustomerId("");
-            setItems([{ type: "custom", description: "", quantity: 1, unitPrice: 0 }]);
-            setTaxRate(0);
+            setItems([{ type: "custom", description: "", quantity: 1, unitPrice: 0, isTaxable: false }]);
+            setTaxRate(5.5);
         }
     }, [isOpen]);
 
@@ -368,10 +368,10 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
                                         <span>Tax Rate (%):</span>
                                         <input
                                             type="number"
-                                            min="0" max="100" step="1"
+                                            min="0" max="100" step="0.1"
                                             value={taxRate}
                                             onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
-                                            className="w-16 bg-white/5 border border-border rounded text-right px-2 py-1 focus:outline-none"
+                                            className="w-20 bg-white/5 border border-border rounded text-right px-2 py-1 focus:outline-none"
                                         />
                                     </span>
                                     <span>${taxAmount.toFixed(2)}</span>
