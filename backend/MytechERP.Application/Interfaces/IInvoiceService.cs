@@ -15,9 +15,8 @@ namespace MytechERP.Application.Interfaces
         Task<int> GenerateInvoiceFromJobAsync(int workOrderId);
         Task<IEnumerable<InvoiceDto>> GetAllAsync(string tenantId);
         Task<InvoiceDto> GetByIdAsync(int id, string tenantId);
-        Task<bool> UpdateStatusAsync(int id, int status, string tenantId);
+        Task<bool> UpdateStatusAsync(int id, int status, string tenantId, string? paymentReference = null);
         Task<IEnumerable<InvoiceDto>> GetByCustomerEmailAsync(string email);
-
         Task<WeeklyAccountingReportDto> GetWeeklyAccountingReportAsync(string tenantId, DateTime weekStart, DateTime weekEnd);
         Task SendInvoiceEmailAsync(int id, string tenantId, string recipientEmail);
         Task SendWeeklyReportEmailAsync(string tenantId, DateTime weekStart, DateTime weekEnd, string recipientEmail);

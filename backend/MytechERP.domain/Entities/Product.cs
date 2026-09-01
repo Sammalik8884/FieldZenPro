@@ -33,5 +33,8 @@ namespace MytechERP.domain.Entities
 
         [Column(TypeName = "nvarchar(max)")]
         public string? TechnicalSpecs { get; set; }
+
+        /// <summary>Materials are taxable (5.5% sales tax), Labor/Services are not.</summary>
+        public bool IsTaxable { get; set; } = false;
     }
 }

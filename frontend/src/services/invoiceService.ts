@@ -44,6 +44,13 @@ export const invoiceService = {
         return response.data;
     },
 
+    markAsPaidWithRef: async (id: number, paymentReference?: string): Promise<any> => {
+        const response = await apiClient.put<any>(`/Invoice/${id}/mark-paid`, { paymentReference }, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.data;
+    },
+
     createCustom: async (dto: any): Promise<{ message: string, invoiceId: number, invoiceNumber: string }> => {
         const response = await apiClient.post('/Invoice/custom', dto);
         return response.data;

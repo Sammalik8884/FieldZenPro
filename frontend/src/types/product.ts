@@ -13,6 +13,7 @@ export interface ProductDto {
     imageUrl?: string;
     brand?: string;
     itemCode?: string;
+    isTaxable: boolean;
 }
 
 export interface CreateProductDto {
@@ -26,6 +27,7 @@ export interface CreateProductDto {
     brand?: string;
     itemCode?: string;
     image?: File;
+    isTaxable?: boolean;
 }
 
 export interface PagedResponse<T> {

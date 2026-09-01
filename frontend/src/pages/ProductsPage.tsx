@@ -38,7 +38,8 @@ export const ProductsPage = () => {
  categoryId: 0,
  description: "",
  brand: "",
- itemCode: ""
+ itemCode: "",
+ isTaxable: false
  });
 
  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -86,7 +87,8 @@ export const ProductsPage = () => {
  categoryId: product.categoryId,
  description: product.description || "",
  brand: product.brand || "",
- itemCode: product.itemCode || ""
+ itemCode: product.itemCode || "",
+ isTaxable: product.isTaxable ?? false
  });
  } else {
  setEditingProduct(null);
@@ -404,6 +406,21 @@ export const ProductsPage = () => {
  value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })}
  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none"
  />
+ </div>
+
+ {/* Taxable Toggle */}
+ <div className="flex items-center gap-3 p-3 border border-border rounded-lg bg-background">
+ <input
+ type="checkbox"
+ id="isTaxable"
+ checked={formData.isTaxable ?? false}
+ onChange={e => setFormData({ ...formData, isTaxable: e.target.checked })}
+ className="w-4 h-4 accent-primary cursor-pointer"
+ />
+ <div>
+ <label htmlFor="isTaxable" className="text-sm font-semibold cursor-pointer">Taxable (5.5% Sales Tax)</label>
+ <p className="text-xs text-muted-foreground">Check for materials/parts. Leave unchecked for labor &amp; flat-rate services.</p>
+ </div>
  </div>
 
  <div>

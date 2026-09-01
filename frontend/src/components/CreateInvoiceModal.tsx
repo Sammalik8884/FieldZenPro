@@ -19,6 +19,7 @@ interface CreateInvoiceModalProps {
 interface InvoiceLineItem extends CreateInvoiceItemDto {
     type: "product" | "asset" | "custom";
     itemId?: number;
+    isTaxable?: boolean;
 }
 
 export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoiceModalProps) => {
@@ -34,15 +35,20 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
     const [customerId, setCustomerId] = useState<number | "">("");
     const [customerSearch, setCustomerSearch] = useState("");
     const [issueDate, setIssueDate] = useState(new Date().toISOString().split("T")[0]);
-    const [dueDate, setDueDate] = useState(new Date(Date.now() + 15 * 86400000).toISOString().split("T")[0]); // 15 days default
+    const [dueDate, setDueDate] = useState(() => {
+        const date = new Date();
+        date.setDate(date.getDate() + 30);
+        return date.toISOString().split('T')[0];
+    });
     const [items, setItems] = useState<InvoiceLineItem[]>([
-        { type: "custom", description: "", quantity: 1, unitPrice: 0 }
+        { type: "custom", description: "", quantity: 1, unitPrice: 0, isTaxable: false }
     ]);
-    const [taxRate, setTaxRate] = useState(0);
+    const [taxRate, setTaxRate] = useState(5.5);
 
     // Derived values
     const subTotal = items.reduce((acc, item) => acc + (item.quantity * item.unitPrice), 0);
-    const taxAmount = subTotal * (taxRate / 100);
+    const taxableAmount = items.filter(i => i.isTaxable).reduce((acc, item) => acc + (item.quantity * item.unitPrice), 0);
+    const taxAmount = taxableAmount * (taxRate / 100);
     const totalAmount = subTotal + taxAmount;
 
     useEffect(() => {
@@ -98,12 +104,12 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
         if (type === "product") {
             const product = products.find(p => p.id === itemId);
             if (product) {
-                newItems[index] = { ...newItems[index], itemId, description: product.name, unitPrice: product.price || 0 };
+                newItems[index] = { ...newItems[index], itemId, description: product.name, unitPrice: product.price || 0, isTaxable: product.isTaxable };
             }
-        } else if (type === "asset") {
+        } else {
             const asset = assets.find(a => a.id === itemId);
             if (asset) {
-                newItems[index] = { ...newItems[index], itemId, description: asset.name, unitPrice: 0 };
+                newItems[index] = { ...newItems[index], itemId, description: asset.name, unitPrice: 0, isTaxable: false };
             }
         }
         setItems(newItems);
@@ -262,7 +268,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
                                                             const matched = products.find(p => p.name === val);
                                                             const newItems = [...items];
                                                             if (matched) {
-                                                                newItems[index] = { ...newItems[index], itemId: matched.id, description: matched.name, unitPrice: matched.price || 0 };
+                                                                newItems[index] = { ...newItems[index], itemId: matched.id, description: matched.name, unitPrice: matched.price || 0, isTaxable: matched.isTaxable };
                                                             } else {
                                                                 newItems[index] = { ...newItems[index], itemId: undefined, description: val };
                                                             }
@@ -319,7 +325,17 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
                                                 className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                             />
                                         </div>
+                                        <div className="w-16 flex flex-col items-center">
+                                            <label className="block text-xs text-muted-foreground mb-3">Tax</label>
+                                            <input
+                                                type="checkbox"
+                                                checked={item.isTaxable || false}
+                                                onChange={(e) => handleItemChange(index, "isTaxable", e.target.checked)}
+                                                className="w-4 h-4 accent-primary cursor-pointer"
+                                            />
+                                        </div>
                                         <div className="w-32">
+
                                             <label className="block text-xs text-muted-foreground mb-1">Total</label>
                                             <div className="w-full bg-white/5 border border-transparent rounded-lg px-4 py-2 text-sm text-muted-foreground">
                                                 ${(item.quantity * item.unitPrice).toFixed(2)}

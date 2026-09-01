@@ -220,14 +220,19 @@ namespace MyTechERP.Infrastructure.Services
             };
         }
 
-        public async Task<bool> UpdateStatusAsync(int id, int status, string tenantId)
+        public async Task<bool> UpdateStatusAsync(int id, int status, string tenantId, string? paymentReference = null)
         {
             int tId = int.Parse(tenantId);
             var invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.Id == id && i.TenantId == tId);
             if (invoice == null) return false;
 
             invoice.Status = (InvoiceStatus)status;
-            if (invoice.Status == InvoiceStatus.Paid) { invoice.AmountPaid = invoice.TotalAmount; }
+            if (invoice.Status == InvoiceStatus.Paid)
+            {
+                invoice.AmountPaid = invoice.TotalAmount;
+                if (!string.IsNullOrWhiteSpace(paymentReference))
+                    invoice.PaymentReference = paymentReference;
+            }
             await _context.SaveChangesAsync();
             return true;
         }

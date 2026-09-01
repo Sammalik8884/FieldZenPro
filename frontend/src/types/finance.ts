@@ -42,6 +42,7 @@ export interface InvoiceDto {
     status: number; // Enum: 0=Draft, 1=Issued, 2=Paid, 3=Overdue, 4=Void
     statusString?: string;
     items?: InvoiceItemDto[];
+    paymentReference?: string;
 }
 
 export interface PaymentRequestDto {
