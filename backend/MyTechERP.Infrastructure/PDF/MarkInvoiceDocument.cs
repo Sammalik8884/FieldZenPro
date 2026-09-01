@@ -10,7 +10,8 @@ namespace MyTechERP.Infrastructure.PDF
     public class MarkInvoiceDocument : IDocument
     {
         public Invoice Invoice { get; }
-        private static readonly Color BrandColor = Color.FromHex("#006CA9"); // MY TECH color used in quotation
+        private static readonly Color BrandColor = Color.FromHex("#006CA9");
+        private static readonly Color LightBlue = Color.FromHex("#E6F2F8");
         private static readonly Color GreyText = Colors.Grey.Darken2;
         private static readonly Color LightBorder = Colors.Grey.Lighten2;
 
@@ -39,14 +40,13 @@ namespace MyTechERP.Infrastructure.PDF
         {
             var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "mark_logo.png");
             
-            container.Row(row =>
+            container.PaddingBottom(15).Row(row =>
             {
-                // LEFT: LOGO
                 row.RelativeItem().Column(col =>
                 {
                     if (File.Exists(logoPath))
                     {
-                        col.Item().Height(80).Image(logoPath).FitArea();
+                        col.Item().Height(70).Image(logoPath).FitArea();
                     }
                     else
                     {
@@ -55,66 +55,63 @@ namespace MyTechERP.Infrastructure.PDF
                         col.Item().Text("(207) 245-0780").FontSize(14).Bold().FontColor(Colors.Green.Darken2);
                     }
                 });
-
-                // RIGHT: INVOICE DETAILS
-                row.ConstantItem(250).PaddingLeft(10).Column(col =>
-                {
-                    col.Item().Text("Invoice").FontSize(16).Bold().AlignRight().FontColor(Colors.Black);
-                    
-                    col.Item().PaddingTop(10).Table(table =>
-                    {
-                        table.ColumnsDefinition(columns =>
-                        {
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                        });
-
-                        table.Cell().RowSpan(2).LabelCell("To:");
-                        table.Cell().RowSpan(2).ValueCell(Invoice.Customer?.Name ?? "Standard Customer");
-
-                        table.Cell().LabelCell("Invoice #:");
-                        table.Cell().ValueCell(Invoice.InvoiceNumber);
-
-                        table.Cell().LabelCell("Date:");
-                        table.Cell().ValueCell(Invoice.IssueDate.ToString("dd-MMM-yyyy"));
-                        
-                        table.Cell().LabelCell("Due Date:");
-                        table.Cell().ValueCell(Invoice.DueDate.ToString("dd-MMM-yyyy"));
-                    });
-                    
-                    if (Invoice.Customer != null)
-                    {
-                        col.Item().PaddingTop(5).Text(text =>
-                        {
-                            text.Span("Contact: ").SemiBold();
-                            text.Span(Invoice.Customer.Phone ?? Invoice.Customer.Email ?? "");
-                        });
-                        
-                        if (!string.IsNullOrEmpty(Invoice.Customer.Address))
-                        {
-                            col.Item().Text(text =>
-                            {
-                                text.Span("Address: ").SemiBold();
-                                text.Span(Invoice.Customer.Address);
-                            });
-                        }
-                    }
-                });
             });
         }
 
         void ComposeContent(IContainer container)
         {
-            container.PaddingTop(20).Column(col =>
+            container.Column(col =>
             {
+                // Top Info Tables Side by Side
+                col.Item().Row(row =>
+                {
+                    // LEFT TABLE
+                    row.RelativeItem().PaddingRight(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(100);
+                            columns.RelativeColumn();
+                        });
+
+                        table.Cell().Element(HeaderLabel).Text("To");
+                        table.Cell().Element(HeaderValue).Text(Invoice.Customer?.Name ?? "Standard Customer").FontColor(BrandColor).Bold();
+
+                        table.Cell().Element(SubLabel).Text("Contact");
+                        table.Cell().Element(SubValue).Text(Invoice.Customer?.Phone ?? Invoice.Customer?.Email ?? "N/A").Bold();
+
+                        table.Cell().Element(SubLabel).Text("Address");
+                        table.Cell().Element(SubValue).Text(Invoice.Customer?.Address ?? "N/A").Bold();
+                    });
+
+                    // RIGHT TABLE
+                    row.RelativeItem().PaddingLeft(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(100);
+                            columns.RelativeColumn();
+                        });
+
+                        table.Cell().Element(HeaderLabel).Text("Invoice #");
+                        table.Cell().Element(HeaderValue).Text(Invoice.InvoiceNumber).FontColor(BrandColor).Bold();
+
+                        table.Cell().Element(SubLabel).Text("Date");
+                        table.Cell().Element(SubValue).Text(Invoice.IssueDate.ToString("dd-MMM-yyyy")).Bold();
+
+                        table.Cell().Element(SubLabel).Text("Due Date");
+                        table.Cell().Element(SubValue).Text(Invoice.DueDate.ToString("dd-MMM-yyyy")).Bold();
+                    });
+                });
+
                 // Title Bar
-                col.Item().Background(BrandColor).Padding(5).AlignCenter().Text($"INVOICE FOR: {Invoice.Customer?.Name?.ToUpper()}")
+                col.Item().PaddingTop(20).Background(BrandColor).Padding(5).AlignCenter().Text($"INVOICE FOR: {Invoice.Customer?.Name?.ToUpper()}")
                     .Bold().FontColor(Colors.White).FontSize(11);
 
                 // Table
                 col.Item().PaddingTop(10).Element(ComposeTable);
 
-                // Summary Section (Below table)
+                // Summary Section
                 col.Item().Row(row =>
                 {
                     row.RelativeItem(); // Spacer
@@ -230,19 +227,30 @@ namespace MyTechERP.Infrastructure.PDF
             container.Column(col =>
             {
                 col.Item().LineHorizontal(2).LineColor(BrandColor);
+                
                 col.Item().PaddingTop(5).Row(row => 
                 {
                     row.RelativeItem().Column(c => {
-                        c.Item().Text("Acumen Mobile Equipment Service").Bold().FontSize(8);
+                        c.Item().Text("Head Office:").Bold().FontSize(8);
                         c.Item().Text("1958 Washington Ave").FontSize(7);
                         c.Item().Text("Portland, ME 04103").FontSize(7);
                     });
-                    
-                    row.RelativeItem().AlignRight().Column(c => {
+
+                    row.AutoItem().PaddingHorizontal(5).LineVertical(30).LineColor(Colors.Grey.Medium);
+
+                    row.RelativeItem().Column(c => {
                         c.Item().Text("Contact:").Bold().FontSize(8);
                         c.Item().Text("(207) 245-0780").FontSize(7);
                     });
+                    
+                    row.AutoItem().PaddingHorizontal(5).LineVertical(30).LineColor(Colors.Grey.Medium);
+                    
+                    row.RelativeItem().Column(c => {
+                        c.Item().Text("Business Identity:").Bold().FontSize(8);
+                        c.Item().Text("Acumen Mobile Equipment Service").FontSize(7).FontColor(BrandColor).Bold();
+                    });
                 });
+                
                 col.Item().PaddingTop(5).AlignCenter().Text(x =>
                 {
                     x.Span("Page ");
@@ -253,7 +261,14 @@ namespace MyTechERP.Infrastructure.PDF
             });
         }
         
-        // Styles
+        // ================= STYLES =================
+
+        static IContainer HeaderLabel(IContainer container) => container.Border(1).BorderColor(Colors.White).Background(BrandColor).PaddingVertical(3).PaddingHorizontal(5).DefaultTextStyle(x => x.FontColor(Colors.White).Bold());
+        static IContainer HeaderValue(IContainer container) => container.Border(1).BorderColor(LightBorder).Background(Colors.White).PaddingVertical(3).PaddingHorizontal(5);
+
+        static IContainer SubLabel(IContainer container) => container.Border(1).BorderColor(Colors.White).Background(LightBlue).PaddingVertical(3).PaddingHorizontal(5).DefaultTextStyle(x => x.FontColor(GreyText).SemiBold());
+        static IContainer SubValue(IContainer container) => container.Border(1).BorderColor(LightBorder).Background(Colors.White).PaddingVertical(3).PaddingHorizontal(5);
+
         static IContainer HeaderCellStyle(IContainer container)
         {
             return container.Border(1).BorderColor(Colors.White).Background(BrandColor).PaddingVertical(5).PaddingHorizontal(2).DefaultTextStyle(x => x.FontColor(Colors.White).Bold());
@@ -266,25 +281,12 @@ namespace MyTechERP.Infrastructure.PDF
         
         static IContainer SummaryHeaderStyle(IContainer container)
         {
-            return container.Background(Colors.Grey.Lighten2).PaddingVertical(5).PaddingHorizontal(5).DefaultTextStyle(x => x.Bold());
+            return container.Background(Color.FromHex("#1ABC9C")).PaddingVertical(5).PaddingHorizontal(5).DefaultTextStyle(x => x.FontColor(Colors.White).Bold());
         }
 
         static IContainer SummaryCellStyle(IContainer container)
         {
             return container.BorderBottom(1).BorderColor(LightBorder).PaddingVertical(5).PaddingHorizontal(5);
-        }
-    }
-
-    public static class ExtensionMethods
-    {
-        public static void LabelCell(this IContainer container, string text)
-        {
-            container.Border(1).BorderColor(Colors.White).Background(Colors.Grey.Lighten2).PaddingVertical(2).PaddingHorizontal(5).Text(text).Bold();
-        }
-
-        public static void ValueCell(this IContainer container, string text)
-        {
-            container.Border(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(2).PaddingHorizontal(5).Text(text);
         }
     }
 }
