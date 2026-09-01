@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,5 +24,15 @@ namespace MytechERP.Application.DTOs.CRM
         public string Result { get; set; }
         public DateTime? CheckInTime { get; set; }
         public DateTime? CheckOutTime { get; set; }
+        public List<JobEvidenceDto> Evidences { get; set; } = new();
+    }
+    
+    public class JobEvidenceDto
+    {
+        public int Id { get; set; }
+        public string FileName { get; set; } = string.Empty;
+        public string FileUrl { get; set; } = string.Empty;
+        public string FileType { get; set; } = string.Empty;
+        public DateTime Timestamp { get; set; }
     }
 }

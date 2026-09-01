@@ -45,6 +45,7 @@ namespace MytechERP.domain.Entities
         public List<WorkOrderChecklistResult> Results { get; set; } = new();
         public List<MytechERP.domain.Entities.System.TimeLog> TimeLogs { get; set; } = new();
         
+        public List<MytechERP.domain.Entities.Job.JobEvidence> Evidences { get; set; } = new();
         [ForeignKey("ReferenceQuotationId")]
         public Quotation? ReferenceQuotation { get; set; }
         

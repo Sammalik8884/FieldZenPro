@@ -17,6 +17,11 @@ export const invoiceService = {
         return response.data;
     },
 
+    getPreviewFromJob: async (workOrderId: number): Promise<{ customerId: number; laborCost: number }> => {
+        const response = await apiClient.get<{ customerId: number; laborCost: number }>(`/Invoice/preview-from-job/${workOrderId}`);
+        return response.data;
+    },
+
     generateFromJob: async (workOrderId: number): Promise<{ message: string; invoiceId: number }> => {
         const response = await apiClient.post<{ message: string; invoiceId: number }>(`/Invoice/generate-from-job/${workOrderId}`);
         return response.data;

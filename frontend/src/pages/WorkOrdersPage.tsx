@@ -13,16 +13,23 @@ import { toast } from "react-hot-toast";
 import { authService } from "../services/authService";
 import { apiClient } from "../services/apiClient";
 
+import { CreateInvoiceModal } from "../components/CreateInvoiceModal";
+import { ReviewJobModal } from "../components/ReviewJobModal";
+
 const extractApiError = (error: any, fallback: string) => {
- if (!error || !error.response || !error.response.data) {
- return error?.message || fallback;
- }
- const d = error.response.data;
- if (typeof d === 'string') return d;
- return d.error || d.Error || d.message || d.Message || d.detail || d.title || fallback;
+    if (!error || !error.response || !error.response.data) {
+        return error?.message || fallback;
+    }
+    const d = error.response.data;
+    if (typeof d === 'string') return d;
+    return d.error || d.Error || d.message || d.Message || d.detail || d.title || fallback;
 };
 
 export const WorkOrdersPage = () => {
+    const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+    const [invoiceModalProps, setInvoiceModalProps] = useState<{workOrderId?: number, customerId?: number, laborCost?: number}>({});
+    const [reviewModalOpen, setReviewModalOpen] = useState(false);
+    const [reviewWorkOrder, setReviewWorkOrder] = useState<WorkOrderDto | null>(null);
  const [confirmModal, setConfirmModal] = useState<{isOpen: boolean, title: string, message: string, type: 'info' | 'warning' | 'danger', onConfirm: () => void}>({
  isOpen: false, title: '', message: '', type: 'info', onConfirm: () => {}
  });
@@ -178,17 +185,18 @@ export const WorkOrdersPage = () => {
  );
  };
 
- const handleGenerateInvoice = async (id: number) => {
- try {
- setProcessingId(id);
- await invoiceService.generateFromJob(id);
- toast.success("Invoice generated successfully!");
- } catch (error: any) {
- toast.error(extractApiError(error, "Failed to generate invoice."));
- } finally {
- setProcessingId(null);
- }
- };
+    const handleGenerateInvoice = async (id: number) => {
+        try {
+            setProcessingId(id);
+            const preview = await invoiceService.getPreviewFromJob(id);
+            setInvoiceModalProps({ workOrderId: id, customerId: preview.customerId, laborCost: preview.laborCost });
+            setInvoiceModalOpen(true);
+        } catch (error: any) {
+            toast.error(extractApiError(error, "Failed to prepare invoice."));
+        } finally {
+            setProcessingId(null);
+        }
+    };
 
 
     const handleCreateSubmit = async (e: React.FormEvent) => {
@@ -391,39 +399,65 @@ export const WorkOrdersPage = () => {
  {wo.completedDate && <div className="text-xs text-muted-foreground">{new Date(wo.completedDate).toLocaleDateString()}</div>}
  </td>
  <td className="px-6 py-4 text-right">
- {wo.status === 'PendingApproval' && (
- <div className="flex justify-end space-x-2">
- <button
- onClick={() => handleApproveReject(wo.id, true)}
- disabled={processingId === wo.id}
- className="p-2 border border-green-500/30 text-green-500 hover:bg-green-500/20 hover:text-green-500 rounded-lg transition-colors flex items-center space-x-1 font-medium bg-green-500/10 disabled:opacity-50"
- >
- {processingId === wo.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
- <span className="text-xs">Approve</span>
- </button>
- <button
- onClick={() => handleApproveReject(wo.id, false)}
- disabled={processingId === wo.id}
- className="p-2 border border-destructive/30 text-destructive hover:bg-destructive/20 hover:text-destructive rounded-lg transition-colors flex items-center space-x-1 font-medium bg-destructive/10 disabled:opacity-50"
- >
- {processingId === wo.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
- <span className="text-xs">Reject</span>
- </button>
- </div>
- )}
- {wo.status === 'Approved' && (
- <div className="flex justify-end space-x-2">
- <button
- onClick={() => handleGenerateInvoice(wo.id)}
- disabled={processingId === wo.id}
- className="p-2 border border-blue-500/30 text-blue-500 hover:bg-blue-500/20 hover:text-blue-500 rounded-lg transition-colors flex items-center space-x-1 font-medium bg-blue-500/10 disabled:opacity-50"
- >
- {processingId === wo.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Receipt className="h-4 w-4" />}
- <span className="text-xs">Generate Invoice</span>
- </button>
- </div>
- )}
-
+    {wo.status === 'PendingApproval' && (
+        <div className="flex justify-end space-x-2">
+            <button
+                onClick={() => { setReviewWorkOrder(wo); setReviewModalOpen(true); }}
+                className="p-2 border border-blue-500/30 text-blue-500 hover:bg-blue-500/20 hover:text-blue-500 rounded-lg transition-colors flex items-center space-x-1 font-medium bg-blue-500/10"
+                title="Review Technician Work"
+            >
+                <BriefcaseBusiness className="h-4 w-4" />
+                <span className="text-xs">Review Work</span>
+            </button>
+            <button
+                onClick={() => handleApproveReject(wo.id, true)}
+                disabled={processingId === wo.id}
+                className="p-2 border border-green-500/30 text-green-500 hover:bg-green-500/20 hover:text-green-500 rounded-lg transition-colors flex items-center space-x-1 font-medium bg-green-500/10 disabled:opacity-50"
+            >
+                {processingId === wo.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
+                <span className="text-xs">Approve</span>
+            </button>
+            <button
+                onClick={() => handleApproveReject(wo.id, false)}
+                disabled={processingId === wo.id}
+                className="p-2 border border-destructive/30 text-destructive hover:bg-destructive/20 hover:text-destructive rounded-lg transition-colors flex items-center space-x-1 font-medium bg-destructive/10 disabled:opacity-50"
+            >
+                {processingId === wo.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+                <span className="text-xs">Reject</span>
+            </button>
+        </div>
+    )}
+    {wo.status === 'Approved' && (
+        <div className="flex justify-end space-x-2">
+            <button
+                onClick={() => { setReviewWorkOrder(wo); setReviewModalOpen(true); }}
+                className="p-2 border border-muted/30 text-muted-foreground hover:bg-muted/20 hover:text-foreground rounded-lg transition-colors flex items-center space-x-1 font-medium bg-muted/10"
+                title="Review Technician Work"
+            >
+                <BriefcaseBusiness className="h-4 w-4" />
+            </button>
+            <button
+                onClick={() => handleGenerateInvoice(wo.id)}
+                disabled={processingId === wo.id}
+                className="p-2 border border-blue-500/30 text-blue-500 hover:bg-blue-500/20 hover:text-blue-500 rounded-lg transition-colors flex items-center space-x-1 font-medium bg-blue-500/10 disabled:opacity-50"
+            >
+                {processingId === wo.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Receipt className="h-4 w-4" />}
+                <span className="text-xs">Generate Invoice</span>
+            </button>
+        </div>
+    )}
+    {wo.status === 'Completed' && (
+        <div className="flex justify-end space-x-2">
+            <button
+                onClick={() => { setReviewWorkOrder(wo); setReviewModalOpen(true); }}
+                className="p-2 border border-muted/30 text-muted-foreground hover:bg-muted/20 hover:text-foreground rounded-lg transition-colors flex items-center space-x-1 font-medium bg-muted/10"
+                title="Review Technician Work"
+            >
+                <BriefcaseBusiness className="h-4 w-4" />
+                <span className="text-xs">Review Work</span>
+            </button>
+        </div>
+    )}
  {wo.status === 'Assigned' && (
  <div className="flex justify-end space-x-2">
  <button
@@ -701,6 +735,24 @@ export const WorkOrdersPage = () => {
  onConfirm={confirmModal.onConfirm}
  onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
  confirmText="Confirm"
+ />
+ 
+ <CreateInvoiceModal 
+     isOpen={invoiceModalOpen}
+     onClose={() => setInvoiceModalOpen(false)}
+     onSuccess={() => {
+         setInvoiceModalOpen(false);
+         fetchData();
+     }}
+     initialCustomerId={invoiceModalProps.customerId}
+     initialLaborCost={invoiceModalProps.laborCost}
+     workOrderId={invoiceModalProps.workOrderId}
+ />
+
+ <ReviewJobModal
+     isOpen={reviewModalOpen}
+     onClose={() => setReviewModalOpen(false)}
+     workOrder={reviewWorkOrder}
  />
  </div>
  );

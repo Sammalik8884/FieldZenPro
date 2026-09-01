@@ -47,6 +47,11 @@ export const workOrderService = {
         return response.data;
     },
 
+    reopen: async (id: number): Promise<any> => {
+        const response = await apiClient.post<any>(`/WorkOrders/${id}/reopen`);
+        return response.data;
+    },
+
     approveJob: async (id: number, isApproved: boolean): Promise<any> => {
         const response = await apiClient.post<any>(`/WorkOrders/${id}/approve`, isApproved);
         return response.data;

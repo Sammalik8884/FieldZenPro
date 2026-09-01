@@ -35,6 +35,7 @@ namespace MyTechERP.Infrastructure.Repositories
                 .Include(w => w.Site)
                 .Include(w => w.Technician)            
                 .Include(w => w.TimeLogs)
+                .Include(w => w.Evidences)
                 .FirstOrDefaultAsync(w => w.Id == id);
         }
 
@@ -51,6 +52,7 @@ namespace MyTechERP.Infrastructure.Repositories
                     .ThenInclude(a => a.Site)
                 .Include(w => w.Technician)
                 .Include(w => w.TimeLogs)
+                .Include(w => w.Evidences)
                 .OrderByDescending(w => w.Id)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize)
@@ -84,6 +86,7 @@ namespace MyTechERP.Infrastructure.Repositories
                 .Include(w => w.Customer)
                 .Include(w => w.Site)
                 .Include(w => w.TimeLogs)
+                .Include(w => w.Evidences)
                 .OrderBy(w => w.ScheduledDate)
                 .ToListAsync();
         }

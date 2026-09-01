@@ -14,6 +14,9 @@ interface CreateInvoiceModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    initialCustomerId?: number;
+    initialLaborCost?: number;
+    workOrderId?: number;
 }
 
 interface InvoiceLineItem extends CreateInvoiceItemDto {
@@ -22,7 +25,7 @@ interface InvoiceLineItem extends CreateInvoiceItemDto {
     isTaxable?: boolean;
 }
 
-export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoiceModalProps) => {
+export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomerId, initialLaborCost, workOrderId }: CreateInvoiceModalProps) => {
     const [loading, setLoading] = useState(false);
     const [dataLoading, setDataLoading] = useState(false);
 
@@ -32,7 +35,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
     const [assets, setAssets] = useState<AssetDto[]>([]);
 
     // Form State
-    const [customerId, setCustomerId] = useState<number | "">("");
+    const [customerId, setCustomerId] = useState<number | "">(initialCustomerId || "");
     const [customerSearch, setCustomerSearch] = useState("");
     const [issueDate, setIssueDate] = useState(new Date().toISOString().split("T")[0]);
     const [dueDate, setDueDate] = useState(() => {
@@ -40,9 +43,12 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
         date.setDate(date.getDate() + 30);
         return date.toISOString().split('T')[0];
     });
-    const [items, setItems] = useState<InvoiceLineItem[]>([
-        { type: "custom", description: "", quantity: 1, unitPrice: 0, isTaxable: false }
-    ]);
+    const [items, setItems] = useState<InvoiceLineItem[]>(() => {
+        if (initialLaborCost !== undefined && initialLaborCost > 0) {
+            return [{ type: "custom", description: "Technician Labor (Time tracked)", quantity: 1, unitPrice: initialLaborCost, isTaxable: false }];
+        }
+        return [{ type: "custom", description: "", quantity: 1, unitPrice: 0, isTaxable: false }];
+    });
     const [taxRate, setTaxRate] = useState(5.5);
 
     // Derived values
@@ -64,6 +70,13 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
                     setCustomers(custs);
                     setProducts(prods);
                     setAssets(asts);
+                    
+                    if (initialCustomerId) {
+                        const matched = custs.find(c => c.id === initialCustomerId);
+                        if (matched) {
+                            setCustomerSearch(matched.name);
+                        }
+                    }
                 } catch (error) {
                     toast.error("Failed to load select options.");
                     console.error("Failed to load options", error);
@@ -74,11 +87,15 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
             loadData();
         } else {
             // Reset form when closed
-            setCustomerId("");
-            setItems([{ type: "custom", description: "", quantity: 1, unitPrice: 0, isTaxable: false }]);
+            setCustomerId(initialCustomerId || "");
+            if (initialLaborCost !== undefined && initialLaborCost > 0) {
+                setItems([{ type: "custom", description: "Technician Labor (Time tracked)", quantity: 1, unitPrice: initialLaborCost, isTaxable: false }]);
+            } else {
+                setItems([{ type: "custom", description: "", quantity: 1, unitPrice: 0, isTaxable: false }]);
+            }
             setTaxRate(5.5);
         }
-    }, [isOpen]);
+    }, [isOpen, initialCustomerId, initialLaborCost]);
 
     if (!isOpen) return null;
 
@@ -130,6 +147,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess }: CreateInvoice
 
         const dto: CreateInvoiceDto = {
             customerId: Number(customerId),
+            workOrderId: workOrderId,
             issueDate: new Date(issueDate).toISOString(),
             dueDate: new Date(dueDate).toISOString(),
             subTotal,

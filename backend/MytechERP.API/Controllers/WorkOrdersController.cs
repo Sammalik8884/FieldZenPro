@@ -190,9 +190,35 @@ namespace MytechERP.API.Controllers
             {
                 return BadRequest(new { Error = "Compliance Failure", Message = ex.Message });
             }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { Error = "Server Error", Message = ex.Message });
+            }
+        }
+
+        [HttpPost("{id}/reopen")]
+        [Authorize(Roles = Roles.Technician + "," + Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        public async Task<IActionResult> ReopenJob(int id)
+        {
+            try
+            {
+                var success = await _service.ReopenJobAsync(id);
+
+                if (!success) return NotFound("Work Order not found.");
+
+                return Ok(new { Message = "Job reopened successfully." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Error = "Action not allowed", Message = ex.Message });
+            }
             catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized(new { Error = "Auth Failure", Message = ex.Message });
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { Error = "Server Error", Message = ex.Message });
             }
         }
 

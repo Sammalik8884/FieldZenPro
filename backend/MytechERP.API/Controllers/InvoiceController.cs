@@ -59,6 +59,21 @@ namespace MytechERP.API.Controllers
         }
 
         [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [HttpGet("preview-from-job/{workOrderId}")]
+        public async Task<IActionResult> GetInvoicePreview(int workOrderId)
+        {
+            try
+            {
+                var (customerId, laborCost) = await _service.GetJobInvoicePreviewAsync(workOrderId);
+                return Ok(new { customerId, laborCost });
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
         [HttpPost("custom")]
         public async Task<IActionResult> CreateCustom([FromBody] MytechERP.Application.DTOs.Finance.CreateInvoiceDto dto)
         {

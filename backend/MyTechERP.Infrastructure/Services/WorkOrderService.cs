@@ -166,7 +166,15 @@ namespace MyTechERP.Infrastructure.Services
                 TechnicianName = w.Technician?.UserName,
                 TechnicianNotes = w.TechnicianNotes,
                 CheckInTime = w.TimeLogs?.OrderByDescending(t => t.CheckInTime).FirstOrDefault()?.CheckInTime,
-                CheckOutTime = w.TimeLogs?.OrderByDescending(t => t.CheckInTime).FirstOrDefault()?.CheckOutTime
+                CheckOutTime = w.TimeLogs?.OrderByDescending(t => t.CheckInTime).FirstOrDefault()?.CheckOutTime,
+                Evidences = w.Evidences?.Select(e => new MytechERP.Application.DTOs.CRM.JobEvidenceDto
+                {
+                    Id = e.Id,
+                    FileName = e.FileName,
+                    FileUrl = e.FileUrl,
+                    FileType = e.FileType,
+                    Timestamp = e.Timestamp
+                }).ToList() ?? new List<MytechERP.Application.DTOs.CRM.JobEvidenceDto>()
             };
         }
 
@@ -315,6 +323,19 @@ namespace MyTechERP.Infrastructure.Services
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> ReopenJobAsync(int id)
+        {
+            var workOrder = await _context.WorkOrders.FindAsync(id);
+            if (workOrder == null) return false;
+
+            if (workOrder.Status != WorkOrderStatus.PendingApproval)
+                throw new InvalidOperationException("Only jobs pending approval can be reopened.");
+
+            workOrder.Status = WorkOrderStatus.InProgress;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> ApproveJobAsync(int id, bool isApproved)
         {
             var managerId = _currentUserService.UserId;

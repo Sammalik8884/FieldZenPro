@@ -103,9 +103,29 @@ namespace MyTechERP.Infrastructure.Services
             }
 
             _context.Invoices.Add(invoice);
+            
+            if (dto.WorkOrderId.HasValue)
+            {
+                var wo = await _context.WorkOrders.FindAsync(dto.WorkOrderId.Value);
+                if (wo != null)
+                {
+                    wo.Status = MytechERP.domain.Enums.WorkOrderStatus.Completed;
+                    wo.CompletedDate = DateTime.UtcNow;
+                }
+            }
+            
             await _context.SaveChangesAsync();
 
             return await GetByIdAsync(invoice.Id, tenantId);
+        }
+
+        public async Task<(int customerId, decimal laborCost)> GetJobInvoicePreviewAsync(int workOrderId)
+        {
+            var job = await _context.WorkOrders.FindAsync(workOrderId);
+            if (job == null) throw new Exception("Work Order not found.");
+
+            decimal laborCost = await _timeService.CalculateJobLaborCostAsync(workOrderId, 85.00m);
+            return (job.CustomerId, laborCost);
         }
 
         public async Task<int> GenerateInvoiceFromJobAsync(int workOrderId)

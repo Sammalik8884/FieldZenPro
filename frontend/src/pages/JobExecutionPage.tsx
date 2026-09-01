@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, CalendarClock, Clock, CheckCircle2, Loader2, Navigation, UploadCloud, ClipboardCheck, Satellite } from "lucide-react";
+import { ArrowLeft, MapPin, CalendarClock, Clock, CheckCircle2, Loader2, Navigation, UploadCloud, ClipboardCheck, Satellite, Unlock } from "lucide-react";
 import { ConfirmModal } from "../components/common/ConfirmModal";
 import { workOrderService } from "../services/workOrderService";
 
@@ -29,7 +29,7 @@ export const JobExecutionPage = () => {
  // Checklist & Evidence State
  const [checklists, setChecklists] = useState<ChecklistResultDto[]>([]);
  const [checklistAnswers, setChecklistAnswers] = useState<Record<number, string>>({});
- const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
+    const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
 
  // GPS / Location State
  const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
@@ -176,16 +176,18 @@ export const JobExecutionPage = () => {
  await workOrderService.submitChecklist(Number(id), answers);
  }
 
- // 2. Upload Evidence if selected
- if (evidenceFile) {
- const formData = new FormData();
- formData.append('File', evidenceFile);
- if (currentLocation) {
- formData.append('Latitude', currentLocation.lat.toString());
- formData.append('Longitude', currentLocation.lng.toString());
- }
- await workOrderService.uploadEvidence(Number(id), formData);
- }
+            // 2. Upload Evidence if selected
+            if (evidenceFiles.length > 0) {
+                for (const file of evidenceFiles) {
+                    const formData = new FormData();
+                    formData.append('File', file);
+                    if (currentLocation) {
+                        formData.append('Latitude', currentLocation.lat.toString());
+                        formData.append('Longitude', currentLocation.lng.toString());
+                    }
+                    await workOrderService.uploadEvidence(Number(id), formData);
+                }
+            }
 
  // 3. Complete Job
  await workOrderService.completeJob(Number(id), { notes, result });
@@ -199,6 +201,26 @@ export const JobExecutionPage = () => {
  }
  );
  };
+
+    const handleReopen = async () => {
+        confirmAction(
+            "Re-open Job",
+            "This will revert the job status to In Progress. Continue?",
+            "info",
+            async () => {
+                setActionLoading(true);
+                try {
+                    await workOrderService.reopen(Number(id));
+                    toast.success("Job re-opened successfully.");
+                    fetchJob();
+                } catch (error: any) {
+                    toast.error(extractApiError(error, "Failed to re-open job."));
+                } finally {
+                    setActionLoading(false);
+                }
+            }
+        );
+    };
 
  if (loading) {
  return <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -415,22 +437,27 @@ export const JobExecutionPage = () => {
  type="file"
  accept="image/*"
  id="evidence-upload"
+ multiple
  className="hidden"
  onChange={(e) => {
  if (e.target.files && e.target.files.length > 0) {
- setEvidenceFile(e.target.files[0]);
+ setEvidenceFiles(Array.from(e.target.files));
  }
  }}
  />
  <label htmlFor="evidence-upload" className="cursor-pointer flex flex-col items-center justify-center">
  <UploadCloud className="h-8 w-8 text-muted-foreground mb-2" />
- <span className="text-sm font-medium text-primary">Click to take a photo or upload</span>
+ <span className="text-sm font-medium text-primary">Click to take photos or upload</span>
  <span className="text-xs text-muted-foreground mt-1">JPEG, PNG, HEIC up to 10MB</span>
  </label>
- {evidenceFile && (
- <div className="mt-4 p-2 bg-primary/10 border border-primary/20 text-primary text-sm rounded-lg flex justify-between items-center">
- <span className="truncate max-w-[200px]">{evidenceFile.name}</span>
- <button type="button" onClick={() => setEvidenceFile(null)} className="text-xs hover:underline">Remove</button>
+ {evidenceFiles.length > 0 && (
+ <div className="mt-4 space-y-2">
+ {evidenceFiles.map((file, i) => (
+ <div key={i} className="p-2 bg-primary/10 border border-primary/20 text-primary text-sm rounded-lg flex justify-between items-center">
+ <span className="truncate max-w-[200px]">{file.name}</span>
+ <button type="button" onClick={() => setEvidenceFiles(prev => prev.filter((_, index) => index !== i))} className="text-xs hover:underline">Remove</button>
+ </div>
+ ))}
  </div>
  )}
  </div>
@@ -494,6 +521,19 @@ export const JobExecutionPage = () => {
  <div>
  <span className="font-semibold text-muted-foreground block mb-1">Completed On:</span>
  <span>{new Date(job.completedDate).toLocaleString()}</span>
+ </div>
+ )}
+ {job.status === 'PendingApproval' && (
+ <div className="pt-4 border-t border-border">
+ <button
+ type="button"
+ onClick={handleReopen}
+ disabled={actionLoading}
+ className="w-full bg-blue-500/10 text-blue-500 font-semibold py-3 flex items-center justify-center gap-2 rounded-xl hover:bg-blue-500/20 transition-all border border-blue-500/30 disabled:opacity-50"
+ >
+ {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Unlock className="h-5 w-5" />}
+ <span>Unlock Job</span>
+ </button>
  </div>
  )}
  </div>

@@ -31,6 +31,14 @@ export interface UpdateAssetDto extends CreateAssetDto {
     id: number;
 }
 
+export interface JobEvidenceDto {
+    id: number;
+    fileName: string;
+    fileUrl: string;
+    fileType: string;
+    timestamp: string;
+}
+
 export interface WorkOrderDto {
     id: number;
     description: string;
@@ -46,6 +54,7 @@ export interface WorkOrderDto {
     result: string;
     checkInTime?: string;
     checkOutTime?: string;
+    evidences?: JobEvidenceDto[];
 }
 
 export interface CreateWorkOrderDto {
