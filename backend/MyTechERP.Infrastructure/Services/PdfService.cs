@@ -16,10 +16,12 @@ namespace MyTechERP.Infrastructure.Services
     public class PdfService  : IPdfService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ICurrentUserService _currentUserService;
 
-        public PdfService(ApplicationDbContext context)
+        public PdfService(ApplicationDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
+            _currentUserService = currentUserService;
 
             QuestPDF.Settings.License = LicenseType.Community;
         }
@@ -135,8 +137,18 @@ namespace MyTechERP.Infrastructure.Services
 
             if (invoice == null) throw new Exception("Invoice not found.");
 
+            bool useMarkInvoice = invoice.TenantId == 19 || invoice.TenantId == 1;
+            if (!useMarkInvoice && _currentUserService.UserId != null)
+            {
+                var user = await _context.Users.FindAsync(_currentUserService.UserId);
+                if (user != null && string.Equals(user.Email, "Muhammad@test.com", StringComparison.OrdinalIgnoreCase))
+                {
+                    useMarkInvoice = true;
+                }
+            }
+
             IDocument document;
-            if (invoice.TenantId == 19 || invoice.TenantId == 1)
+            if (useMarkInvoice)
             {
                 document = new MyTechERP.Infrastructure.PDF.MarkInvoiceDocument(invoice);
             }
