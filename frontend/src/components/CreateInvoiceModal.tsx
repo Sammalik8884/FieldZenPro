@@ -75,6 +75,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                         const matched = custs.find(c => c.id === initialCustomerId);
                         if (matched) {
                             setCustomerSearch(matched.name);
+                            setCustomerId(matched.id); // ← also set the ID so validation passes
                         }
                     }
                 } catch (error) {
