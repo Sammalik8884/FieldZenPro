@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
-import { Loader2, Search, BriefcaseBusiness, CheckCircle, XCircle, Receipt, PlayCircle, Trash2, Edit, Briefcase, PlusCircle, X } from "lucide-react";
+import { Loader2, Search, BriefcaseBusiness, CheckCircle, XCircle, Receipt, Trash2, Edit, Briefcase, PlusCircle, X } from "lucide-react";
 import { StatCard } from "../components/dashboard/StatCard";
 import { ConfirmModal } from "../components/common/ConfirmModal";
 import { workOrderService } from "../services/workOrderService";
 import { invoiceService } from "../services/invoiceService";
-import { contractService } from "../services/contractService";
 import { customerService } from "../services/customerService";
 import { WorkOrderDto, UpdateWorkOrderDto, AssetDto, CreateWorkOrderDto } from "../types/field";
-import { ContractDto } from "../types/contract";
 import { CustomerDto } from "../types/customer";
 import { toast } from "react-hot-toast";
 import { authService } from "../services/authService";
@@ -59,7 +57,6 @@ export const WorkOrdersPage = () => {
 
  const [technicians, setTechnicians] = useState<any[]>([]);
  const [assets, setAssets] = useState<AssetDto[]>([]);
- const [contracts, setContracts] = useState<ContractDto[]>([]);
  const [customers, setCustomers] = useState<CustomerDto[]>([]);
 
  // Create modal state
@@ -72,6 +69,10 @@ export const WorkOrdersPage = () => {
  technicianId: null,
  assetId: undefined
  });
+ const [createCustomerSearch, setCreateCustomerSearch] = useState("");
+ const [createTechSearch, setCreateTechSearch] = useState("");
+ const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
+ const [showTechDropdown, setShowTechDropdown] = useState(false);
 
  // Delete modal state
  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -93,17 +94,15 @@ export const WorkOrdersPage = () => {
  const fetchData = async () => {
  try {
  setLoading(true);
- const [woData, usersData, assetData, contractData, custData] = await Promise.all([
+ const [woData, usersData, assetData, custData] = await Promise.all([
  workOrderService.getAll(),
  authService.getUsers().catch(() => []),
  apiClient.get<AssetDto[]>("/Assets").then(r => r.data).catch(() => []),
- contractService.getAll().catch(() => []),
  customerService.getAll().catch(() => [])
  ]);
  setWorkOrders(woData);
  setTechnicians(usersData.filter((u: any) => u.roles && (u.roles.includes("Tech") || u.roles.includes("Worker") || u.roles.includes("Technician"))));
  setAssets(Array.isArray(assetData) ? assetData : []);
- setContracts(Array.isArray(contractData) ? contractData : []);
  setCustomers(Array.isArray(custData) ? custData : []);
  } catch (error) {
  toast.error("Failed to load work orders.");
@@ -147,9 +146,9 @@ export const WorkOrdersPage = () => {
 
  const handleApproveReject = async (id: number, isApproved: boolean) => {
  confirmAction(
- isApproved ? "Approve Job" : "Reject Job", 
- `Are you sure you want to ${isApproved ? 'approve' : 'reject'} this job?`, 
- isApproved ? "info" : "warning", 
+ isApproved ? "Approve Job" : "Reject Job",
+ `Are you sure you want to ${isApproved ? 'approve' : 'reject'} this job?`,
+ isApproved ? "info" : "warning",
  async () => {
  try {
  setProcessingId(id);
@@ -158,26 +157,6 @@ export const WorkOrdersPage = () => {
  fetchData();
  } catch (error: any) {
  toast.error(extractApiError(error, "Failed to process job."));
- } finally {
- setProcessingId(null);
- }
- }
- );
- };
-
- const handleInitialize = async (id: number) => {
- confirmAction(
- "Initialize Work Order", 
- "Initialize this work order? This will set up the inspection checklist and mark it as In Progress.", 
- "info", 
- async () => {
- try {
- setProcessingId(id);
- const result = await workOrderService.initialize(id);
- toast.success(result?.message || "Work order initialized successfully!");
- fetchData();
- } catch (error: any) {
- toast.error(extractApiError(error, "Failed to initialize work order."));
  } finally {
  setProcessingId(null);
  }
@@ -198,10 +177,9 @@ export const WorkOrdersPage = () => {
         }
     };
 
-
     const handleCreateSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!createForm.customerId && !createForm.contractId) { 
+        if (!createForm.customerId) { 
             toast.error("Please select a Customer."); 
             return; 
         }
@@ -218,6 +196,8 @@ export const WorkOrdersPage = () => {
             toast.success("Work Order created successfully!");
             setIsCreateModalOpen(false);
             setCreateForm({ description: "", customerId: 0, contractId: 0, scheduledDate: new Date().toISOString().split('T')[0], technicianId: null, assetId: undefined });
+            setCreateCustomerSearch("");
+            setCreateTechSearch("");
             fetchData();
         } catch (error: any) {
             toast.error(extractApiError(error, "Failed to create work order."));
@@ -244,11 +224,6 @@ export const WorkOrdersPage = () => {
 
  if (!formData.technicianId) {
  toast.error("Please select a Technician before assigning.");
- return;
- }
-
- if (!formData.assetId) {
- toast.error("Please select an Asset before saving the assignment.");
  return;
  }
 
@@ -458,18 +433,6 @@ export const WorkOrdersPage = () => {
             </button>
         </div>
     )}
- {wo.status === 'Assigned' && (
- <div className="flex justify-end space-x-2">
- <button
- onClick={() => handleInitialize(wo.id)}
- disabled={processingId === wo.id}
- className="p-2 border border-primary/30 text-primary hover:bg-primary/20 rounded-lg transition-colors flex items-center space-x-1 font-medium bg-primary/10 disabled:opacity-50"
- >
- {processingId === wo.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlayCircle className="h-4 w-4" />}
- <span className="text-xs">Initialize</span>
- </button>
- </div>
- )}
  {(wo.status === 'Assigned' || wo.status === 'Initialized') && (
  <div className="flex justify-end mt-2 border-t border-border/20 pt-2 text-[11px] text-muted-foreground italic items-center gap-1">
  <Loader2 className="h-3 w-3 animate-spin" /> Waiting for Technician
@@ -614,33 +577,51 @@ export const WorkOrdersPage = () => {
  </button>
  </div>
  <form onSubmit={handleCreateSubmit} className="space-y-4">
+ {/* Searchable Customer */}
  <div>
  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Customer *</label>
- <select
+ <div className="relative">
+ <input
+ type="text"
  required
- value={createForm.customerId || 0}
- onChange={e => setCreateForm({ ...createForm, customerId: Number(e.target.value) })}
+ placeholder="Search customer..."
+ value={createCustomerSearch}
+ onChange={e => {
+ setCreateCustomerSearch(e.target.value);
+ setShowCustomerDropdown(true);
+ if (!e.target.value) setCreateForm({ ...createForm, customerId: 0 });
+ }}
+ onFocus={() => setShowCustomerDropdown(true)}
+ onBlur={() => setTimeout(() => setShowCustomerDropdown(false), 150)}
  className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 text-foreground"
+ />
+ {showCustomerDropdown && (
+ <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+ {customers.filter(c => (c.companyName || c.name).toLowerCase().includes(createCustomerSearch.toLowerCase())).length === 0 ? (
+ <div className="px-3 py-2 text-sm text-muted-foreground">No customers found</div>
+ ) : (
+ customers.filter(c => (c.companyName || c.name).toLowerCase().includes(createCustomerSearch.toLowerCase())).map(c => (
+ <button key={c.id} type="button"
+ onMouseDown={() => {
+ setCreateForm({ ...createForm, customerId: c.id });
+ setCreateCustomerSearch(c.companyName || c.name);
+ setShowCustomerDropdown(false);
+ }}
+ className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors"
  >
- <option value={0} disabled>-- Select Customer --</option>
- {customers.map(c => (
- <option key={c.id} value={c.id}>{c.companyName || c.name}</option>
- ))}
- </select>
+ {c.companyName || c.name}
+ </button>
+ ))
+ )}
  </div>
- <div>
- <label className="text-xs font-semibold text-muted-foreground mb-1 block">Contract (Optional)</label>
- <select
- value={createForm.contractId || 0}
- onChange={e => setCreateForm({ ...createForm, contractId: Number(e.target.value) })}
- className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 text-foreground"
- >
- <option value={0}>-- No Contract --</option>
- {contracts.map(c => (
- <option key={c.id} value={c.id}>{c.description} — {c.customerName}</option>
- ))}
- </select>
+ )}
  </div>
+ {createForm.customerId > 0 && (
+ <p className="text-xs text-green-500 mt-1">✓ Customer selected</p>
+ )}
+ </div>
+
+ {/* Description */}
  <div>
  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Description *</label>
  <textarea
@@ -652,7 +633,8 @@ export const WorkOrdersPage = () => {
  placeholder="Describe the work to be done..."
  />
  </div>
- <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+ {/* Scheduled Date */}
  <div>
  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Scheduled Date</label>
  <input
@@ -662,44 +644,65 @@ export const WorkOrdersPage = () => {
  className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 text-foreground"
  />
  </div>
- <div>
- <label className="text-xs font-semibold text-muted-foreground mb-1 block">Asset</label>
- <select
- value={createForm.assetId || 0}
- onChange={e => setCreateForm({ ...createForm, assetId: Number(e.target.value) || undefined })}
- className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 text-foreground"
- >
- <option value={0}>-- No Asset --</option>
- {assets.map(a => (
- <option key={a.id} value={a.id}>[{a.assetType}] {a.name} — S/N: {a.serialNumber}</option>
- ))}
- </select>
- </div>
- </div>
+
+ {/* Searchable Technician */}
  <div>
  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Assign Technician</label>
- <select
- value={createForm.technicianId || ""}
- onChange={e => setCreateForm({ ...createForm, technicianId: e.target.value || null })}
+ <div className="relative">
+ <input
+ type="text"
+ placeholder="Search technician..."
+ value={createTechSearch}
+ onChange={e => {
+ setCreateTechSearch(e.target.value);
+ setShowTechDropdown(true);
+ if (!e.target.value) setCreateForm({ ...createForm, technicianId: null });
+ }}
+ onFocus={() => setShowTechDropdown(true)}
+ onBlur={() => setTimeout(() => setShowTechDropdown(false), 150)}
  className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 text-foreground"
+ />
+ {showTechDropdown && (
+ <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+ <button type="button"
+ onMouseDown={() => {
+ setCreateForm({ ...createForm, technicianId: null });
+ setCreateTechSearch("");
+ setShowTechDropdown(false);
+ }}
+ className="w-full text-left px-3 py-2 text-sm text-muted-foreground hover:bg-muted transition-colors italic"
  >
- <option value="">-- Unassigned --</option>
- {technicians.map(t => (
- <option key={t.id} value={t.id}>{t.fullName}</option>
+ -- Unassigned --
+ </button>
+ {technicians.filter(t => t.fullName.toLowerCase().includes(createTechSearch.toLowerCase())).map(t => (
+ <button key={t.id} type="button"
+ onMouseDown={() => {
+ setCreateForm({ ...createForm, technicianId: t.id });
+ setCreateTechSearch(t.fullName);
+ setShowTechDropdown(false);
+ }}
+ className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors"
+ >
+ {t.fullName}
+ </button>
  ))}
- </select>
+ {technicians.length === 0 && <div className="px-3 py-2 text-sm text-muted-foreground">No technicians found</div>}
  </div>
+ )}
+ </div>
+ </div>
+
  <div className="flex justify-end space-x-3 pt-4 border-t border-border">
  <button
  type="button"
- onClick={() => setIsCreateModalOpen(false)}
+ onClick={() => { setIsCreateModalOpen(false); setCreateCustomerSearch(""); setCreateTechSearch(""); }}
  className="px-4 py-2 text-sm font-medium hover:bg-muted rounded-lg transition-colors text-muted-foreground"
  >
  Cancel
  </button>
  <button
  type="submit"
- disabled={processingId === -10}
+ disabled={processingId === -10 || !createForm.customerId}
  className="px-5 py-2 text-sm font-semibold bg-primary text-primary-foreground rounded-lg hover:-translate-y-0.5 transition-all disabled:opacity-50 flex items-center gap-2"
  >
  {processingId === -10 ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
