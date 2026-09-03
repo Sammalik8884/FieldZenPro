@@ -92,6 +92,12 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
         }
     };
 
+    const [expandedNotes, setExpandedNotes] = useState<number[]>([]);
+
+    const toggleNotes = (id: number) => {
+        setExpandedNotes(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    };
+
     return (
         <div className="flex flex-col lg:flex-row gap-6 h-[75vh]">
             {/* Unscheduled Queue */}
@@ -114,7 +120,23 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                                  )}
                              </div>
                             <p className="text-sm font-medium leading-tight mb-1">{job.customerName}</p>
-                            <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{job.description}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-2 mb-2">{job.description}</p>
+                            
+                            {job.technicianNotes && (
+                                <div className="mb-3">
+                                    <button 
+                                        onClick={() => toggleNotes(job.id)}
+                                        className="text-[10px] font-semibold text-primary hover:underline flex items-center gap-1"
+                                    >
+                                        {expandedNotes.includes(job.id) ? "Hide Notes" : "View Technician Notes"}
+                                    </button>
+                                    {expandedNotes.includes(job.id) && (
+                                        <div className="mt-1 p-2 bg-muted/50 rounded border border-border text-xs whitespace-pre-wrap text-foreground">
+                                            {job.technicianNotes}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                             
                             <div className="mt-2 pt-2 border-t border-border">
                                 <label className="text-xs text-muted-foreground mb-1 block">Assign to Date:</label>
