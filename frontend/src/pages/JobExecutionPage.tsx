@@ -280,8 +280,8 @@ export const JobExecutionPage = () => {
  <div className="flex items-start gap-3">
  <CalendarClock className="h-5 w-5 text-primary shrink-0 mt-0.5" />
  <div>
- <p className="text-sm font-medium text-foreground">Scheduled For</p>
- <p className="text-sm text-muted-foreground">{new Date(job.scheduledDate).toLocaleString()}</p>
+  <p className="text-sm font-medium text-foreground">Scheduled For</p>
+  <p className="text-sm text-muted-foreground">{job.scheduledDate ? new Date(job.scheduledDate).toLocaleString() : 'Unscheduled'}</p>
  </div>
  </div>
  </div>

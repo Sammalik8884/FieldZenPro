@@ -116,7 +116,7 @@ export const MyJobsPage = () => {
  </div>
  <div className="flex items-center gap-2">
  <CalendarClock className="h-4 w-4 shrink-0" />
- <span>{new Date(job.scheduledDate).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span>
+ <span>{job.scheduledDate ? new Date(job.scheduledDate).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : 'Unscheduled'}</span>
  </div>
  </div>
 

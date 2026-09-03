@@ -18,7 +18,7 @@ namespace MytechERP.Application.DTOs.CRM
         
         public int? SiteId { get; set; }
 
-        public DateTime ScheduledDate { get; set; }
+        public DateTime? ScheduledDate { get; set; }
 
         public string? TechnicianId { get; set; }
         public int? AssetId { get; set; }

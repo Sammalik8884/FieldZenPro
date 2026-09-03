@@ -28,7 +28,8 @@ namespace MytechERP.domain.Entities
 
         public WorkOrderStatus Status { get; set; } = WorkOrderStatus.Created;
 
-        public DateTime ScheduledDate { get; set; }
+        public DateTime? ScheduledDate { get; set; }
+        public int SequenceOrder { get; set; } = 0;
         public DateTime? CompletedDate { get; set; }
 
         public int? ContractId { get; set; }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +16,8 @@ namespace MytechERP.domain.Enums
         PendingApproval = 5,
         Approved = 6,
         Rejected = 7,
-        Cancelled = 8
+        Cancelled = 8,
+        WaitingForParts = 9,
+        Unscheduled = 10
     }
 }

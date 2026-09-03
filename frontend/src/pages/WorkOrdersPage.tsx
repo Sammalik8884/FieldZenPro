@@ -13,6 +13,7 @@ import { apiClient } from "../services/apiClient";
 
 import { CreateInvoiceModal } from "../components/CreateInvoiceModal";
 import { ReviewJobModal } from "../components/ReviewJobModal";
+import { SchedulingBoard } from "../components/workorders/SchedulingBoard";
 
 const extractApiError = (error: any, fallback: string) => {
     if (!error || !error.response || !error.response.data) {
@@ -28,7 +29,8 @@ export const WorkOrdersPage = () => {
     const [invoiceModalProps, setInvoiceModalProps] = useState<{workOrderId?: number, customerId?: number, laborCost?: number}>({});
     const [reviewModalOpen, setReviewModalOpen] = useState(false);
     const [reviewWorkOrder, setReviewWorkOrder] = useState<WorkOrderDto | null>(null);
- const [confirmModal, setConfirmModal] = useState<{isOpen: boolean, title: string, message: string, type: 'info' | 'warning' | 'danger', onConfirm: () => void}>({
+    const [viewMode, setViewMode] = useState<'list' | 'board'>('board');
+    const [confirmModal, setConfirmModal] = useState<{isOpen: boolean, title: string, message: string, type: 'info' | 'warning' | 'danger', onConfirm: () => void}>({
  isOpen: false, title: '', message: '', type: 'info', onConfirm: () => {}
  });
 
@@ -189,7 +191,7 @@ export const WorkOrdersPage = () => {
                 description: createForm.description,
                 customerId: createForm.customerId,
                 contractId: createForm.contractId || undefined,
-                scheduledDate: new Date(createForm.scheduledDate).toISOString(),
+                scheduledDate: createForm.scheduledDate ? new Date(createForm.scheduledDate).toISOString() : null,
                 technicianId: createForm.technicianId || null,
                 assetId: createForm.assetId || undefined
             });
@@ -212,7 +214,7 @@ export const WorkOrdersPage = () => {
  id: wo.id,
  description: wo.description,
  status: wo.status,
- scheduledDate: wo.scheduledDate.split('T')[0],
+ scheduledDate: wo.scheduledDate ? wo.scheduledDate.split('T')[0] : "",
  technicianId: "",
  assetId: (wo as any).assetId || null
  });
@@ -305,21 +307,48 @@ export const WorkOrdersPage = () => {
  </div>
 
  <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
- <div className="p-4 border-b border-border flex justify-between items-center">
- <div className="relative w-72">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
- <input
- type="text"
- placeholder="Search jobs or customers..."
- value={searchQuery}
- onChange={(e) => setSearchQuery(e.target.value)}
- className="bg-background/50 border border-border text-sm rounded-lg pl-9 pr-4 py-2 w-full focus:outline-none focus:ring-1 focus:ring-primary"
- />
- </div>
- </div>
+ <div className="p-4 border-b border-border flex justify-between items-center bg-card">
+    <div className="flex bg-muted p-1 rounded-lg">
+        <button 
+            onClick={() => setViewMode('board')} 
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'board' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+            Scheduling Board
+        </button>
+        <button 
+            onClick={() => setViewMode('list')} 
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${viewMode === 'list' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+            All Jobs (List)
+        </button>
+    </div>
+    {viewMode === 'list' && (
+        <div className="relative w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+                type="text"
+                placeholder="Search jobs or customers..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-background/50 border border-border text-sm rounded-lg pl-9 pr-4 py-2 w-full focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+        </div>
+    )}
+</div>
 
- <div className="overflow-x-auto">
- <table className="w-full text-sm text-left">
+{viewMode === 'board' ? (
+    <div className="p-4 bg-background">
+        <SchedulingBoard 
+            workOrders={workOrders} 
+            onUpdateJob={async (id, updates) => {
+                await workOrderService.update(id, updates as any);
+                fetchData();
+            }} 
+        />
+    </div>
+) : (
+    <div className="overflow-x-auto bg-card">
+        <table className="w-full text-sm text-left">
  <thead className="text-xs text-muted-foreground uppercase bg-muted border-b border-border">
  <tr>
  <th className="px-6 py-4 font-medium">Job Details</th>
@@ -458,6 +487,7 @@ export const WorkOrdersPage = () => {
  </tbody>
  </table>
  </div>
+ )}
  </div>
 
 
@@ -502,7 +532,7 @@ export const WorkOrdersPage = () => {
  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Scheduled Date</label>
  <input
  type="date"
- value={formData.scheduledDate}
+ value={formData.scheduledDate || ""}
  onChange={e => setFormData({ ...formData, scheduledDate: e.target.value })}
  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
  />
@@ -639,7 +669,7 @@ export const WorkOrdersPage = () => {
  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Scheduled Date</label>
  <input
  type="date"
- value={createForm.scheduledDate}
+ value={createForm.scheduledDate || ""}
  onChange={e => setCreateForm({ ...createForm, scheduledDate: e.target.value })}
  className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 text-foreground"
  />

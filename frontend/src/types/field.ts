@@ -43,7 +43,8 @@ export interface WorkOrderDto {
     id: number;
     description: string;
     status: string;
-    scheduledDate: string;
+    scheduledDate?: string | null;
+    sequenceOrder: number;
     completedDate?: string | null;
     contractId: number;
     customerName: string;
@@ -59,7 +60,7 @@ export interface WorkOrderDto {
 
 export interface CreateWorkOrderDto {
     description: string;
-    scheduledDate: string;
+    scheduledDate?: string | null;
     customerId: number;
     siteId?: number;
     contractId?: number;
@@ -71,7 +72,7 @@ export interface UpdateWorkOrderDto {
     id: number;
     description: string;
     status: string;
-    scheduledDate: string;
+    scheduledDate?: string | null;
     technicianId?: string | null;
     assetId?: number | null;
 }

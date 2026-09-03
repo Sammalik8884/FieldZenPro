@@ -85,7 +85,8 @@ namespace MyTechERP.Infrastructure.Services
                 SiteId = finalSiteId,
                 ScheduledDate = request.ScheduledDate,
                 TechnicianId = request.TechnicianId,
-                Status = string.IsNullOrEmpty(request.TechnicianId) ? WorkOrderStatus.Created : WorkOrderStatus.Assigned,
+                Status = !request.ScheduledDate.HasValue ? WorkOrderStatus.Unscheduled : 
+                          (string.IsNullOrEmpty(request.TechnicianId) ? WorkOrderStatus.Created : WorkOrderStatus.Assigned),
                 TenantId = userTenantId.Value,
                 AssetId = request.AssetId > 0 ? request.AssetId : null
             };
@@ -150,6 +151,7 @@ namespace MyTechERP.Infrastructure.Services
                 Status = w.Status.ToString(),
                 Result = w.Result.ToString(), 
                 ScheduledDate = w.ScheduledDate,
+                SequenceOrder = w.SequenceOrder,
                 CompletedDate = w.CompletedDate,
                 ContractId = w.ContractId ?? 0,
                 CustomerName = w.Customer?.CompanyName
