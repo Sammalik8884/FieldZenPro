@@ -117,19 +117,19 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                             <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{job.description}</p>
                             
                             <div className="mt-2 pt-2 border-t border-border">
-                                <label className="text-xs text-muted-foreground mb-1 block">Assign to Day (this week):</label>
-                                <div className="flex gap-1 flex-wrap">
-                                    {weekDays.map(day => (
-                                        <button 
-                                            key={day.toISOString()}
-                                            disabled={loading}
-                                            onClick={() => handleAssignToDate(job.id, day)}
-                                            className="px-2 py-1 text-[10px] bg-secondary hover:bg-primary hover:text-white rounded border border-border transition-colors disabled:opacity-50"
-                                        >
-                                            {format(day, 'EEE')}
-                                        </button>
-                                    ))}
-                                </div>
+                                <label className="text-xs text-muted-foreground mb-1 block">Assign to Date:</label>
+                                <input
+                                    type="date"
+                                    disabled={loading}
+                                    min={format(new Date(), 'yyyy-MM-dd')}
+                                    className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary disabled:opacity-50"
+                                    onChange={(e) => {
+                                        if (e.target.value) {
+                                            handleAssignToDate(job.id, new Date(e.target.value + 'T00:00:00'));
+                                            e.target.value = '';
+                                        }
+                                    }}
+                                />
                             </div>
                         </div>
                     ))}

@@ -63,12 +63,13 @@ namespace MytechERP.API.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateWorkOrderDto request)
         {
             if (request == null) return BadRequest("Request body is null.");
-            if (id != request.Id) return BadRequest($"URL ID ({id}) does not match body ID ({request?.Id}).");
+            // Always use the URL id as the authoritative source — body Id is optional
+            request.Id = id;
 
             var success = await _service.UpdateWorkOrderAsync(id, request);
             if (!success) return NotFound($"Service failed to update Work Order #{id}. Maybe it wasn't found.");
