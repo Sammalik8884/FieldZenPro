@@ -1,4 +1,4 @@
-﻿using MytechERP.Application.Interfaces;
+using MytechERP.Application.Interfaces;
 using MytechERP.domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -12,10 +12,12 @@ namespace MyTechERP.Infrastructure.Services
     {
         private readonly Dictionary<WorkOrderStatus, List<WorkOrderStatus>> _allowedTransitions = new()
         {
-            { WorkOrderStatus.Created,         new() { WorkOrderStatus.Assigned, WorkOrderStatus.Cancelled } },
-            { WorkOrderStatus.Assigned,        new() { WorkOrderStatus.Initialized, WorkOrderStatus.Cancelled } },
-            { WorkOrderStatus.Initialized,     new() { WorkOrderStatus.InProgress, WorkOrderStatus.Cancelled } },
-            { WorkOrderStatus.InProgress,      new() { WorkOrderStatus.PendingApproval, WorkOrderStatus.Cancelled } },
+            { WorkOrderStatus.Created,         new() { WorkOrderStatus.Assigned, WorkOrderStatus.Unscheduled, WorkOrderStatus.Cancelled } },
+            { WorkOrderStatus.Unscheduled,     new() { WorkOrderStatus.Created, WorkOrderStatus.Assigned, WorkOrderStatus.Cancelled } },
+            { WorkOrderStatus.Assigned,        new() { WorkOrderStatus.Initialized, WorkOrderStatus.InProgress, WorkOrderStatus.Cancelled } },
+            { WorkOrderStatus.Initialized,     new() { WorkOrderStatus.InProgress, WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.Cancelled } },
+            { WorkOrderStatus.InProgress,      new() { WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.PendingApproval, WorkOrderStatus.Cancelled } },
+            { WorkOrderStatus.WaitingForParts, new() { WorkOrderStatus.Unscheduled, WorkOrderStatus.InProgress, WorkOrderStatus.Cancelled } },
             { WorkOrderStatus.PendingApproval, new() { WorkOrderStatus.Approved, WorkOrderStatus.Rejected } },
             { WorkOrderStatus.Approved,        new() { WorkOrderStatus.Completed } },
             { WorkOrderStatus.Rejected,        new() { WorkOrderStatus.Assigned, WorkOrderStatus.InProgress } },

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, CalendarClock, Clock, CheckCircle2, Loader2, Navigation, UploadCloud, ClipboardCheck, Satellite, Unlock } from "lucide-react";
+import { ArrowLeft, MapPin, CalendarClock, Clock, CheckCircle2, Loader2, Navigation, UploadCloud, ClipboardCheck, Satellite, Unlock, Receipt } from "lucide-react";
 import { ConfirmModal } from "../components/common/ConfirmModal";
 import { workOrderService } from "../services/workOrderService";
 
@@ -17,6 +17,8 @@ import { WorkOrderDto, ChecklistResultDto, UpdateChecklistDto } from "../types/f
 import { toast } from "react-hot-toast";
 import { useAuth } from "../auth/AuthContext";
 import { PlanFeature } from "../types/auth";
+import { CreateInvoiceModal } from "../components/CreateInvoiceModal";
+import { invoiceService } from "../services/invoiceService";
 
 export const JobExecutionPage = () => {
  const { id } = useParams();
@@ -40,8 +42,10 @@ export const JobExecutionPage = () => {
  const [notes, setNotes] = useState("");
  const [result, setResult] = useState(1); // 1=Pass
 
- // Modal State
- const [confirmModal, setConfirmModal] = useState<{isOpen: boolean, title: string, message: string, type: 'info' | 'warning' | 'danger', onConfirm: () => void}>({
+  // Modal State
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+  const [invoiceModalProps, setInvoiceModalProps] = useState<{workOrderId?: number, customerId?: number, laborCost?: number}>({});
+  const [confirmModal, setConfirmModal] = useState<{isOpen: boolean, title: string, message: string, type: 'info' | 'warning' | 'danger', onConfirm: () => void}>({
  isOpen: false, title: '', message: '', type: 'info', onConfirm: () => {}
  });
 
@@ -191,7 +195,7 @@ export const JobExecutionPage = () => {
 
  // 3. Complete Job
  await workOrderService.completeJob(Number(id), { notes, result });
- toast.success("Job marked as Complete — pending manager review.");
+ toast.success("Job completed! You can now generate an invoice.");
  fetchJob();
  } catch (error: any) {
  toast.error(extractApiError(error, "Failed to complete job. Ensure photos are uploaded."));
@@ -201,6 +205,19 @@ export const JobExecutionPage = () => {
  }
  );
  };
+
+     const handleGenerateInvoice = async () => {
+         try {
+             setActionLoading(true);
+             const preview = await invoiceService.getPreviewFromJob(Number(id));
+             setInvoiceModalProps({ workOrderId: Number(id), customerId: preview.customerId, laborCost: preview.laborCost });
+             setInvoiceModalOpen(true);
+         } catch (error: any) {
+             toast.error(extractApiError(error, "Failed to prepare invoice."));
+         } finally {
+             setActionLoading(false);
+         }
+     };
 
     const handleReopen = async () => {
         confirmAction(
@@ -515,6 +532,19 @@ export const JobExecutionPage = () => {
  <span>{new Date(job.completedDate).toLocaleString()}</span>
  </div>
  )}
+ {job.status === 'Completed' && (
+ <div className="pt-4 border-t border-border mt-4">
+ <button
+ type="button"
+ onClick={handleGenerateInvoice}
+ disabled={actionLoading}
+ className="w-full bg-green-500/10 text-green-500 font-semibold py-3 flex items-center justify-center gap-2 rounded-xl hover:bg-green-500/20 transition-all border border-green-500/30 disabled:opacity-50"
+ >
+ {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Receipt className="h-5 w-5" />}
+ <span>Generate Invoice & Collect Payment</span>
+ </button>
+ </div>
+ )}
  {job.status === 'PendingApproval' && (
  <div className="pt-4 border-t border-border">
  <button
@@ -543,6 +573,19 @@ export const JobExecutionPage = () => {
  onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
  confirmText="Confirm"
  />
+
+ {invoiceModalOpen && (
+     <CreateInvoiceModal
+         isOpen={invoiceModalOpen}
+         onClose={() => setInvoiceModalOpen(false)}
+         onSuccess={() => {
+             setInvoiceModalOpen(false);
+         }}
+         initialCustomerId={invoiceModalProps.customerId}
+         initialLaborCost={invoiceModalProps.laborCost}
+         workOrderId={invoiceModalProps.workOrderId}
+     />
+ )}
  </div>
  );
 };

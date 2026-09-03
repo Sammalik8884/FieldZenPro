@@ -301,13 +301,14 @@ namespace MyTechERP.Infrastructure.Services
             var workOrder = await _context.WorkOrders.FindAsync(id);
             if (workOrder == null) return false;
 
-            _workflowService.ValidateTransition(workOrder.Status, WorkOrderStatus.PendingApproval);
+            _workflowService.ValidateTransition(workOrder.Status, WorkOrderStatus.Completed);
 
             var evidenceCount = await _context.JobEvidences.CountAsync(e => e.WorkOrderId == id);
             if (evidenceCount == 0)
                 throw new InvalidOperationException("Compliance Block: You must upload at least one evidence photo.");
 
-            workOrder.Status = WorkOrderStatus.PendingApproval;
+            workOrder.Status = WorkOrderStatus.Completed;
+            workOrder.CompletedDate = DateTime.UtcNow;
             workOrder.TechnicianNotes = notes;
             workOrder.Result = result; 
 
@@ -315,9 +316,9 @@ namespace MyTechERP.Infrastructure.Services
             {
                 EntityName = "WorkOrder",
                 EntityId = id,
-                Action = "SubmittedForReview",
+                Action = "Completed",
                 UserId = technicianId,
-                Details = $"Technician finished. Result: {result}. Evidence: {evidenceCount}",
+                Details = $"Technician finished and completed job. Result: {result}. Evidence: {evidenceCount}",
                 Timestamp = DateTime.UtcNow
             };
             _context.AuditLogs.Add(log);

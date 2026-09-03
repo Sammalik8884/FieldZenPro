@@ -219,6 +219,13 @@ namespace MyTechERP.Infrastructure.PDF
                     "Payment is due by the specified Due Date.",
                     "Late payments may be subject to additional fees."
                 );
+
+                col.Item().PaddingTop(10).Background(LightBlue).Padding(10).Column(c => {
+                    c.Item().Text("Please remit payment by check to:").Bold().FontSize(10).FontColor(BrandColor);
+                    c.Item().Text("Acumen Mobile Equipment Service").Bold().FontSize(9);
+                    c.Item().Text("1958 Washington Ave").FontSize(9);
+                    c.Item().Text("Portland, ME 04103").FontSize(9);
+                });
             });
         }
         

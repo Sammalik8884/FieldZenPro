@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Plus, Trash2, Loader2 } from "lucide-react";
+import { X, Plus, Trash2, Loader2, CheckCircle2, Smartphone, Mail, Copy, Printer } from "lucide-react";
 import { CreateInvoiceDto, CreateInvoiceItemDto } from "../types/finance";
 import { invoiceService } from "../services/invoiceService";
 import { customerService } from "../services/customerService";
@@ -28,6 +28,7 @@ interface InvoiceLineItem extends CreateInvoiceItemDto {
 export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomerId, initialLaborCost, workOrderId }: CreateInvoiceModalProps) => {
     const [loading, setLoading] = useState(false);
     const [dataLoading, setDataLoading] = useState(false);
+    const [createdInvoice, setCreatedInvoice] = useState<{ id: number, number: string } | null>(null);
 
     // Dropdown Data State
     const [customers, setCustomers] = useState<CustomerDto[]>([]);
@@ -164,12 +165,11 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
         };
 
         try {
-            setLoading(true);
-            await invoiceService.createCustom(dto);
-            toast.success("Custom Invoice generated successfully!");
-            onSuccess();
-            onClose();
-        } catch (error: any) {
+             setLoading(true);
+             const res = await invoiceService.createCustom(dto);
+             toast.success("Invoice generated successfully!");
+             setCreatedInvoice({ id: res.invoiceId, number: res.invoiceNumber });
+         } catch (error: any) {
             toast.error(error.response?.data?.Error || "Failed to create invoice.");
         } finally {
             setLoading(false);
@@ -179,6 +179,67 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
     return (
         <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-start md:items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
             <div className="bg-card w-full max-w-4xl max-h-[90vh] flex flex-col border border-border rounded-2xl shadow-2xl relative my-auto">
+                {createdInvoice ? (
+                    <div className="p-8 flex flex-col items-center justify-center text-center space-y-6">
+                        <div className="h-16 w-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-2">
+                            <CheckCircle2 className="h-8 w-8" />
+                        </div>
+                        <h2 className="text-2xl font-bold">Invoice {createdInvoice.number} Created!</h2>
+                        <p className="text-muted-foreground max-w-md">The invoice has been saved to the customer's account. How would you like to collect payment?</p>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-lg mt-4">
+                            <a 
+                                href={`sms:?&body=Please view and pay your invoice ${createdInvoice.number} here: ${window.location.origin}/portal/invoices`}
+                                className="flex items-center justify-center gap-2 p-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors font-medium shadow-sm"
+                            >
+                                <Smartphone className="h-5 w-5" /> Send via Text
+                            </a>
+                            <a 
+                                href={`mailto:?subject=Invoice ${createdInvoice.number}&body=Please view and pay your invoice ${createdInvoice.number} here: ${window.location.origin}/portal/invoices`}
+                                className="flex items-center justify-center gap-2 p-4 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-medium shadow-sm"
+                            >
+                                <Mail className="h-5 w-5" /> Send via Email
+                            </a>
+                            <button 
+                                type="button"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(`${window.location.origin}/portal/invoices`);
+                                    toast.success("Payment link copied to clipboard!");
+                                }}
+                                className="flex items-center justify-center gap-2 p-4 bg-secondary text-foreground border border-border rounded-xl hover:bg-secondary/80 transition-colors font-medium shadow-sm"
+                            >
+                                <Copy className="h-5 w-5" /> Copy Payment Link
+                            </button>
+                            <button 
+                                type="button"
+                                onClick={async () => {
+                                    try {
+                                        const blob = await invoiceService.downloadPdf(createdInvoice.id);
+                                        const url = window.URL.createObjectURL(blob);
+                                        window.open(url, '_blank');
+                                    } catch {
+                                        toast.error("Failed to load PDF for printing");
+                                    }
+                                }}
+                                className="flex items-center justify-center gap-2 p-4 bg-secondary text-foreground border border-border rounded-xl hover:bg-secondary/80 transition-colors font-medium shadow-sm"
+                            >
+                                <Printer className="h-5 w-5" /> Print (Thermal / PDF)
+                            </button>
+                        </div>
+
+                        <button 
+                            type="button"
+                            onClick={() => {
+                                onSuccess();
+                                onClose();
+                            }}
+                            className="mt-8 px-8 py-3 bg-muted text-foreground font-semibold rounded-lg hover:bg-muted/80 transition-colors"
+                        >
+                            Done
+                        </button>
+                    </div>
+                ) : (
+                    <>
                 <div className="flex justify-between items-center p-6 border-b border-border shrink-0 bg-card z-10 rounded-t-2xl">
                     <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
                         Create Custom Invoice
@@ -423,6 +484,8 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                         <span>Generate Invoice</span>
                     </button>
                 </div>
+                </>
+                )}
             </div>
         </div>
     );
