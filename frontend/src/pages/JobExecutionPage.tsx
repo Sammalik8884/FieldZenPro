@@ -228,7 +228,7 @@ export const JobExecutionPage = () => {
 
  if (!job) return null;
 
- const isJobActive = job.status === 'Initialized' || job.status === 'InProgress' || job.status === 'Assigned' || job.checkInTime != null;
+ const isJobActive = !['Completed', 'PendingApproval', 'Approved'].includes(job.status);
 
  return (
  <div className="p-4 md:p-8 max-w-3xl mx-auto animate-in fade-in duration-500 pb-24">
@@ -317,7 +317,7 @@ export const JobExecutionPage = () => {
  className="col-span-1 sm:col-span-2 bg-primary/10 border border-primary/30 text-primary hover:bg-primary hover:text-white font-semibold py-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:hover:bg-primary/10 disabled:hover:text-primary"
  >
  <MapPin className="h-6 w-6" />
- <span>{gpsStatus === 'acquiring' ? 'Acquiring GPS...' : 'Check In & Start Job'}</span>
+ <span>{gpsStatus === 'acquiring' ? 'Acquiring GPS...' : 'Start Timer (Optional)'}</span>
  </button>
  )}
 
@@ -340,7 +340,7 @@ export const JobExecutionPage = () => {
  disabled:opacity-50 shadow-sm active:scale-95"
  >
  <Clock className="h-6 w-6" />
- <span>Check Out</span>
+ <span>Stop Timer</span>
  </button>
  )}
 
@@ -358,14 +358,6 @@ export const JobExecutionPage = () => {
  )}
 
  {/* Execution Forms Container */}
- {/* Execution Forms Container */}
- {!job.checkInTime ? (
- <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-6 md:p-8 text-center shadow-sm">
- <Clock className="h-10 w-10 text-yellow-500 mx-auto mb-3" />
- <h3 className="text-lg font-bold text-yellow-600 mb-1">Check-in Required</h3>
- <p className="text-sm text-yellow-600/80">Please <strong>Check In</strong> above to begin this job and unlock the checklist, evidence upload, and completion forms.</p>
- </div>
- ) : (
  <div className="bg-card border border-border rounded-2xl p-5 md:p-6 shadow-lg space-y-8">
 
  {/* Checklist Section */}
@@ -540,7 +532,6 @@ export const JobExecutionPage = () => {
  )}
  </div>
  </div>
- )}
  </div>
 
  <ConfirmModal
