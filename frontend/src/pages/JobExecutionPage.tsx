@@ -521,6 +521,7 @@ export const JobExecutionPage = () => {
  </div>
 
  <div className="flex gap-2">
+ {job.status !== 'WaitingForParts' && (
       <button
       type="button"
       onClick={handleWaitingForParts}
@@ -530,6 +531,7 @@ export const JobExecutionPage = () => {
       {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Clock className="h-5 w-5" />}
       <span>Waiting for Parts</span>
       </button>
+ )}
 
       <button
       type="submit"
