@@ -43,7 +43,7 @@ namespace MytechERP.API.Controllers
             }
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
         [HttpPost("generate-from-job/{workOrderId}")]
         public async Task<IActionResult> GenerateInvoice(int workOrderId)
         {
@@ -58,7 +58,7 @@ namespace MytechERP.API.Controllers
             }
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
         [HttpGet("preview-from-job/{workOrderId}")]
         public async Task<IActionResult> GetInvoicePreview(int workOrderId)
         {
@@ -73,7 +73,7 @@ namespace MytechERP.API.Controllers
             }
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
         [HttpPost("custom")]
         public async Task<IActionResult> CreateCustom([FromBody] MytechERP.Application.DTOs.Finance.CreateInvoiceDto dto)
         {
@@ -103,7 +103,7 @@ namespace MytechERP.API.Controllers
             return Ok(invoices);
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Customers)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Customers + "," + Roles.Technician)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -119,7 +119,7 @@ namespace MytechERP.API.Controllers
             }
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] int status)
         {
@@ -129,7 +129,7 @@ namespace MytechERP.API.Controllers
             return Ok(new { Message = "Invoice status updated successfully." });
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
         [HttpPut("{id}/mark-paid")]
         public async Task<IActionResult> MarkAsPaid(int id, [FromBody] MarkAsPaidDto dto)
         {
@@ -179,7 +179,7 @@ namespace MytechERP.API.Controllers
         }
 
         [HttpPost("{id}/send")]
-        [Authorize(Roles = "Admin,Manager,Engineer")]
+        [Authorize(Roles = "Admin,Manager,Engineer,Technician")]
         public async Task<IActionResult> SendInvoiceEmail(int id, [FromBody] string recipientEmail)
         {
             var tenantId = User.FindFirst("TenantId")?.Value ?? "1";
