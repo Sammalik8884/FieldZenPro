@@ -26,7 +26,6 @@ export const productService = {
         if (data.costPrice) formData.append("costPrice", data.costPrice.toString());
         if (data.reorderLevel) formData.append("reorderLevel", data.reorderLevel.toString());
         if (data.description) formData.append("description", data.description);
-        if (data.brand) formData.append("brand", data.brand);
         if (data.itemCode) formData.append("itemCode", data.itemCode);
         if (data.image) formData.append("image", data.image);
 
@@ -46,7 +45,6 @@ export const productService = {
 
         if (data.priceAED) formData.append("priceAED", data.priceAED.toString());
         if (data.description) formData.append("description", data.description);
-        if (data.brand) formData.append("brand", data.brand);
         if (data.itemCode) formData.append("itemCode", data.itemCode);
         if (data.image) formData.append("image", data.image);
 
@@ -59,11 +57,11 @@ export const productService = {
         return response.data;
     },
 
-    importExcel: async (file: File, brand: string = "LIFECO"): Promise<{ message: string }> => {
+    importExcel: async (file: File): Promise<{ message: string }> => {
         const formData = new FormData();
         formData.append("file", file);
 
-        const response = await apiClient.post<{ message: string }>(`/Product/import-excel?brand=${encodeURIComponent(brand)}`, formData, {
+        const response = await apiClient.post<{ message: string }>(`/Product/import-excel`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data"
             }

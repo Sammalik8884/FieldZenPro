@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace MytechERP.Application.DTOs
@@ -19,7 +19,6 @@ namespace MytechERP.Application.DTOs
 
         public decimal? PriceAED { get; set; }
         public string? Description { get; set; }
-        public string? Brand { get; set; }
         public string? ItemCode { get; set; }
         public decimal CostPrice { get; set; }
         public int ReorderLevel { get; set; }

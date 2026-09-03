@@ -37,14 +37,12 @@ export const ProductsPage = () => {
  price: 0,
  categoryId: 0,
  description: "",
- brand: "",
  itemCode: "",
  isTaxable: false
  });
 
  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
  const [importFile, setImportFile] = useState<File | null>(null);
- const [importBrand, setImportBrand] = useState("LIFECO");
  const [importLoading, setImportLoading] = useState(false);
 
  const fetchData = async () => {
@@ -86,7 +84,6 @@ export const ProductsPage = () => {
  priceAED: product.priceAED || 0,
  categoryId: product.categoryId,
  description: product.description || "",
- brand: product.brand || "",
  itemCode: product.itemCode || "",
  isTaxable: product.isTaxable ?? false
  });
@@ -97,7 +94,6 @@ export const ProductsPage = () => {
  price: 0,
  categoryId: categories.length > 0 ? categories[0].id : 0,
  description: "",
- brand: "",
  itemCode: ""
  });
  }
@@ -145,7 +141,7 @@ export const ProductsPage = () => {
 
  setImportLoading(true);
  try {
- const res = await productService.importExcel(importFile, importBrand);
+ const res = await productService.importExcel(importFile);
  toast.success(res.message || "Import completed successfully");
  setIsImportModalOpen(false);
  setImportFile(null);
@@ -242,7 +238,6 @@ export const ProductsPage = () => {
  <tr>
  <th className="px-6 py-4 font-medium pl-6">Item</th>
  <th className="px-6 py-4 font-medium">Category</th>
- <th className="px-6 py-4 font-medium">Brand</th>
  <th className="px-6 py-4 font-medium text-right">Price</th>
  <th className="px-6 py-4 font-medium text-right">Actions</th>
  </tr>
@@ -280,9 +275,6 @@ export const ProductsPage = () => {
  </td>
  <td className="px-6 py-4 text-muted-foreground">
  {item.category?.name || "Uncategorized"}
- </td>
- <td className="px-6 py-4 text-muted-foreground">
- {item.brand || "-"}
  </td>
  <td className="px-6 py-4 text-right font-medium text-primary">
  ${item.price.toFixed(2)}
@@ -391,15 +383,6 @@ export const ProductsPage = () => {
  </div>
 
  <div>
- <label className="text-xs font-semibold text-muted-foreground mb-1 block">Brand</label>
- <input
- type="text"
- value={formData.brand} onChange={e => setFormData({ ...formData, brand: e.target.value })}
- className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
- />
- </div>
-
- <div>
  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Description</label>
  <textarea
  rows={3}
@@ -469,14 +452,6 @@ export const ProductsPage = () => {
  </h2>
 
  <form onSubmit={handleImportSubmit} className="space-y-4">
- <div>
- <label className="text-xs font-semibold text-muted-foreground mb-1 block">Brand (Optional default)</label>
- <input
- type="text"
- value={importBrand} onChange={e => setImportBrand(e.target.value)}
- className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent"
- />
- </div>
  <div>
  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Select Excel File (.xlsx, .xls)</label>
  <input

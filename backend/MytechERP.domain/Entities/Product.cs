@@ -21,7 +21,6 @@ namespace MytechERP.domain.Entities
         public Category? Category { get; set; }
 
         public string? Description { get; set; }
-        public string? Brand { get; set; }
         public string? ItemCode { get; set; }
         public string? SupplierItemCode { get; set; }
         [Column(TypeName = "decimal(18,2)")]

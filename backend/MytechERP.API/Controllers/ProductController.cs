@@ -90,7 +90,6 @@ namespace MytechERP.API.Controllers
                 TenantId = category.TenantId,
                 PriceAED = request.PriceAED,
                 Description = request.Description ?? request.Name,
-                Brand = request.Brand ?? "Generic",
                 ItemCode = request.ItemCode,
                 TechnicalSpecs = "{}"
             };
@@ -102,7 +101,7 @@ namespace MytechERP.API.Controllers
 
         [HttpPost("import-excel")]
         [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
-        public async Task<IActionResult> ImportExcel(IFormFile file, [FromQuery] string brand = "LIFECO")
+        public async Task<IActionResult> ImportExcel(IFormFile file)
         {
             if (file == null || file.Length == 0) return BadRequest("File is empty");
 
@@ -112,7 +111,7 @@ namespace MytechERP.API.Controllers
                 int tenantId = _currentUserService.TenantId ?? 1;
 
                
-                var result = await _importService.ImportExcelAsync(file, brand, tenantId);
+                var result = await _importService.ImportExcelAsync(file, tenantId);
                 return Ok(new { message = result });
             }
             catch (Exception ex)
@@ -183,9 +182,6 @@ namespace MytechERP.API.Controllers
 
             if (!string.IsNullOrEmpty(request.Description))
                 existingProduct.Description = request.Description;
-
-            if (!string.IsNullOrEmpty(request.Brand))
-                existingProduct.Brand = request.Brand;
 
             if (!string.IsNullOrEmpty(request.ItemCode))
                 existingProduct.ItemCode = request.ItemCode;

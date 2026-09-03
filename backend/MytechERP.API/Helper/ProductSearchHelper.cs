@@ -1,4 +1,4 @@
-﻿using MytechERP.domain.Entities;
+using MytechERP.domain.Entities;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 
@@ -29,7 +29,7 @@ namespace MyTechERP.API.Helpers
                 // 2. Build the OR Block for this specific term (and its variations) across all columns
                 Expression? termBlock = null;
 
-                var properties = new[] { "Name", "Description", "Brand", "ItemCode", "SupplierItemCode", "TechnicalSpecs" };
+                var properties = new[] { "Name", "Description", "ItemCode", "SupplierItemCode", "TechnicalSpecs" };
 
                 foreach (var variation in variations)
                 {

@@ -11,7 +11,6 @@ export interface ProductDto {
     categoryId: number;
     category?: CategoryDto;
     imageUrl?: string;
-    brand?: string;
     itemCode?: string;
     isTaxable: boolean;
 }
@@ -24,7 +23,6 @@ export interface CreateProductDto {
     costPrice?: number;
     reorderLevel?: number;
     categoryId: number;
-    brand?: string;
     itemCode?: string;
     image?: File;
     isTaxable?: boolean;
