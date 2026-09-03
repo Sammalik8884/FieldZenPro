@@ -14,7 +14,7 @@ namespace MyTechERP.Infrastructure.Services
         {
             { WorkOrderStatus.Created,         new() { WorkOrderStatus.Assigned, WorkOrderStatus.Unscheduled, WorkOrderStatus.Cancelled } },
             { WorkOrderStatus.Unscheduled,     new() { WorkOrderStatus.Created, WorkOrderStatus.Assigned, WorkOrderStatus.Cancelled } },
-            { WorkOrderStatus.Assigned,        new() { WorkOrderStatus.Initialized, WorkOrderStatus.InProgress, WorkOrderStatus.Cancelled } },
+            { WorkOrderStatus.Assigned,        new() { WorkOrderStatus.Initialized, WorkOrderStatus.InProgress, WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.Cancelled } },
             { WorkOrderStatus.Initialized,     new() { WorkOrderStatus.InProgress, WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.Cancelled } },
             { WorkOrderStatus.InProgress,      new() { WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.PendingApproval, WorkOrderStatus.Cancelled } },
             { WorkOrderStatus.WaitingForParts, new() { WorkOrderStatus.Unscheduled, WorkOrderStatus.InProgress, WorkOrderStatus.Cancelled } },
