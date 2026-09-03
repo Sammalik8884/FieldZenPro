@@ -137,25 +137,8 @@ namespace MyTechERP.Infrastructure.Services
 
             if (invoice == null) throw new Exception("Invoice not found.");
 
-            bool useMarkInvoice = invoice.TenantId == 19 || invoice.TenantId == 1;
-            if (!useMarkInvoice && _currentUserService.UserId != null)
-            {
-                var user = await _context.Users.FindAsync(_currentUserService.UserId);
-                if (user != null && string.Equals(user.Email, "Muhammad@test.com", StringComparison.OrdinalIgnoreCase))
-                {
-                    useMarkInvoice = true;
-                }
-            }
-
-            IDocument document;
-            if (useMarkInvoice)
-            {
-                document = new MyTechERP.Infrastructure.PDF.MarkInvoiceDocument(invoice);
-            }
-            else
-            {
-                document = new MyTechERP.Infrastructure.PDF.InvoiceDocument(invoice);
-            }
+            // Always use the branded Acuman (Mark) invoice template for all tenants
+            var document = new MyTechERP.Infrastructure.PDF.MarkInvoiceDocument(invoice);
 
             return document.GeneratePdf();
         }
