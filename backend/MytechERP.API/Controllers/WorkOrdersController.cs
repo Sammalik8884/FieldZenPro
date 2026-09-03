@@ -174,6 +174,28 @@ namespace MytechERP.API.Controllers
         }
        
 
+         [HttpPost("{id}/waiting-for-parts")]
+         [Authorize(Roles = Roles.Technician + "," + Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+         public async Task<IActionResult> MarkWaitingForParts(int id, [FromBody] CompleteJobRequest request)
+         {
+             try
+             {
+                 var success = await _service.MarkWaitingForPartsAsync(id, request.Notes);
+
+                 if (!success) return NotFound("Work Order not found.");
+
+                 return Ok(new { Message = "Job marked as Waiting for Parts and unscheduled." });
+             }
+             catch (InvalidOperationException ex)
+             {
+                 return BadRequest(new { Error = "Workflow Error", Message = ex.Message });
+             }
+             catch (System.Exception ex)
+             {
+                 return StatusCode(500, new { Error = "Server Error", Message = ex.Message });
+             }
+         }
+
         [HttpPost("{id}/complete")]
         [Authorize(Roles = Roles.Technician + "," + Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Engineer)]
         public async Task<IActionResult> CompleteJob(int id, [FromBody] CompleteJobRequest request)

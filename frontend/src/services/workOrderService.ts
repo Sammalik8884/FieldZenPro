@@ -47,6 +47,11 @@ export const workOrderService = {
         return response.data;
     },
 
+    markWaitingForParts: async (id: number, notes: string): Promise<any> => {
+        const response = await apiClient.post<any>(`/WorkOrders/${id}/waiting-for-parts`, { notes, result: 1 });
+        return response.data;
+    },
+
     reopen: async (id: number): Promise<any> => {
         const response = await apiClient.post<any>(`/WorkOrders/${id}/reopen`);
         return response.data;

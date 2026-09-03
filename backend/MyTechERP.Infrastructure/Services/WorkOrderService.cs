@@ -294,7 +294,37 @@ namespace MyTechERP.Infrastructure.Services
             return true;
         }
 
-        public async Task<bool> CompleteJobAsync(int id, string notes, InspectionResult result)
+         public async Task<bool> MarkWaitingForPartsAsync(int id, string notes)
+         {
+             var technicianId = _currentUserService.UserId;
+             if (string.IsNullOrEmpty(technicianId)) throw new UnauthorizedAccessException("User not authenticated.");
+             var workOrder = await _context.WorkOrders.FindAsync(id);
+             if (workOrder == null) return false;
+
+             _workflowService.ValidateTransition(workOrder.Status, WorkOrderStatus.WaitingForParts);
+
+             workOrder.Status = WorkOrderStatus.WaitingForParts;
+             // Unschedule the job so it goes back to the queue
+             workOrder.ScheduledDate = null;
+             workOrder.SequenceOrder = 0;
+             workOrder.TechnicianNotes = notes;
+
+             var log = new AuditLog
+             {
+                 EntityName = "WorkOrder",
+                 EntityId = id,
+                 Action = "WaitingForParts",
+                 UserId = technicianId,
+                 Details = $"Job marked as Waiting For Parts. Notes: {notes}",
+                 Timestamp = DateTime.UtcNow
+             };
+             _context.AuditLogs.Add(log);
+
+             await _context.SaveChangesAsync();
+             return true;
+         }
+
+         public async Task<bool> CompleteJobAsync(int id, string notes, InspectionResult result)
         {
             var technicianId = _currentUserService.UserId;
             if (string.IsNullOrEmpty(technicianId)) throw new UnauthorizedAccessException("User not authenticated.");

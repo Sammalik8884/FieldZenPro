@@ -31,9 +31,15 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
             const targetDateJobs = workOrders.filter(w => w.scheduledDate && isSameDay(new Date(w.scheduledDate), date));
             const maxOrder = targetDateJobs.length > 0 ? Math.max(...targetDateJobs.map(j => j.sequenceOrder || 0)) : 0;
             
+            const job = workOrders.find(w => w.id === jobId);
+            let newStatus = job?.status;
+            if (newStatus === 'Unscheduled') {
+                newStatus = job?.technicianId ? 'Assigned' : 'Created';
+            }
+
             await onUpdateJob(jobId, { 
                 scheduledDate: date.toISOString(), 
-                status: 'Created', 
+                ...(newStatus && newStatus !== job?.status ? { status: newStatus } : {}),
                 sequenceOrder: maxOrder + 1 
             });
             toast.success("Job scheduled.");
@@ -45,7 +51,16 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
     const handleUnschedule = async (jobId: number) => {
         setLoading(true);
         try {
-            await onUpdateJob(jobId, { scheduledDate: null, status: 'Unscheduled', sequenceOrder: 0 });
+            const job = workOrders.find(w => w.id === jobId);
+            let newStatus = job?.status;
+            if (newStatus !== 'WaitingForParts') {
+                newStatus = 'Unscheduled';
+            }
+            await onUpdateJob(jobId, { 
+                scheduledDate: null, 
+                ...(newStatus && newStatus !== job?.status ? { status: newStatus } : {}),
+                sequenceOrder: 0 
+            });
             toast.success("Job unscheduled.");
         } finally {
             setLoading(false);
@@ -92,9 +107,12 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                     )}
                     {unscheduledJobs.map(job => (
                         <div key={job.id} className="bg-card border border-border p-3 rounded-lg shadow-sm">
-                            <div className="flex justify-between items-start mb-2">
-                                <span className="text-xs font-bold text-primary">WO-{job.id.toString().padStart(4, '0')}</span>
-                            </div>
+                             <div className="flex justify-between items-start mb-2">
+                                 <span className="text-xs font-bold text-primary">WO-{job.id.toString().padStart(4, '0')}</span>
+                                 {job.status === 'WaitingForParts' && (
+                                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-500 border border-orange-500/20">Parts</span>
+                                 )}
+                             </div>
                             <p className="text-sm font-medium leading-tight mb-1">{job.customerName}</p>
                             <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{job.description}</p>
                             

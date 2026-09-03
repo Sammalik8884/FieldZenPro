@@ -59,6 +59,19 @@ export const JobExecutionPage = () => {
  });
  };
 
+     const handleWaitingForParts = async () => {
+         try {
+             setActionLoading(true);
+             await workOrderService.markWaitingForParts(Number(id), notes);
+             toast.success("Job marked as Waiting for Parts. It has been unscheduled.");
+             fetchJob();
+         } catch (error: any) {
+             toast.error(extractApiError(error, "Failed to update job."));
+         } finally {
+             setActionLoading(false);
+         }
+     };
+
  const fetchJob = async () => {
  try {
  setLoading(true);
@@ -507,14 +520,26 @@ export const JobExecutionPage = () => {
  </select>
  </div>
 
- <button
- type="submit"
- disabled={actionLoading || !notes}
- className="w-full bg-primary text-primary-foreground font-semibold py-3.5 flex items-center justify-center gap-2 rounded-xl hover:-translate-y-0.5 transition-all shadow-sm disabled:opacity-50 disabled:hover:translate-y-0"
- >
- {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
- <span>Complete & Lock Job</span>
- </button>
+ <div className="flex gap-2">
+      <button
+      type="button"
+      onClick={handleWaitingForParts}
+      disabled={actionLoading || !notes}
+      className="flex-1 bg-orange-500/10 text-orange-500 border border-orange-500/20 font-semibold py-3.5 flex items-center justify-center gap-2 rounded-xl hover:bg-orange-500/20 transition-all shadow-sm disabled:opacity-50"
+      >
+      {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Clock className="h-5 w-5" />}
+      <span>Waiting for Parts</span>
+      </button>
+
+      <button
+      type="submit"
+      disabled={actionLoading || !notes}
+      className="flex-1 bg-primary text-primary-foreground font-semibold py-3.5 flex items-center justify-center gap-2 rounded-xl hover:-translate-y-0.5 transition-all shadow-sm disabled:opacity-50 disabled:hover:translate-y-0"
+      >
+      {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
+      <span>Complete Job</span>
+      </button>
+  </div>
  </form>
  ) : (
  <div className="space-y-4 text-sm bg-background/50 p-4 rounded-xl border border-border">

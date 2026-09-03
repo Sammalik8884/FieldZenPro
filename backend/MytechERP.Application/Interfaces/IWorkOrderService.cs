@@ -20,6 +20,7 @@ namespace MytechERP.Application.Interfaces
         Task<bool> UpdateWorkOrderAsync(int id, UpdateWorkOrderDto request);
         Task<bool> DeleteWorkOrderAsync(int id);
         Task<bool> CompleteJobAsync(int id, string notes, InspectionResult result);
+        Task<bool> MarkWaitingForPartsAsync(int id, string notes);
         Task<bool> ReopenJobAsync(int id);
         Task<bool> ApproveJobAsync(int id, bool isApproved);
         Task<int> CreateWorkOrderFromQuoteAsync(CreateRepairJobDto dto);
