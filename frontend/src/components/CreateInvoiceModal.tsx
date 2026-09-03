@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Plus, Trash2, Loader2, CheckCircle2, Smartphone, Mail, Copy, Printer } from "lucide-react";
+import { X, Plus, Trash2, Loader2, CheckCircle2, Smartphone, Mail, Copy, Printer, Send } from "lucide-react";
 import { CreateInvoiceDto, CreateInvoiceItemDto } from "../types/finance";
 import { invoiceService } from "../services/invoiceService";
 import { customerService } from "../services/customerService";
@@ -29,6 +29,9 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
     const [loading, setLoading] = useState(false);
     const [dataLoading, setDataLoading] = useState(false);
     const [createdInvoice, setCreatedInvoice] = useState<{ id: number, number: string } | null>(null);
+    const [emailPromptVisible, setEmailPromptVisible] = useState(false);
+    const [customerEmail, setCustomerEmail] = useState("");
+    const [sendingEmail, setSendingEmail] = useState(false);
 
     // Dropdown Data State
     const [customers, setCustomers] = useState<CustomerDto[]>([]);
@@ -71,12 +74,12 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                     setCustomers(custs);
                     setProducts(prods);
                     setAssets(asts);
-                    
                     if (initialCustomerId) {
                         const matched = custs.find(c => c.id === initialCustomerId);
                         if (matched) {
                             setCustomerSearch(matched.name);
-                            setCustomerId(matched.id); // ← also set the ID so validation passes
+                            setCustomerId(matched.id); 
+                            if(matched.email) setCustomerEmail(matched.email);
                         }
                     }
                 } catch (error) {
@@ -194,12 +197,13 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                             >
                                 <Smartphone className="h-5 w-5" /> Send via Text
                             </a>
-                            <a 
-                                href={`mailto:?subject=Invoice ${createdInvoice.number}&body=Please view and pay your invoice ${createdInvoice.number} here: ${window.location.origin}/portal/invoices`}
+                            <button 
+                                type="button"
+                                onClick={() => setEmailPromptVisible(true)}
                                 className="flex items-center justify-center gap-2 p-4 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-medium shadow-sm"
                             >
                                 <Mail className="h-5 w-5" /> Send via Email
-                            </a>
+                            </button>
                             <button 
                                 type="button"
                                 onClick={() => {
@@ -226,6 +230,41 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                 <Printer className="h-5 w-5" /> Print (Thermal / PDF)
                             </button>
                         </div>
+
+                        {emailPromptVisible && (
+                                <div className="w-full max-w-lg mt-4 p-4 border border-border rounded-xl bg-muted/50 text-left animate-in fade-in slide-in-from-top-2">
+                                    <label className="block text-sm font-medium mb-2 text-foreground">Send Invoice to:</label>
+                                    <div className="flex gap-2">
+                                        <input 
+                                            type="email" 
+                                            value={customerEmail} 
+                                            onChange={e => setCustomerEmail(e.target.value)}
+                                            placeholder="customer@email.com"
+                                            className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary text-foreground"
+                                        />
+                                        <button 
+                                            onClick={async () => {
+                                                if(!customerEmail) return toast.error("Email required");
+                                                try {
+                                                    setSendingEmail(true);
+                                                    await invoiceService.sendEmail(createdInvoice.id, customerEmail);
+                                                    toast.success("Invoice sent successfully!");
+                                                    setEmailPromptVisible(false);
+                                                } catch (err: any) {
+                                                    toast.error(err.response?.data?.Error || "Failed to send email");
+                                                } finally {
+                                                    setSendingEmail(false);
+                                                }
+                                            }}
+                                            disabled={sendingEmail}
+                                            className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-primary/90 disabled:opacity-50"
+                                        >
+                                            {sendingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} 
+                                            Send
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                         <button 
                             type="button"
@@ -265,8 +304,13 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                     onChange={(e) => {
                                         setCustomerSearch(e.target.value);
                                         const matched = customers.find(c => c.name === e.target.value);
-                                        if (matched) setCustomerId(matched.id);
-                                        else setCustomerId(0);
+                                        if (matched) {
+                                            setCustomerId(matched.id);
+                                            if (matched.email) setCustomerEmail(matched.email);
+                                        } else {
+                                            setCustomerId(0);
+                                            setCustomerEmail("");
+                                        }
                                     }}
                                     className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary/50 disabled:opacity-50"
                                     disabled={dataLoading}
