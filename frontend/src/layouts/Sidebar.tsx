@@ -34,7 +34,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     { label: "Assets", href: "/assets", icon: Box, allowedRoles: ["Admin", "Manager"] },
 
     { label: "Inventory", isHeader: true, allowedRoles: ["Admin", "Manager", "Engineer"] },
-    { label: "Catalog (Items)", href: "/products", icon: Package, paths: ["/products", "/categories"], allowedRoles: ["Admin", "Manager", "Engineer"] },
+    { label: "Catalog (Items)", href: "/products", icon: Package, paths: ["/products"], allowedRoles: ["Admin", "Manager", "Engineer"] },
     { label: "Procurement (POs)", href: "/procurement", icon: ShoppingCart, allowedRoles: ["Admin", "Manager"] },
     { label: "Inventory", href: "/inventory", icon: FolderTree, allowedRoles: ["Admin", "Manager"] },
 
@@ -55,6 +55,9 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     { label: "Sync Dashboard", href: "/sync-dashboard", icon: RefreshCw, allowedRoles: ["Admin", "Manager"], requiredFeature: PlanFeature.OfflineSync },
     { label: "Billing & Plans", href: "/subscription/plans", icon: CreditCard, allowedRoles: ["Admin", "Manager"] },
     { label: "Support", href: "/support", icon: HelpCircle, allowedRoles: ["Admin", "Manager", "Engineer", "Technician", "Worker", "Customer"] },
+
+    { label: "Settings", isHeader: true, allowedRoles: ["Admin", "Manager"] },
+    { label: "Categories", href: "/categories", icon: FolderTree, allowedRoles: ["Admin", "Manager"] },
 ];
 
 interface SidebarProps {
@@ -141,31 +144,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                                 </NavLink>
                             )}
 
-                            {/* Submenu for Catalog */}
-                            {!isLocked && item.label === "Catalog (Items)" && isActive && (
-                                <div className="pl-12 flex flex-col space-y-1 mt-1 animate-in slide-in-from-top-2 duration-200">
-                                    <NavLink
-                                        to="/products"
-                                        className={({ isActive }) => cn(
-                                            "text-xs py-2 px-2 rounded-md transition-colors flex items-center space-x-2",
-                                            isActive ? "text-primary font-medium bg-primary/5" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                                        )}
-                                    >
-                                        <Package className="h-3 w-3" />
-                                        <span>Items & Services</span>
-                                    </NavLink>
-                                    <NavLink
-                                        to="/categories"
-                                        className={({ isActive }) => cn(
-                                            "text-xs py-2 px-2 rounded-md transition-colors flex items-center space-x-2",
-                                            isActive ? "text-primary font-medium bg-primary/5" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                                        )}
-                                    >
-                                        <FolderTree className="h-3 w-3" />
-                                        <span>Categories</span>
-                                    </NavLink>
-                                </div>
-                            )}
+                            {/* Submenu for Catalog (Removed) */}
                             {/* Submenu for CRM */}
                             {!isLocked && item.label === "Customers (CRM)" && isActive && (
                                 <div className="pl-12 flex flex-col space-y-1 mt-1 animate-in slide-in-from-top-2 duration-200">
