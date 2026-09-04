@@ -12,6 +12,11 @@ interface SchedulingBoardProps {
 export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, onUpdateJob }) => {
     const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
     const [loading, setLoading] = useState(false);
+    const [expandedAddresses, setExpandedAddresses] = useState<Record<number, boolean>>({});
+
+    const toggleAddress = (id: number) => {
+        setExpandedAddresses(prev => ({ ...prev, [id]: !prev[id] }));
+    };
 
     // Unscheduled: null date OR Unscheduled status
     const unscheduledJobs = workOrders
@@ -201,7 +206,13 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                                                 </button>
                                             </div>
                                             <p className="font-semibold text-xs truncate" title={job.customerName}>{job.customerName}</p>
-                                            <p className="text-[10px] text-muted-foreground truncate" title={job.customerAddress || job.siteName}>{job.customerAddress || job.siteName}</p>
+                                            <p 
+                                                className={`text-[10px] text-muted-foreground cursor-pointer ${expandedAddresses[job.id] ? '' : 'truncate'}`} 
+                                                title={job.customerAddress || job.siteName}
+                                                onClick={() => toggleAddress(job.id)}
+                                            >
+                                                {job.customerAddress || job.siteName}
+                                            </p>
                                             {job.customerPhone && (
                                                 <p className="text-[10px] text-primary truncate">📞 {job.customerPhone}</p>
                                             )}
