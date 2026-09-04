@@ -19,6 +19,7 @@ export const CustomersPage = () => {
  name: "",
  email: "",
  phone: "",
+ altPhone: "",
  address: "",
  taxNumber: ""
  });
