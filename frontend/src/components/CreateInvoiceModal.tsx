@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Plus, Trash2, Loader2, CheckCircle2, Smartphone, Mail, Printer, Send } from "lucide-react";
+import { X, Plus, Trash2, Loader2, CheckCircle2, Smartphone, Mail, Printer, Send, DollarSign } from "lucide-react";
 import { CreateInvoiceDto, CreateInvoiceItemDto } from "../types/finance";
 import { invoiceService } from "../services/invoiceService";
 import { customerService } from "../services/customerService";
@@ -50,13 +50,16 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
     const [items, setItems] = useState<InvoiceLineItem[]>(() => {
         // Preloaded job items take priority
         if (preloadedItems && preloadedItems.length > 0) {
-            return preloadedItems.map(i => ({
-                type: "custom" as const,
-                description: i.description,
-                quantity: i.quantity,
-                unitPrice: i.unitPrice,
-                isTaxable: i.isTaxable
-            }));
+            return preloadedItems.map(i => {
+                const isLabor = i.description?.toLowerCase().includes("labor") || i.description?.toLowerCase().includes("service");
+                return {
+                    type: isLabor ? "custom" : "product",
+                    description: i.description,
+                    quantity: i.quantity,
+                    unitPrice: i.unitPrice,
+                    isTaxable: i.isTaxable
+                } as InvoiceLineItem;
+            });
         }
         if (initialLaborCost !== undefined && initialLaborCost > 0) {
             return [{ type: "custom", description: "Technician Labor (Time tracked)", quantity: 1, unitPrice: initialLaborCost, isTaxable: false }];
@@ -229,6 +232,20 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                 className="flex items-center justify-center gap-2 p-4 bg-secondary text-foreground border border-border rounded-xl hover:bg-secondary/80 transition-colors font-medium shadow-sm"
                             >
                                 <Printer className="h-5 w-5" /> Print (Thermal / PDF)
+                            </button>
+                            <button 
+                                type="button"
+                                onClick={async () => {
+                                    try {
+                                        await invoiceService.markAsPaidWithRef(createdInvoice.id, "Paid on site");
+                                        toast.success("Payment recorded successfully!");
+                                    } catch (err: any) {
+                                        toast.error(err.response?.data?.message || "Failed to record payment");
+                                    }
+                                }}
+                                className="flex items-center justify-center gap-2 p-4 bg-green-600 text-white border border-green-700 rounded-xl hover:bg-green-500 transition-colors font-medium shadow-sm"
+                            >
+                                <DollarSign className="h-5 w-5" /> Record Payment
                             </button>
                         </div>
 
