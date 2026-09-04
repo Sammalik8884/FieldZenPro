@@ -201,7 +201,14 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                                                 </button>
                                             </div>
                                             <p className="font-semibold text-xs truncate" title={job.customerName}>{job.customerName}</p>
-                                            <p className="text-[10px] text-muted-foreground truncate">{woStatusIcon(job.status)} {job.status}</p>
+                                            <p className="text-[10px] text-muted-foreground truncate" title={job.customerAddress || job.siteName}>{job.customerAddress || job.siteName}</p>
+                                            {job.customerPhone && (
+                                                <p className="text-[10px] text-primary truncate">📞 {job.customerPhone}</p>
+                                            )}
+                                            {job.customerAltPhone && (
+                                                <p className="text-[10px] text-primary truncate">📞 {job.customerAltPhone}</p>
+                                            )}
+                                            <p className="text-[10px] text-muted-foreground truncate mt-1">{woStatusIcon(job.status)} {job.status}</p>
                                             
                                             <div className="absolute top-1/2 -translate-y-1/2 -right-2 flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 {idx > 0 && (

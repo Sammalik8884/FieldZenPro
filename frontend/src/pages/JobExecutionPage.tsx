@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Navigation, CalendarClock, Clock, CheckCircle2, Loader2, UploadCloud, ClipboardCheck, Unlock, Receipt } from "lucide-react";
+import { ArrowLeft, MapPin, Navigation, CalendarClock, Clock, CheckCircle2, Loader2, UploadCloud, ClipboardCheck, Unlock, Receipt, Phone } from "lucide-react";
 import { ConfirmModal } from "../components/common/ConfirmModal";
 import { workOrderService, WorkOrderItemDto } from "../services/workOrderService";
 import { JobLineItems } from "../components/workorders/JobLineItems";
@@ -234,21 +234,39 @@ export const JobExecutionPage = () => {
  </h1>
 
  <div className="space-y-4">
- <div className="flex items-start gap-3">
- <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
- <div>
- <p className="text-sm font-medium text-foreground">{job.customerName}</p>
- <p className="text-sm text-muted-foreground">{job.siteName}</p>
- {/* Launch external maps - assuming siteName can be queried */}
- <a
- href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job.siteName + ' ' + job.customerName)}`}
- target="_blank" rel="noopener noreferrer"
- className="inline-flex items-center gap-1 text-xs text-primary font-medium mt-1 hover:underline"
- >
- <Navigation className="h-3 w-3" /> Get Directions
- </a>
- </div>
- </div>
+                            <div className="flex items-start gap-3">
+                                <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="text-sm font-medium text-foreground">{job.customerName}</p>
+                                    <p className="text-sm text-muted-foreground">{job.customerAddress || job.siteName}</p>
+                                    <a
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job.customerAddress || (job.siteName + ' ' + job.customerName))}`}
+                                        target="_blank" rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-xs text-primary font-medium mt-1 hover:underline"
+                                    >
+                                        <Navigation className="h-3 w-3" /> Get Directions
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            {(job.customerPhone || job.customerAltPhone) && (
+                                <div className="flex items-start gap-3">
+                                    <Phone className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-medium text-foreground">Contact</p>
+                                        {job.customerPhone && (
+                                            <a href={`tel:${job.customerPhone}`} className="block text-sm text-primary hover:underline">
+                                                {job.customerPhone}
+                                            </a>
+                                        )}
+                                        {job.customerAltPhone && (
+                                            <a href={`tel:${job.customerAltPhone}`} className="block text-sm text-primary hover:underline">
+                                                {job.customerAltPhone}
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
  <div className="flex items-start gap-3">
  <CalendarClock className="h-5 w-5 text-primary shrink-0 mt-0.5" />

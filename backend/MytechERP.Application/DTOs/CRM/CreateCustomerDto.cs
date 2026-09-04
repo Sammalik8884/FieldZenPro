@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,9 +12,10 @@ namespace MytechERP.Application.DTOs.CRM
         [Required]
         public string Name { get; set; }=string.Empty;
         [EmailAddress]
-        public string Email { get; set; }= string.Empty;
-        public string Phone {  get; set; }= string.Empty;
-        public string Address {  get; set; }= string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string? AltPhone { get; set; }
+        public string Address { get; set; } = string.Empty;
         public string TaxNumber { get; set; } = string.Empty;
 
 

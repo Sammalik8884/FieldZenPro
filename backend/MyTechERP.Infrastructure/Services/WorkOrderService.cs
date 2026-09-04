@@ -164,6 +164,9 @@ namespace MyTechERP.Infrastructure.Services
                            ?? w.Contract?.Customer?.SiteName
                            ?? w.Asset?.Site?.Name
                            ?? "Unknown",
+                CustomerPhone = w.Customer?.Phone ?? w.Contract?.Customer?.Phone ?? w.ReferenceQuotation?.Customer?.Phone ?? "",
+                CustomerAltPhone = w.Customer?.AltPhone ?? w.Contract?.Customer?.AltPhone ?? w.ReferenceQuotation?.Customer?.AltPhone,
+                CustomerAddress = w.Customer?.Address ?? w.Contract?.Customer?.Address ?? w.ReferenceQuotation?.Customer?.Address ?? "",
                 TechnicianId = w.TechnicianId,
                 TechnicianName = w.Technician?.UserName,
                 TechnicianNotes = w.TechnicianNotes,

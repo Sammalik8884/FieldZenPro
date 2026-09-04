@@ -48,6 +48,9 @@ export interface WorkOrderDto {
     completedDate?: string | null;
     contractId: number;
     customerName: string;
+    customerPhone: string;
+    customerAltPhone?: string;
+    customerAddress: string;
     siteName: string;
     technicianId?: string | null;
     technicianName?: string;

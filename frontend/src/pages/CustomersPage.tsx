@@ -64,12 +64,13 @@ export const CustomersPage = () => {
  name: customer.name,
  email: customer.email,
  phone: customer.phone || "",
+ altPhone: (customer as any).altPhone || "",
  address: customer.address || "",
  taxNumber: "" // Would need getById to populate if necessary, leaving blank for edit modal simplicity
  });
  } else {
  setEditingCustomer(null);
- setFormData({ name: "", email: "", phone: "", address: "", taxNumber: "" });
+ setFormData({ name: "", email: "", phone: "", altPhone: "", address: "", taxNumber: "" });
  }
  setIsModalOpen(true);
  };
@@ -246,6 +247,15 @@ export const CustomersPage = () => {
  <input
  type="text"
  value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })}
+ className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
+ />
+ </div>
+
+ <div>
+ <label className="text-xs font-semibold text-muted-foreground mb-1 block">Alt Phone</label>
+ <input
+ type="text"
+ value={formData.altPhone || ""} onChange={e => setFormData({ ...formData, altPhone: e.target.value })}
  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
  />
  </div>
