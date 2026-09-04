@@ -12,12 +12,10 @@ interface JobLineItemsProps {
 
 export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
     const [items, setItems] = useState<WorkOrderItemDto[]>([]);
+    const [newItems, setNewItems] = useState<Omit<WorkOrderItemDto, 'id'>[]>([]);
     const [products, setProducts] = useState<ProductDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [adding, setAdding] = useState(false);
-    const [showForm, setShowForm] = useState(false);
-    const [form, setForm] = useState({ description: "", quantity: 1, unitPrice: 0, isTaxable: false });
-    const [productSearch, setProductSearch] = useState("");
     const [taxRate, setTaxRate] = useState(5.5); // Default tax rate
 
     const fetchItems = async () => {
@@ -37,34 +35,47 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
         productService.getAll(1, 200).then(setProducts).catch(() => {});
     }, [jobId]);
 
-    const handleProductSelect = (name: string) => {
-        setProductSearch(name);
+    const handleNewItemChange = (index: number, field: keyof Omit<WorkOrderItemDto, 'id'>, value: any) => {
+        const updated = [...newItems];
+        // @ts-ignore
+        updated[index] = { ...updated[index], [field]: value };
+        setNewItems(updated);
+    };
+
+    const handleProductSelect = (index: number, name: string) => {
         const matched = products.find(p => p.name === name);
+        const updated = [...newItems];
         if (matched) {
-            setForm(f => ({
-                ...f,
+            updated[index] = {
+                ...updated[index],
                 description: matched.name,
                 unitPrice: matched.price ?? 0,
                 isTaxable: matched.isTaxable ?? false
-            }));
+            };
         } else {
-            setForm(f => ({ ...f, description: name }));
+            updated[index] = { ...updated[index], description: name };
         }
+        setNewItems(updated);
     };
 
-    const handleAdd = async () => {
-        if (!form.description.trim()) return toast.error("Description is required");
-        if (form.quantity <= 0) return toast.error("Quantity must be greater than 0");
+    const handleRemoveNewItem = (index: number) => {
+        setNewItems(newItems.filter((_, i) => i !== index));
+    };
+
+    const handleSaveAll = async () => {
+        if (newItems.some(i => !i.description.trim())) return toast.error("All items must have a description");
+        if (newItems.some(i => i.quantity <= 0)) return toast.error("Quantities must be greater than 0");
+        
         setAdding(true);
         try {
-            await workOrderService.addItem(jobId, form);
-            toast.success("Item added");
-            setForm({ description: "", quantity: 1, unitPrice: 0, isTaxable: false });
-            setProductSearch("");
-            setShowForm(false);
+            for (const item of newItems) {
+                await workOrderService.addItem(jobId, item);
+            }
+            toast.success("Items added successfully");
+            setNewItems([]);
             await fetchItems();
         } catch {
-            toast.error("Failed to add item");
+            toast.error("Failed to add some items");
         } finally {
             setAdding(false);
         }
@@ -80,8 +91,9 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
         }
     };
 
-    const subtotal = items.reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
-    const taxableAmount = items.filter(i => i.isTaxable).reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
+    const allItems = [...items, ...newItems];
+    const subtotal = allItems.reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
+    const taxableAmount = allItems.filter(i => i.isTaxable).reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
     const taxAmount = taxableAmount * (taxRate / 100);
     const totalAmount = subtotal + taxAmount;
 
@@ -95,7 +107,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                 <div className="flex items-center space-x-2">
                     <button
                         type="button"
-                        onClick={() => { setForm({ description: "", quantity: 1, unitPrice: 0, isTaxable: false }); setShowForm(true); }}
+                        onClick={() => setNewItems([...newItems, { description: "", quantity: 1, unitPrice: 0, isTaxable: false } as unknown as Omit<WorkOrderItemDto, 'id'>])}
                         className="flex items-center space-x-1 text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30 transition-colors font-medium border border-blue-500/20"
                     >
                         <Plus className="h-3 w-3" />
@@ -103,7 +115,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                     </button>
                     <button
                         type="button"
-                        onClick={() => { setForm({ description: "Service/Labor", quantity: 1, unitPrice: 0, isTaxable: false }); setShowForm(true); }}
+                        onClick={() => setNewItems([...newItems, { description: "Service/Labor", quantity: 1, unitPrice: 0, isTaxable: false } as unknown as Omit<WorkOrderItemDto, 'id'>])}
                         className="flex items-center space-x-1 text-xs px-3 py-1.5 rounded-lg bg-white/10 text-muted-foreground hover:bg-white/20 transition-colors font-medium border border-border"
                     >
                         <Plus className="h-3 w-3" />
@@ -118,12 +130,12 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                     </div>
                 ) : (
                     <>
-                        {items.length === 0 && !showForm && (
+                        {items.length === 0 && newItems.length === 0 && (
                             <p className="text-sm text-muted-foreground text-center py-4">No items added yet.</p>
                         )}
 
                         {items.map(item => (
-                            <div key={item.id} className="flex flex-wrap md:flex-nowrap gap-4 items-end animate-in slide-in-from-left-4 duration-300">
+                            <div key={`saved-${item.id}`} className="flex flex-wrap md:flex-nowrap gap-4 items-end animate-in slide-in-from-left-4 duration-300">
                                 <div className="flex-1 min-w-[200px]">
                                     <label className="block text-xs text-muted-foreground mb-1">Description</label>
                                     <div className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground">
@@ -144,7 +156,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                 </div>
                                 <div className="w-16 flex flex-col items-center">
                                     <label className="block text-xs text-muted-foreground mb-3">Tax</label>
-                                    <input type="checkbox" checked={item.isTaxable} disabled className="w-4 h-4 accent-primary cursor-not-allowed opacity-50" />
+                                    <input type="checkbox" checked={item.isTaxable} readOnly className="w-4 h-4 accent-primary cursor-not-allowed opacity-50" />
                                 </div>
                                 <div className="w-32">
                                     <label className="block text-xs text-muted-foreground mb-1">Total</label>
@@ -162,19 +174,19 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                             </div>
                         ))}
 
-                        {showForm && (
-                            <div className="flex flex-wrap md:flex-nowrap gap-4 items-end animate-in slide-in-from-left-4 duration-300 bg-muted/20 p-3 rounded-lg border border-border">
+                        {newItems.map((item, index) => (
+                            <div key={`new-${index}`} className="flex flex-wrap md:flex-nowrap gap-4 items-end animate-in slide-in-from-left-4 duration-300 bg-muted/20 p-3 rounded-lg border border-border">
                                 <div className="flex-1 min-w-[200px]">
                                     <label className="block text-xs text-muted-foreground mb-1">Description</label>
                                     <input
                                         type="text"
-                                        list="job-product-list"
-                                        value={productSearch || form.description}
-                                        onChange={e => handleProductSelect(e.target.value)}
+                                        list={`job-product-list-${index}`}
+                                        value={item.description}
+                                        onChange={e => handleProductSelect(index, e.target.value)}
                                         placeholder="Type or select a product..."
                                         className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                     />
-                                    <datalist id="job-product-list">
+                                    <datalist id={`job-product-list-${index}`}>
                                         {products.map(p => <option key={p.id} value={p.name} />)}
                                     </datalist>
                                 </div>
@@ -183,8 +195,8 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                     <input
                                         type="number"
                                         min="0.01" step="0.01"
-                                        value={form.quantity}
-                                        onChange={e => setForm(f => ({ ...f, quantity: parseFloat(e.target.value) || 0 }))}
+                                        value={item.quantity}
+                                        onChange={e => handleNewItemChange(index, 'quantity', parseFloat(e.target.value) || 0)}
                                         className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                     />
                                 </div>
@@ -193,8 +205,8 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                     <input
                                         type="number"
                                         min="0" step="0.01"
-                                        value={form.unitPrice}
-                                        onChange={e => setForm(f => ({ ...f, unitPrice: parseFloat(e.target.value) || 0 }))}
+                                        value={item.unitPrice}
+                                        onChange={e => handleNewItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
                                         className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                     />
                                 </div>
@@ -202,24 +214,41 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                     <label className="block text-xs text-muted-foreground mb-3">Tax</label>
                                     <input 
                                         type="checkbox" 
-                                        checked={form.isTaxable}
-                                        onChange={e => setForm(f => ({ ...f, isTaxable: e.target.checked }))}
+                                        checked={item.isTaxable}
+                                        onChange={e => handleNewItemChange(index, 'isTaxable', e.target.checked)}
                                         className="w-4 h-4 accent-primary cursor-pointer" 
                                     />
                                 </div>
                                 <div className="w-32 flex flex-col gap-2">
-                                    <button
-                                        onClick={handleAdd}
-                                        disabled={adding}
-                                        className="w-full bg-primary text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center hover:bg-primary/90 transition-colors disabled:opacity-50"
-                                    >
-                                        {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
-                                    </button>
+                                    <label className="block text-xs text-muted-foreground mb-1">Total</label>
+                                    <div className="w-full bg-white/5 border border-transparent rounded-lg px-4 py-2 text-sm text-muted-foreground flex justify-between items-center">
+                                        <span>${(item.quantity * item.unitPrice).toFixed(2)}</span>
+                                        <button
+                                            onClick={() => handleRemoveNewItem(index)}
+                                            className="text-muted-foreground hover:text-destructive transition-colors ml-2"
+                                            title="Remove item"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    </div>
                                 </div>
+                            </div>
+                        ))}
+                        
+                        {newItems.length > 0 && (
+                            <div className="flex justify-end pt-4">
+                                <button
+                                    onClick={handleSaveAll}
+                                    disabled={adding}
+                                    className="bg-primary text-white px-6 py-2 rounded-lg text-sm font-medium flex items-center justify-center hover:bg-primary/90 transition-colors disabled:opacity-50"
+                                >
+                                    {adding ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                                    Save Added Items
+                                </button>
                             </div>
                         )}
                         
-                        {(items.length > 0 || showForm) && (
+                        {(items.length > 0 || newItems.length > 0) && (
                             <div className="pt-4 mt-6 border-t border-border flex justify-end gap-12 text-sm">
                                 <div className="space-y-2 text-right">
                                     <div className="text-muted-foreground">Subtotal:</div>
