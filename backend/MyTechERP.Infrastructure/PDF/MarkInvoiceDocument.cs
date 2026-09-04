@@ -12,8 +12,8 @@ namespace MyTechERP.Infrastructure.PDF
         public Invoice Invoice { get; }
         public MytechERP.domain.Entities.WorkOrder? WorkOrder { get; }
         
-        private static readonly Color BrandColor = Color.FromHex("#006CA9");
-        private static readonly Color LightBlue = Color.FromHex("#E6F2F8");
+        private static readonly Color BrandColor = Color.FromHex("#017925");
+        private static readonly Color LightBrandColor = Color.FromHex("#E8F3E9");
         private static readonly Color GreyText = Colors.Grey.Darken2;
         private static readonly Color LightBorder = Colors.Grey.Lighten2;
 
@@ -53,9 +53,9 @@ namespace MyTechERP.Infrastructure.PDF
                     }
                     else
                     {
-                        col.Item().Text("ACUMEN").FontSize(22).Bold().FontColor(Colors.Green.Darken2);
-                        col.Item().Text("Mobile Equipment Service").FontSize(14).Bold().FontColor(Colors.Green.Darken2);
-                        col.Item().Text("(207) 245-0780").FontSize(14).Bold().FontColor(Colors.Green.Darken2);
+                        col.Item().Text("ACUMEN").FontSize(22).Bold().FontColor(BrandColor);
+                        col.Item().Text("Mobile Equipment Service").FontSize(14).Bold().FontColor(BrandColor);
+                        col.Item().Text("(207) 245-0780").FontSize(14).Bold().FontColor(BrandColor);
                     }
                 });
             });
@@ -122,10 +122,10 @@ namespace MyTechERP.Infrastructure.PDF
                 });
 
                 // Notes
-                col.Item().PaddingTop(20).Element(ComposeNotes);
+                col.Item().PaddingTop(25).Element(ComposeNotes);
 
                 // Terms
-                col.Item().PaddingTop(10).Element(ComposeTerms);
+                col.Item().PaddingTop(15).Element(ComposeTerms);
             });
         }
 
@@ -217,18 +217,18 @@ namespace MyTechERP.Infrastructure.PDF
             {
                 if (hasWorkPerformed)
                 {
-                    col.Item().PaddingBottom(10).Column(c =>
+                    col.Item().PaddingBottom(15).Column(c =>
                     {
-                        c.Item().Text("WORK PERFORMED / SUMMARY").Bold().Underline().FontColor(BrandColor);
+                        c.Item().PaddingBottom(3).BorderBottom(1).BorderColor(LightBorder).Text("WORK PERFORMED / SUMMARY").Bold().FontSize(10).FontColor(BrandColor);
                         c.Item().PaddingTop(5).Text(WorkOrder!.TechnicianNotes).FontSize(9).FontColor(Colors.Black);
                     });
                 }
 
                 if (hasTechNotes)
                 {
-                    col.Item().Column(c =>
+                    col.Item().PaddingBottom(15).Column(c =>
                     {
-                        c.Item().Text("TECHNICIAN's NOTES / RECOMMENDATIONS").Bold().Underline().FontColor(BrandColor);
+                        c.Item().PaddingBottom(3).BorderBottom(1).BorderColor(LightBorder).Text("TECHNICIAN'S NOTES / RECOMMENDATIONS").Bold().FontSize(10).FontColor(BrandColor);
                         c.Item().PaddingTop(5).Text(Invoice.TechnicianNotes).FontSize(9).FontColor(Colors.Black);
                     });
                 }
@@ -239,7 +239,7 @@ namespace MyTechERP.Infrastructure.PDF
         {
             container.Column(col =>
             {
-                col.Item().Text("TERMS & CONDITIONS").Bold().Underline().FontColor(BrandColor);
+                col.Item().PaddingBottom(3).BorderBottom(1).BorderColor(LightBorder).Text("TERMS & CONDITIONS").Bold().FontSize(10).FontColor(BrandColor);
                 
                 void AddTerm(string title, params string[] points)
                 {
@@ -255,7 +255,7 @@ namespace MyTechERP.Infrastructure.PDF
                     "All returned checks subject to $30.00 returned check fee."
                 );
 
-                col.Item().PaddingTop(10).Background(LightBlue).Padding(10).Column(c => {
+                col.Item().PaddingTop(15).Background(LightBrandColor).BorderLeft(3).BorderColor(BrandColor).Padding(10).Column(c => {
                     c.Item().Text("Please remit payment by check to:").Bold().FontSize(10).FontColor(BrandColor);
                     c.Item().Text("Acumen Mobile Equipment Service").Bold().FontSize(9);
                     c.Item().Text("1958 Washington Ave").FontSize(9);
@@ -308,7 +308,7 @@ namespace MyTechERP.Infrastructure.PDF
         static IContainer HeaderLabel(IContainer container) => container.Border(1).BorderColor(Colors.White).Background(BrandColor).PaddingVertical(3).PaddingHorizontal(5).DefaultTextStyle(x => x.FontColor(Colors.White).Bold());
         static IContainer HeaderValue(IContainer container) => container.Border(1).BorderColor(LightBorder).Background(Colors.White).PaddingVertical(3).PaddingHorizontal(5);
 
-        static IContainer SubLabel(IContainer container) => container.Border(1).BorderColor(Colors.White).Background(LightBlue).PaddingVertical(3).PaddingHorizontal(5).DefaultTextStyle(x => x.FontColor(GreyText).SemiBold());
+        static IContainer SubLabel(IContainer container) => container.Border(1).BorderColor(Colors.White).Background(LightBrandColor).PaddingVertical(3).PaddingHorizontal(5).DefaultTextStyle(x => x.FontColor(GreyText).SemiBold());
         static IContainer SubValue(IContainer container) => container.Border(1).BorderColor(LightBorder).Background(Colors.White).PaddingVertical(3).PaddingHorizontal(5);
 
         static IContainer HeaderCellStyle(IContainer container)
@@ -323,7 +323,7 @@ namespace MyTechERP.Infrastructure.PDF
         
         static IContainer SummaryHeaderStyle(IContainer container)
         {
-            return container.Background(Color.FromHex("#1ABC9C")).PaddingVertical(5).PaddingHorizontal(5).DefaultTextStyle(x => x.FontColor(Colors.White).Bold());
+            return container.Background(BrandColor).PaddingVertical(5).PaddingHorizontal(5).DefaultTextStyle(x => x.FontColor(Colors.White).Bold());
         }
 
         static IContainer SummaryCellStyle(IContainer container)
