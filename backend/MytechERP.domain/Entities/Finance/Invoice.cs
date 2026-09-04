@@ -38,6 +38,8 @@ namespace MytechERP.domain.Entities.Finance
 
         /// <summary>Check number, credit card auth code, or other payment reference recorded when marking paid.</summary>
         public string? PaymentReference { get; set; }
+
+        public string? TechnicianNotes { get; set; }
     }
 
     public enum InvoiceStatus { Draft = 0, Issued = 1, Paid = 2, Overdue = 3, Cancelled = 4 }

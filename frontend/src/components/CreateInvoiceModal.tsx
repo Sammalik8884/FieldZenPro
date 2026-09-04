@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Plus, Trash2, Loader2, CheckCircle2, Smartphone, Mail, Copy, Printer, Send } from "lucide-react";
+import { X, Plus, Trash2, Loader2, CheckCircle2, Smartphone, Mail, Printer, Send } from "lucide-react";
 import { CreateInvoiceDto, CreateInvoiceItemDto } from "../types/finance";
 import { invoiceService } from "../services/invoiceService";
 import { customerService } from "../services/customerService";
@@ -50,6 +50,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
         date.setDate(date.getDate() + 30);
         return date.toISOString().split('T')[0];
     });
+    const [technicianNotes, setTechnicianNotes] = useState("");
     const [items, setItems] = useState<InvoiceLineItem[]>(() => {
         // Preloaded job items take priority
         if (preloadedItems && preloadedItems.length > 0) {
@@ -58,7 +59,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                 description: i.description,
                 quantity: i.quantity,
                 unitPrice: i.unitPrice,
-                isTaxable: false
+                isTaxable: i.isTaxable
             }));
         }
         if (initialLaborCost !== undefined && initialLaborCost > 0) {
@@ -172,6 +173,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
             taxAmount,
             totalAmount,
             status: 0, // Draft
+            technicianNotes,
             items: items.map(i => ({
                 description: i.description,
                 quantity: i.quantity,
@@ -216,16 +218,6 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                 className="flex items-center justify-center gap-2 p-4 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-medium shadow-sm"
                             >
                                 <Mail className="h-5 w-5" /> Send via Email
-                            </button>
-                            <button 
-                                type="button"
-                                onClick={() => {
-                                    navigator.clipboard.writeText(`${window.location.origin}/portal/invoices`);
-                                    toast.success("Payment link copied to clipboard!");
-                                }}
-                                className="flex items-center justify-center gap-2 p-4 bg-secondary text-foreground border border-border rounded-xl hover:bg-secondary/80 transition-colors font-medium shadow-sm"
-                            >
-                                <Copy className="h-5 w-5" /> Copy Payment Link
                             </button>
                             <button 
                                 type="button"
@@ -354,6 +346,17 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                     className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary/50"
                                 />
                             </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-muted-foreground mb-1">Technician's Notes (Visible to Customer)</label>
+                            <textarea
+                                value={technicianNotes}
+                                onChange={(e) => setTechnicianNotes(e.target.value)}
+                                placeholder="e.g. Recommend new blades, needs carburetor replaced next season..."
+                                rows={2}
+                                className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary/50 resize-none"
+                            />
                         </div>
 
                         {/* Line Items */}

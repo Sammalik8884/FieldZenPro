@@ -7,6 +7,7 @@ export interface WorkOrderItemDto {
     description: string;
     quantity: number;
     unitPrice: number;
+    isTaxable: boolean;
     total: number;
     createdAt: string;
 }
@@ -102,7 +103,7 @@ export const workOrderService = {
         return response.data;
     },
 
-    addItem: async (id: number, item: { description: string; quantity: number; unitPrice: number }): Promise<WorkOrderItemDto> => {
+    addItem: async (id: number, item: { description: string; quantity: number; unitPrice: number; isTaxable?: boolean }): Promise<WorkOrderItemDto> => {
         const response = await apiClient.post<WorkOrderItemDto>(`/WorkOrders/${id}/items`, item);
         return response.data;
     },

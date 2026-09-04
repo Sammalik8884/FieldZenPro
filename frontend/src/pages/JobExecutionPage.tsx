@@ -4,6 +4,7 @@ import { ArrowLeft, MapPin, Navigation, CalendarClock, Clock, CheckCircle2, Load
 import { ConfirmModal } from "../components/common/ConfirmModal";
 import { workOrderService, WorkOrderItemDto } from "../services/workOrderService";
 import { JobLineItems } from "../components/workorders/JobLineItems";
+import imageCompression from 'browser-image-compression';
 
 const extractApiError = (error: any, fallback: string) => {
  if (!error || !error.response || !error.response.data) {
@@ -126,10 +127,25 @@ export const JobExecutionPage = () => {
 
             // 2. Upload Evidence if selected
             if (evidenceFiles.length > 0) {
+                const options = {
+                    maxSizeMB: 1,
+                    maxWidthOrHeight: 1920,
+                    useWebWorker: true
+                };
                 for (const file of evidenceFiles) {
-                    const formData = new FormData();
-                    formData.append('File', file);
-                    await workOrderService.uploadEvidence(Number(id), formData);
+                    try {
+                        let uploadFile = file;
+                        if (file.type.startsWith('image/')) {
+                            uploadFile = await imageCompression(file, options);
+                        }
+                        const formData = new FormData();
+                        formData.append('File', uploadFile, uploadFile.name);
+                        await workOrderService.uploadEvidence(Number(id), formData);
+                    } catch (uploadErr) {
+                        console.error("Failed to upload file", file.name, uploadErr);
+                        toast.error(`Failed to upload ${file.name}`);
+                        throw uploadErr; // Abort job completion if an upload fails
+                    }
                 }
             }
 

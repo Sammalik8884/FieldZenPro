@@ -14,6 +14,7 @@ namespace MytechERP.Application.DTOs.Finance
         public decimal TaxAmount { get; set; }
         public decimal TotalAmount { get; set; }
         public int Status { get; set; }
+        public string? TechnicianNotes { get; set; }
 
         public List<CreateInvoiceItemDto> Items { get; set; } = new List<CreateInvoiceItemDto>();
     }

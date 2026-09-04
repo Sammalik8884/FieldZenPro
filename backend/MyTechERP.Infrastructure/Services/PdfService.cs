@@ -137,8 +137,15 @@ namespace MyTechERP.Infrastructure.Services
 
             if (invoice == null) throw new Exception("Invoice not found.");
 
+            // Manually fetch the related WorkOrder to get technician notes
+            MytechERP.domain.Entities.WorkOrder? workOrder = null;
+            if (invoice.WorkOrderId.HasValue)
+            {
+                workOrder = await _context.WorkOrders.FirstOrDefaultAsync(w => w.Id == invoice.WorkOrderId.Value);
+            }
+
             // Always use the branded Acuman (Mark) invoice template for all tenants
-            var document = new MyTechERP.Infrastructure.PDF.MarkInvoiceDocument(invoice);
+            var document = new MyTechERP.Infrastructure.PDF.MarkInvoiceDocument(invoice, workOrder);
 
             return document.GeneratePdf();
         }

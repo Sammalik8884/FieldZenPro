@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MytechERP.Infrastructure.Persistance;
 
@@ -11,9 +12,11 @@ using MytechERP.Infrastructure.Persistance;
 namespace MyTechERP.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260904204424_AddIsTaxableToWorkOrderItems")]
+    partial class AddIsTaxableToWorkOrderItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -753,9 +756,6 @@ namespace MyTechERP.Infrastructure.Migrations
 
                     b.Property<decimal>("TaxAmount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("TechnicianNotes")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TenantId")
                         .HasColumnType("int");

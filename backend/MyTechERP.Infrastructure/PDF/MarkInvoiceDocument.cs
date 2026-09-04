@@ -10,14 +10,17 @@ namespace MyTechERP.Infrastructure.PDF
     public class MarkInvoiceDocument : IDocument
     {
         public Invoice Invoice { get; }
+        public MytechERP.domain.Entities.WorkOrder? WorkOrder { get; }
+        
         private static readonly Color BrandColor = Color.FromHex("#006CA9");
         private static readonly Color LightBlue = Color.FromHex("#E6F2F8");
         private static readonly Color GreyText = Colors.Grey.Darken2;
         private static readonly Color LightBorder = Colors.Grey.Lighten2;
 
-        public MarkInvoiceDocument(Invoice invoice)
+        public MarkInvoiceDocument(Invoice invoice, MytechERP.domain.Entities.WorkOrder? workOrder = null)
         {
             Invoice = invoice;
+            WorkOrder = workOrder;
         }
 
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
@@ -118,8 +121,11 @@ namespace MyTechERP.Infrastructure.PDF
                     row.ConstantItem(250).Element(ComposeSummary);
                 });
 
+                // Notes
+                col.Item().PaddingTop(20).Element(ComposeNotes);
+
                 // Terms
-                col.Item().PaddingTop(20).Element(ComposeTerms);
+                col.Item().PaddingTop(10).Element(ComposeTerms);
             });
         }
 
@@ -196,6 +202,35 @@ namespace MyTechERP.Infrastructure.PDF
                     var balance = Invoice.TotalAmount - Invoice.AmountPaid;
                     table.Cell().Element(SummaryCellStyle).Text("BALANCE DUE").Bold().FontColor(balance > 0 ? Colors.Red.Darken2 : Colors.Black);
                     table.Cell().Element(SummaryCellStyle).AlignRight().Text(balance.ToString("N2")).Bold().FontColor(balance > 0 ? Colors.Red.Darken2 : Colors.Black);
+                }
+            });
+        }
+
+        void ComposeNotes(IContainer container)
+        {
+            var hasWorkPerformed = WorkOrder != null && !string.IsNullOrWhiteSpace(WorkOrder.TechnicianNotes);
+            var hasTechNotes = !string.IsNullOrWhiteSpace(Invoice.TechnicianNotes);
+
+            if (!hasWorkPerformed && !hasTechNotes) return;
+
+            container.Column(col =>
+            {
+                if (hasWorkPerformed)
+                {
+                    col.Item().PaddingBottom(10).Column(c =>
+                    {
+                        c.Item().Text("WORK PERFORMED / SUMMARY").Bold().Underline().FontColor(BrandColor);
+                        c.Item().PaddingTop(5).Text(WorkOrder!.TechnicianNotes).FontSize(9).FontColor(Colors.Black);
+                    });
+                }
+
+                if (hasTechNotes)
+                {
+                    col.Item().Column(c =>
+                    {
+                        c.Item().Text("TECHNICIAN's NOTES / RECOMMENDATIONS").Bold().Underline().FontColor(BrandColor);
+                        c.Item().PaddingTop(5).Text(Invoice.TechnicianNotes).FontSize(9).FontColor(Colors.Black);
+                    });
                 }
             });
         }

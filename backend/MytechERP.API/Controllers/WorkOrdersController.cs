@@ -328,6 +328,7 @@ namespace MytechERP.API.Controllers
                     i.Description,
                     i.Quantity,
                     i.UnitPrice,
+                    i.IsTaxable,
                     Total = i.Quantity * i.UnitPrice,
                     i.CreatedAt
                 })
@@ -349,6 +350,7 @@ namespace MytechERP.API.Controllers
                 Description = dto.Description,
                 Quantity = dto.Quantity,
                 UnitPrice = dto.UnitPrice,
+                IsTaxable = dto.IsTaxable,
                 TenantId = tenantId ?? 0,
                 CreatedAt = DateTime.UtcNow
             };
@@ -360,6 +362,7 @@ namespace MytechERP.API.Controllers
                 item.Description,
                 item.Quantity,
                 item.UnitPrice,
+                item.IsTaxable,
                 Total = item.Quantity * item.UnitPrice,
                 item.CreatedAt
             });

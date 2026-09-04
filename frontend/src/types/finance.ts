@@ -23,6 +23,7 @@ export interface CreateInvoiceDto {
     taxAmount: number;
     totalAmount: number;
     status: number;
+    technicianNotes?: string;
     items: CreateInvoiceItemDto[];
 }
 

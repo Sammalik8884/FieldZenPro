@@ -86,6 +86,7 @@ namespace MyTechERP.Infrastructure.Services
                 TaxAmount = dto.TaxAmount,
                 TotalAmount = dto.TotalAmount,
                 Status = (InvoiceStatus)dto.Status,
+                TechnicianNotes = dto.TechnicianNotes,
                 TenantId = tId
             };
 

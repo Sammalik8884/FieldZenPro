@@ -16,8 +16,9 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
     const [loading, setLoading] = useState(true);
     const [adding, setAdding] = useState(false);
     const [showForm, setShowForm] = useState(false);
-    const [form, setForm] = useState({ description: "", quantity: 1, unitPrice: 0 });
+    const [form, setForm] = useState({ description: "", quantity: 1, unitPrice: 0, isTaxable: false });
     const [productSearch, setProductSearch] = useState("");
+    const [taxRate, setTaxRate] = useState(5.5); // Default tax rate
 
     const fetchItems = async () => {
         try {
@@ -43,7 +44,8 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
             setForm(f => ({
                 ...f,
                 description: matched.name,
-                unitPrice: matched.price ?? 0
+                unitPrice: matched.price ?? 0,
+                isTaxable: matched.isTaxable ?? false
             }));
         } else {
             setForm(f => ({ ...f, description: name }));
@@ -57,7 +59,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
         try {
             await workOrderService.addItem(jobId, form);
             toast.success("Item added");
-            setForm({ description: "", quantity: 1, unitPrice: 0 });
+            setForm({ description: "", quantity: 1, unitPrice: 0, isTaxable: false });
             setProductSearch("");
             setShowForm(false);
             await fetchItems();
@@ -79,6 +81,9 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
     };
 
     const subtotal = items.reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
+    const taxableAmount = items.filter(i => i.isTaxable).reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
+    const taxAmount = taxableAmount * (taxRate / 100);
+    const totalAmount = subtotal + taxAmount;
 
     return (
         <div className="border border-border rounded-xl overflow-hidden mt-6 bg-card">
@@ -90,7 +95,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                 <div className="flex items-center space-x-2">
                     <button
                         type="button"
-                        onClick={() => { setForm({ description: "", quantity: 1, unitPrice: 0 }); setShowForm(true); }}
+                        onClick={() => { setForm({ description: "", quantity: 1, unitPrice: 0, isTaxable: false }); setShowForm(true); }}
                         className="flex items-center space-x-1 text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30 transition-colors font-medium border border-blue-500/20"
                     >
                         <Plus className="h-3 w-3" />
@@ -98,7 +103,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                     </button>
                     <button
                         type="button"
-                        onClick={() => { setForm({ description: "Service/Labor", quantity: 1, unitPrice: 0 }); setShowForm(true); }}
+                        onClick={() => { setForm({ description: "Service/Labor", quantity: 1, unitPrice: 0, isTaxable: false }); setShowForm(true); }}
                         className="flex items-center space-x-1 text-xs px-3 py-1.5 rounded-lg bg-white/10 text-muted-foreground hover:bg-white/20 transition-colors font-medium border border-border"
                     >
                         <Plus className="h-3 w-3" />
@@ -139,7 +144,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                 </div>
                                 <div className="w-16 flex flex-col items-center">
                                     <label className="block text-xs text-muted-foreground mb-3">Tax</label>
-                                    <input type="checkbox" disabled className="w-4 h-4 accent-primary cursor-not-allowed opacity-50" />
+                                    <input type="checkbox" checked={item.isTaxable} disabled className="w-4 h-4 accent-primary cursor-not-allowed opacity-50" />
                                 </div>
                                 <div className="w-32">
                                     <label className="block text-xs text-muted-foreground mb-1">Total</label>
@@ -195,7 +200,12 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                 </div>
                                 <div className="w-16 flex flex-col items-center">
                                     <label className="block text-xs text-muted-foreground mb-3">Tax</label>
-                                    <input type="checkbox" className="w-4 h-4 accent-primary cursor-pointer" />
+                                    <input 
+                                        type="checkbox" 
+                                        checked={form.isTaxable}
+                                        onChange={e => setForm(f => ({ ...f, isTaxable: e.target.checked }))}
+                                        className="w-4 h-4 accent-primary cursor-pointer" 
+                                    />
                                 </div>
                                 <div className="w-32 flex flex-col gap-2">
                                     <button
@@ -213,9 +223,22 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                             <div className="pt-4 mt-6 border-t border-border flex justify-end gap-12 text-sm">
                                 <div className="space-y-2 text-right">
                                     <div className="text-muted-foreground">Subtotal:</div>
+                                    <div className="text-muted-foreground flex items-center gap-2 justify-end">
+                                        Tax Rate (%):
+                                        <input
+                                            type="number"
+                                            min="0" step="0.1"
+                                            value={taxRate}
+                                            onChange={e => setTaxRate(parseFloat(e.target.value) || 0)}
+                                            className="w-16 bg-white/5 border border-border rounded text-right px-1 py-0.5 text-xs text-foreground focus:outline-none focus:border-primary/50"
+                                        />
+                                    </div>
+                                    <div className="text-foreground font-semibold pt-2">Total:</div>
                                 </div>
                                 <div className="space-y-2 text-right font-medium text-foreground w-32 pr-2">
                                     <div>${subtotal.toFixed(2)}</div>
+                                    <div>${taxAmount.toFixed(2)}</div>
+                                    <div className="pt-2 text-lg font-bold text-primary">${totalAmount.toFixed(2)}</div>
                                 </div>
                             </div>
                         )}

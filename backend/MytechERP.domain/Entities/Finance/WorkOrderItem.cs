@@ -15,6 +15,8 @@ namespace MytechERP.domain.Entities.Finance
         [Column(TypeName = "decimal(18,2)")]
         public decimal UnitPrice { get; set; }
 
+        public bool IsTaxable { get; set; }
+
         public int TenantId { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
