@@ -251,8 +251,8 @@ namespace MyTechERP.Infrastructure.PDF
                 }
 
                 AddTerm("Payment Terms:", 
-                    "Payment is due by the specified Due Date.",
-                    "Late payments may be subject to additional fees."
+                    "Payment is due upon completion.",
+                    "All returned checks subject to $30.00 returned check fee."
                 );
 
                 col.Item().PaddingTop(10).Background(LightBlue).Padding(10).Column(c => {

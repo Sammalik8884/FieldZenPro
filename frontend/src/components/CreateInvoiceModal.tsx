@@ -45,11 +45,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
     const [customerId, setCustomerId] = useState<number | "">(initialCustomerId || "");
     const [customerSearch, setCustomerSearch] = useState("");
     const [issueDate, setIssueDate] = useState(new Date().toISOString().split("T")[0]);
-    const [dueDate, setDueDate] = useState(() => {
-        const date = new Date();
-        date.setDate(date.getDate() + 30);
-        return date.toISOString().split('T')[0];
-    });
+    const [dueDate, setDueDate] = useState(new Date().toISOString().split("T")[0]);
     const [technicianNotes, setTechnicianNotes] = useState("");
     const [items, setItems] = useState<InvoiceLineItem[]>(() => {
         // Preloaded job items take priority
