@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, CalendarClock, Clock, CheckCircle2, Loader2, Navigation, UploadCloud, ClipboardCheck, Satellite, Unlock, Receipt } from "lucide-react";
+import { ArrowLeft, MapPin, Navigation, CalendarClock, Clock, CheckCircle2, Loader2, UploadCloud, ClipboardCheck, Unlock, Receipt } from "lucide-react";
 import { ConfirmModal } from "../components/common/ConfirmModal";
-import { workOrderService } from "../services/workOrderService";
+import { workOrderService, WorkOrderItemDto } from "../services/workOrderService";
+import { JobLineItems } from "../components/workorders/JobLineItems";
 
 const extractApiError = (error: any, fallback: string) => {
  if (!error || !error.response || !error.response.data) {
@@ -12,7 +13,6 @@ const extractApiError = (error: any, fallback: string) => {
  if (typeof d === 'string') return d;
  return d.error || d.Error || d.message || d.Message || d.detail || d.title || fallback;
 };
-import { timeTrackingService } from "../services/timeTrackingService";
 import { WorkOrderDto, ChecklistResultDto, UpdateChecklistDto } from "../types/field";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../auth/AuthContext";
@@ -33,14 +33,12 @@ export const JobExecutionPage = () => {
  const [checklistAnswers, setChecklistAnswers] = useState<Record<number, string>>({});
     const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
 
- // GPS / Location State
- const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
- const [gpsStatus, setGpsStatus] = useState<'acquiring' | 'ok' | 'error'>('acquiring');
- const watchIdRef = useRef<number | null>(null);
-
  // Completion Form State
  const [notes, setNotes] = useState("");
  const [result, setResult] = useState(1); // 1=Pass
+
+ // Job line items (pre-invoice parts & services)
+ const [jobItems, setJobItems] = useState<WorkOrderItemDto[]>([]);
 
   // Modal State
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
@@ -105,74 +103,7 @@ export const JobExecutionPage = () => {
  if (id) fetchJob();
  }, [id]);
 
- // Auto-acquire GPS on mount, keep watching for updates
- useEffect(() => {
- if (!navigator.geolocation) {
- setGpsStatus('error');
- return;
- }
- setGpsStatus('acquiring');
- watchIdRef.current = navigator.geolocation.watchPosition(
- (pos) => {
- setCurrentLocation({
- lat: pos.coords.latitude,
- lng: pos.coords.longitude,
- accuracy: Math.round(pos.coords.accuracy)
- });
- setGpsStatus('ok');
- },
- () => setGpsStatus('error'),
- { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
- );
- return () => {
- if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current);
- };
- }, []);
 
-    const handleCheckIn = async () => {
-        setActionLoading(true);
-        try {
-            const loc = currentLocation;
-            if (!loc) {
-                toast.error("GPS location not yet acquired. Please wait a moment and try again.");
-                setActionLoading(false);
-                return;
-            }
-            await timeTrackingService.checkIn({
-                workOrderId: Number(id),
-                latitude: loc.lat,
-                longitude: loc.lng
-            });
-            toast.success(`Checked in successfully at ${loc.lat.toFixed(5)}, ${loc.lng.toFixed(5)}`);
-            await fetchJob();
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || error.message || "Failed to check in.");
-        } finally {
-            setActionLoading(false);
-        }
-    };
-
- const handleCheckOut = async () => {
- setActionLoading(true);
- try {
- const loc = currentLocation;
- if (!loc) {
- toast.error("GPS location not yet acquired. Please wait a moment and try again.");
- setActionLoading(false);
- return;
- }
- await timeTrackingService.checkOut({
- workOrderId: Number(id),
- latitude: loc.lat,
- longitude: loc.lng
- });
- toast.success(`Checked out at ${loc.lat.toFixed(5)}, ${loc.lng.toFixed(5)}`);
- } catch (error: any) {
- toast.error(error.response?.data?.message || error.message || "Failed to check out.");
- } finally {
- setActionLoading(false);
- }
- };
 
  const handleComplete = async (e: React.FormEvent) => {
  e.preventDefault();
@@ -198,10 +129,6 @@ export const JobExecutionPage = () => {
                 for (const file of evidenceFiles) {
                     const formData = new FormData();
                     formData.append('File', file);
-                    if (currentLocation) {
-                        formData.append('Latitude', currentLocation.lat.toString());
-                        formData.append('Longitude', currentLocation.lng.toString());
-                    }
                     await workOrderService.uploadEvidence(Number(id), formData);
                 }
             }
@@ -317,78 +244,11 @@ export const JobExecutionPage = () => {
  </div>
  </div>
 
- {/* Actions (Only if active) */}
- {isJobActive && (
- <div className="space-y-3">
- {/* Live GPS Status Bar */}
- <div className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium ${gpsStatus === 'ok' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
- gpsStatus === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
- 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400'
- }`}>
- {gpsStatus === 'acquiring' && <Loader2 className="h-4 w-4 animate-spin shrink-0" />}
- {gpsStatus === 'ok' && <Satellite className="h-4 w-4 shrink-0" />}
- {gpsStatus === 'error' && <MapPin className="h-4 w-4 shrink-0" />}
- <div className="flex flex-col min-w-0">
- {gpsStatus === 'acquiring' && <span>Acquiring GPS location...</span>}
- {gpsStatus === 'error' && <span>GPS unavailable — enable location permissions</span>}
- {gpsStatus === 'ok' && currentLocation && (
- <>
- <span>📍 {currentLocation.lat.toFixed(6)}, {currentLocation.lng.toFixed(6)}</span>
- <span className="text-xs opacity-70">Accuracy: ±{currentLocation.accuracy}m</span>
- </>
- )}
- </div>
- </div>
- <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
- {!job.checkInTime && (
- <button
- onClick={handleCheckIn}
- disabled={actionLoading || gpsStatus === 'error' || gpsStatus === 'acquiring'}
- className="col-span-1 sm:col-span-2 bg-primary/10 border border-primary/30 text-primary hover:bg-primary hover:text-white font-semibold py-4 rounded-xl flex flex-col items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:hover:bg-primary/10 disabled:hover:text-primary"
- >
- <MapPin className="h-6 w-6" />
- <span>{gpsStatus === 'acquiring' ? 'Acquiring GPS...' : 'Start Timer (Optional)'}</span>
- </button>
- )}
-
- {job.checkInTime && (
- <div className="bg-muted border border-border rounded-xl p-4 flex flex-col justify-center">
- <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">Check In Time</span>
- <div className="flex items-center gap-2 text-foreground font-medium text-lg">
- <Clock className="h-5 w-5 text-primary" />
- {new Date(job.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
- </div>
- </div>
- )}
-
- {job.checkInTime && !job.checkOutTime && (
- <button
- onClick={handleCheckOut}
- disabled={actionLoading}
- className="bg-muted border border-border hover:border-destructive hover:bg-destructive/5 text-destructive 
- font-semibold py-4 rounded-xl transition-all flex flex-col items-center justify-center gap-2 
- disabled:opacity-50 shadow-sm active:scale-95"
- >
- <Clock className="h-6 w-6" />
- <span>Stop Timer</span>
- </button>
- )}
-
- {job.checkOutTime && (
- <div className="bg-muted border border-border rounded-xl p-4 flex flex-col justify-center">
- <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">Check Out Time</span>
- <div className="flex items-center gap-2 text-foreground font-medium text-lg">
- <Clock className="h-5 w-5 text-destructive" />
- {new Date(job.checkOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
- </div>
- </div>
- )}
- </div>
- </div>
- )}
-
  {/* Execution Forms Container */}
  <div className="bg-card border border-border rounded-2xl p-5 md:p-6 shadow-lg space-y-8">
+
+ {/* Parts & Services Section — always visible */}
+ <JobLineItems jobId={Number(id)} onItemsChange={setJobItems} />
 
  {/* Checklist Section */}
  {checklists.length > 0 && (
@@ -611,6 +471,7 @@ export const JobExecutionPage = () => {
          initialCustomerId={invoiceModalProps.customerId}
          initialLaborCost={invoiceModalProps.laborCost}
          workOrderId={invoiceModalProps.workOrderId}
+         preloadedItems={jobItems}
      />
  )}
  </div>

@@ -10,6 +10,8 @@ import { ProductDto } from "../types/product";
 import { AssetDto } from "../types/field";
 import { toast } from "react-hot-toast";
 
+import { WorkOrderItemDto } from "../services/workOrderService";
+
 interface CreateInvoiceModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -17,6 +19,7 @@ interface CreateInvoiceModalProps {
     initialCustomerId?: number;
     initialLaborCost?: number;
     workOrderId?: number;
+    preloadedItems?: WorkOrderItemDto[];
 }
 
 interface InvoiceLineItem extends CreateInvoiceItemDto {
@@ -25,7 +28,7 @@ interface InvoiceLineItem extends CreateInvoiceItemDto {
     isTaxable?: boolean;
 }
 
-export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomerId, initialLaborCost, workOrderId }: CreateInvoiceModalProps) => {
+export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomerId, initialLaborCost, workOrderId, preloadedItems }: CreateInvoiceModalProps) => {
     const [loading, setLoading] = useState(false);
     const [dataLoading, setDataLoading] = useState(false);
     const [createdInvoice, setCreatedInvoice] = useState<{ id: number, number: string } | null>(null);
@@ -48,6 +51,16 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
         return date.toISOString().split('T')[0];
     });
     const [items, setItems] = useState<InvoiceLineItem[]>(() => {
+        // Preloaded job items take priority
+        if (preloadedItems && preloadedItems.length > 0) {
+            return preloadedItems.map(i => ({
+                type: "custom" as const,
+                description: i.description,
+                quantity: i.quantity,
+                unitPrice: i.unitPrice,
+                isTaxable: false
+            }));
+        }
         if (initialLaborCost !== undefined && initialLaborCost > 0) {
             return [{ type: "custom", description: "Technician Labor (Time tracked)", quantity: 1, unitPrice: initialLaborCost, isTaxable: false }];
         }

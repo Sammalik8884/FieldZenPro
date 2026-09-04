@@ -78,6 +78,7 @@ namespace MytechERP.Infrastructure.Persistance
         public DbSet<PaymentTransaction> PaymentTransactions { get; set; }
         public DbSet<TimeLog> TimeLogs { get; set; }
         public DbSet<InvoiceItem> InvoiceItems { get; set; }
+        public DbSet<MytechERP.domain.Entities.Finance.WorkOrderItem> WorkOrderItems { get; set; }
         public DbSet<EmployeePayrollProfile> EmployeeProfiles { get; set; }
         public DbSet<PayrollEntry> PayrollEntries { get; set; }
         public DbSet<Payslip> Payslips { get; set; }

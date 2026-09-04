@@ -313,6 +313,68 @@ namespace MytechERP.API.Controllers
                 return StatusCode(500, new { Message = "An unexpected error occurred: " + ex.Message });
             }
         }
+
+        // ─── Job Line Items (Parts & Services) ─────────────────────────────────
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
+        [HttpGet("{id}/items")]
+        public async Task<IActionResult> GetJobItems(int id)
+        {
+            var items = _context.WorkOrderItems
+                .Where(i => i.WorkOrderId == id)
+                .OrderBy(i => i.CreatedAt)
+                .Select(i => new {
+                    i.Id,
+                    i.WorkOrderId,
+                    i.Description,
+                    i.Quantity,
+                    i.UnitPrice,
+                    Total = i.Quantity * i.UnitPrice,
+                    i.CreatedAt
+                })
+                .ToList();
+            return Ok(items);
+        }
+
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
+        [HttpPost("{id}/items")]
+        public async Task<IActionResult> AddJobItem(int id, [FromBody] AddJobItemDto dto)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Description))
+                return BadRequest("Description is required.");
+
+            var tenantId = _currentUserService.TenantId;
+            var item = new MytechERP.domain.Entities.Finance.WorkOrderItem
+            {
+                WorkOrderId = id,
+                Description = dto.Description,
+                Quantity = dto.Quantity,
+                UnitPrice = dto.UnitPrice,
+                TenantId = tenantId ?? 0,
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.WorkOrderItems.Add(item);
+            await _context.SaveChangesAsync();
+            return Ok(new {
+                item.Id,
+                item.WorkOrderId,
+                item.Description,
+                item.Quantity,
+                item.UnitPrice,
+                Total = item.Quantity * item.UnitPrice,
+                item.CreatedAt
+            });
+        }
+
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
+        [HttpDelete("{id}/items/{itemId}")]
+        public async Task<IActionResult> DeleteJobItem(int id, int itemId)
+        {
+            var item = _context.WorkOrderItems.FirstOrDefault(i => i.Id == itemId && i.WorkOrderId == id);
+            if (item == null) return NotFound();
+            _context.WorkOrderItems.Remove(item);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 
 }
