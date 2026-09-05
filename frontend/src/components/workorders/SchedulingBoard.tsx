@@ -87,11 +87,16 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
             const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
             const targetJob = dayJobs[targetIndex];
 
-            // Swap sequence numbers
-            const tempOrder = targetJob.sequenceOrder || 0;
-            
-            await onUpdateJob(jobId, { sequenceOrder: tempOrder });
-            await onUpdateJob(targetJob.id, { sequenceOrder: currentOrder });
+            let targetOrder = targetJob.sequenceOrder || 0;
+            let currentOrderVal = currentOrder || 0;
+
+            if (targetOrder === currentOrderVal) {
+                const newOrder = direction === 'up' ? targetOrder - 1 : targetOrder + 1;
+                await onUpdateJob(jobId, { sequenceOrder: newOrder });
+            } else {
+                await onUpdateJob(jobId, { sequenceOrder: targetOrder });
+                await onUpdateJob(targetJob.id, { sequenceOrder: currentOrderVal });
+            }
         } finally {
             setLoading(false);
         }
@@ -122,6 +127,9 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                                  <span className="text-xs font-bold text-primary">WO-{job.id.toString().padStart(4, '0')}</span>
                                  {job.status === 'WaitingForParts' && (
                                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-500 border border-orange-500/20">Parts</span>
+                                 )}
+                                 {job.status === 'PendingQuote' && (
+                                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20">Quote</span>
                                  )}
                              </div>
                             <p className="text-sm font-medium leading-tight mb-1">{job.customerName}</p>
@@ -206,8 +214,9 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                                                 </button>
                                             </div>
                                             <p className="font-semibold text-xs truncate" title={job.customerName}>{job.customerName}</p>
+                                            <p className="text-[10px] text-muted-foreground line-clamp-2 mt-0.5" title={job.description}>{job.description}</p>
                                             <p 
-                                                className={`text-[10px] text-muted-foreground cursor-pointer ${expandedAddresses[job.id] ? '' : 'truncate'}`} 
+                                                className={`text-[10px] text-muted-foreground cursor-pointer mt-0.5 ${expandedAddresses[job.id] ? '' : 'truncate'}`} 
                                                 title={job.customerAddress || job.siteName}
                                                 onClick={() => toggleAddress(job.id)}
                                             >
@@ -219,6 +228,13 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                                             {job.customerAltPhone && (
                                                 <p className="text-[10px] text-primary truncate">📞 {job.customerAltPhone}</p>
                                             )}
+                                            {job.status === 'WaitingForParts' && (
+                                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-500 border border-orange-500/20 mt-1 inline-block">Parts</span>
+                                            )}
+                                            {job.status === 'PendingQuote' && (
+                                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20 mt-1 inline-block">Quote</span>
+                                            )}
+
                                             <p className="text-[10px] text-muted-foreground truncate mt-1">{woStatusIcon(job.status)} {job.status}</p>
                                             
                                             <div className="absolute top-1/2 -translate-y-1/2 -right-2 flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -248,9 +264,11 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
 const woStatusIcon = (status: string) => {
     switch (status) {
         case 'Completed': return '✅';
-        case 'InProgress': return '🔧';
+        case 'InProgress': return '🔨';
         case 'PendingApproval': return '⏳';
         case 'Unscheduled': return '📅';
-        default: return '▪';
+        case 'WaitingForParts': return '📦';
+        case 'PendingQuote': return '📝';
+        default: return '🔹';
     }
 };

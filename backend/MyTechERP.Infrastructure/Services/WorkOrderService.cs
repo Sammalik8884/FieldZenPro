@@ -129,6 +129,7 @@ namespace MyTechERP.Infrastructure.Services
                 workOrder.Status = parsedStatus;
             if (!string.IsNullOrEmpty(request.TechnicianNotes)) workOrder.TechnicianNotes = request.TechnicianNotes;
             if (request.AssetId.HasValue && request.AssetId.Value > 0) workOrder.AssetId = request.AssetId.Value;
+            if (request.SequenceOrder.HasValue) workOrder.SequenceOrder = request.SequenceOrder.Value;
 
             await _repository.UpdateAsync(workOrder);
             return true;
@@ -307,9 +308,6 @@ namespace MyTechERP.Infrastructure.Services
              _workflowService.ValidateTransition(workOrder.Status, WorkOrderStatus.WaitingForParts);
 
              workOrder.Status = WorkOrderStatus.WaitingForParts;
-             // Unschedule the job so it goes back to the queue
-             workOrder.ScheduledDate = null;
-             workOrder.SequenceOrder = 0;
              workOrder.TechnicianNotes = notes;
 
              var log = new AuditLog

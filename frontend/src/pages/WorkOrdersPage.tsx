@@ -526,6 +526,9 @@ export const WorkOrdersPage = () => {
  <option value="Completed">Completed</option>
  <option value="Rejected">Rejected</option>
  <option value="Cancelled">Cancelled</option>
+ <option value="WaitingForParts">Waiting for Parts</option>
+ <option value="Unscheduled">Unscheduled</option>
+ <option value="PendingQuote">Pending Quote</option>
  </select>
  </div>
  <div>

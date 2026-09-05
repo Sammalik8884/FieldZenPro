@@ -18,6 +18,7 @@ namespace MytechERP.domain.Enums
         Rejected = 7,
         Cancelled = 8,
         WaitingForParts = 9,
-        Unscheduled = 10
+        Unscheduled = 10,
+        PendingQuote = 11
     }
 }

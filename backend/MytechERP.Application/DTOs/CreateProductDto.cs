@@ -22,5 +22,6 @@ namespace MytechERP.Application.DTOs
         public string? ItemCode { get; set; }
         public decimal CostPrice { get; set; }
         public int ReorderLevel { get; set; }
+        public bool IsTaxable { get; set; }
     }
 }

@@ -28,6 +28,7 @@ export const productService = {
         if (data.description) formData.append("description", data.description);
         if (data.itemCode) formData.append("itemCode", data.itemCode);
         if (data.image) formData.append("image", data.image);
+        if (data.isTaxable !== undefined) formData.append("isTaxable", data.isTaxable.toString());
 
         const response = await apiClient.post<{ message: string; id: number }>("/Product/create-manual", formData, {
             headers: {
@@ -47,6 +48,9 @@ export const productService = {
         if (data.description) formData.append("description", data.description);
         if (data.itemCode) formData.append("itemCode", data.itemCode);
         if (data.image) formData.append("image", data.image);
+        if (data.costPrice !== undefined) formData.append("costPrice", data.costPrice.toString());
+        if (data.reorderLevel !== undefined) formData.append("reorderLevel", data.reorderLevel.toString());
+        if (data.isTaxable !== undefined) formData.append("isTaxable", data.isTaxable.toString());
 
         // API Update expecting matching FromForm fields
         const response = await apiClient.put<{ message: string }>(`/Product/${id}`, formData, {

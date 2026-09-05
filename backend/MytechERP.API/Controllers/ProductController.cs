@@ -91,6 +91,7 @@ namespace MytechERP.API.Controllers
                 PriceAED = request.PriceAED,
                 Description = request.Description ?? request.Name,
                 ItemCode = request.ItemCode,
+                IsTaxable = request.IsTaxable,
                 TechnicalSpecs = "{}"
             };
 
@@ -168,6 +169,7 @@ namespace MytechERP.API.Controllers
             existingProduct.Name = request.Name;
             existingProduct.Price = request.Price;
             existingProduct.CategoryId = request.CategoryId;
+            existingProduct.IsTaxable = request.IsTaxable;
 
             // 🔥 Keep tenant aligned
             existingProduct.TenantId = category.TenantId;
@@ -185,6 +187,9 @@ namespace MytechERP.API.Controllers
 
             if (!string.IsNullOrEmpty(request.ItemCode))
                 existingProduct.ItemCode = request.ItemCode;
+
+            existingProduct.CostPrice = request.CostPrice;
+            existingProduct.ReorderLevel = request.ReorderLevel;
 
             await _genericRepository.UpdateAsync(existingProduct);
 
