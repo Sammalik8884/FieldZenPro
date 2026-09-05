@@ -128,7 +128,7 @@ namespace MyTechERP.Infrastructure.Services
                             Description = item.Description,
                             Quantity = item.Quantity,
                             UnitPrice = item.UnitPrice,
-                            IsTaxable = false, // Mapping default
+                            IsTaxable = item.IsTaxable,
                             TenantId = tId,
                             CreatedAt = DateTime.UtcNow
                         });

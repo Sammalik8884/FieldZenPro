@@ -24,6 +24,7 @@ namespace MytechERP.Application.DTOs.Finance
         public string Description { get; set; } = string.Empty;
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }
+        public bool IsTaxable { get; set; }
         public MytechERP.domain.Enums.ItemCategory ItemCategory { get; set; }
     }
 }

@@ -10,6 +10,7 @@ export interface CreateInvoiceItemDto {
     description: string;
     quantity: number;
     unitPrice: number;
+    isTaxable?: boolean;
     itemCategory?: number;
 }
 

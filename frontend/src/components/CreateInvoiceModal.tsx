@@ -177,6 +177,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                 description: i.description,
                 quantity: i.quantity,
                 unitPrice: i.unitPrice,
+                isTaxable: i.isTaxable || false,
                 itemCategory: i.type === "product" ? 0 : 1
             }))
         };
