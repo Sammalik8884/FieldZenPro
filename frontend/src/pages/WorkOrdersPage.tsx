@@ -191,7 +191,7 @@ export const WorkOrdersPage = () => {
                 description: createForm.description,
                 customerId: createForm.customerId,
                 contractId: createForm.contractId || undefined,
-                scheduledDate: createForm.scheduledDate ? new Date(createForm.scheduledDate).toISOString() : null,
+                scheduledDate: createForm.scheduledDate ? createForm.scheduledDate + "T00:00:00" : null,
                 technicianId: createForm.technicianId || null,
                 assetId: createForm.assetId || undefined
             });
@@ -252,9 +252,9 @@ export const WorkOrdersPage = () => {
  assetId: formData.assetId === 0 ? null : formData.assetId
  };
 
- if (formData.scheduledDate && formData.scheduledDate.trim() !== "") {
- updatePayload.scheduledDate = formData.scheduledDate;
- }
+    if (formData.scheduledDate && formData.scheduledDate.trim() !== "") {
+        updatePayload.scheduledDate = formData.scheduledDate + "T00:00:00";
+    }
 
  await workOrderService.update(editingJob!.id, updatePayload);
  toast.success("Work Order updated successfully.");

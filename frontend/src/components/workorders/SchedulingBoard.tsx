@@ -29,11 +29,11 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
 
     const weekDays = Array.from({ length: 7 }).map((_, i) => addDays(currentWeekStart, i));
 
-    const handleAssignToDate = async (jobId: number, date: Date) => {
+    const handleAssignToDate = async (jobId: number, dateStr: string) => {
         setLoading(true);
         try {
             // Find max sequence order for the target date
-            const targetDateJobs = workOrders.filter(w => w.scheduledDate && isSameDay(new Date(w.scheduledDate), date));
+            const targetDateJobs = workOrders.filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr);
             const maxOrder = targetDateJobs.length > 0 ? Math.max(...targetDateJobs.map(j => j.sequenceOrder || 0)) : 0;
             
             const job = workOrders.find(w => w.id === jobId);
@@ -43,7 +43,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
             }
 
             await onUpdateJob(jobId, { 
-                scheduledDate: date.toISOString(), 
+                scheduledDate: dateStr + "T00:00:00", 
                 ...(newStatus && newStatus !== job?.status ? { status: newStatus } : {}),
                 sequenceOrder: maxOrder + 1 
             });
@@ -72,9 +72,9 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
         }
     };
 
-    const handleMoveOrder = async (jobId: number, date: Date, currentOrder: number, direction: 'up' | 'down') => {
+    const handleMoveOrder = async (jobId: number, dateStr: string, currentOrder: number, direction: 'up' | 'down') => {
         const dayJobs = workOrders
-            .filter(w => w.scheduledDate && isSameDay(new Date(w.scheduledDate), date))
+            .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr)
             .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
 
         const currentIndex = dayJobs.findIndex(j => j.id === jobId);
@@ -160,7 +160,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                                     className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary disabled:opacity-50"
                                     onChange={(e) => {
                                         if (e.target.value) {
-                                            handleAssignToDate(job.id, new Date(e.target.value + 'T00:00:00'));
+                                            handleAssignToDate(job.id, e.target.value);
                                             e.target.value = '';
                                         }
                                     }}
@@ -192,8 +192,9 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
 
                 <div className="flex flex-1 overflow-x-auto divide-x divide-border">
                     {weekDays.map(day => {
+                        const dateStr = format(day, 'yyyy-MM-dd');
                         const dayJobs = workOrders
-                            .filter(w => w.scheduledDate && isSameDay(new Date(w.scheduledDate), day))
+                            .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr)
                             .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
                         
                         const isToday = isSameDay(day, new Date());
@@ -239,12 +240,12 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                                             
                                             <div className="absolute top-1/2 -translate-y-1/2 -right-2 flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 {idx > 0 && (
-                                                    <button onClick={() => handleMoveOrder(job.id, day, job.sequenceOrder, 'up')} className="bg-background border border-border rounded-full p-0.5 hover:bg-muted shadow-sm">
+                                                    <button onClick={() => handleMoveOrder(job.id, dateStr, job.sequenceOrder, 'up')} className="bg-background border border-border rounded-full p-0.5 hover:bg-muted shadow-sm">
                                                         <ArrowUp className="h-3 w-3 text-muted-foreground" />
                                                     </button>
                                                 )}
                                                 {idx < dayJobs.length - 1 && (
-                                                    <button onClick={() => handleMoveOrder(job.id, day, job.sequenceOrder, 'down')} className="bg-background border border-border rounded-full p-0.5 hover:bg-muted shadow-sm">
+                                                    <button onClick={() => handleMoveOrder(job.id, dateStr, job.sequenceOrder, 'down')} className="bg-background border border-border rounded-full p-0.5 hover:bg-muted shadow-sm">
                                                         <ArrowDown className="h-3 w-3 text-muted-foreground" />
                                                     </button>
                                                 )}
