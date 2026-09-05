@@ -3,16 +3,18 @@ import { WorkOrderDto } from '../../types/field';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { ChevronLeft, ChevronRight, Calendar, ArrowUp, ArrowDown } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { getNYDate } from '../../utils/dateUtils';
 
 interface SchedulingBoardProps {
     workOrders: WorkOrderDto[];
-    onUpdateJob: (id: number, updates: { scheduledDate?: string | null; status?: string; sequenceOrder?: number }) => Promise<void>;
+    onUpdateJob: (id: number, updates: { scheduledDate?: string | null; clearScheduledDate?: boolean; status?: string; sequenceOrder?: number }) => Promise<void>;
 }
 
 export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, onUpdateJob }) => {
-    const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
+    const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(getNYDate(), { weekStartsOn: 1 }));
     const [loading, setLoading] = useState(false);
     const [expandedAddresses, setExpandedAddresses] = useState<Record<number, boolean>>({});
+
 
     const toggleAddress = (id: number) => {
         setExpandedAddresses(prev => ({ ...prev, [id]: !prev[id] }));
@@ -25,7 +27,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
 
     const nextWeek = () => setCurrentWeekStart(addDays(currentWeekStart, 7));
     const prevWeek = () => setCurrentWeekStart(addDays(currentWeekStart, -7));
-    const currentWeek = () => setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }));
+    const currentWeek = () => setCurrentWeekStart(startOfWeek(getNYDate(), { weekStartsOn: 1 }));
 
     const weekDays = Array.from({ length: 7 }).map((_, i) => addDays(currentWeekStart, i));
 
@@ -62,7 +64,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                 newStatus = 'Unscheduled';
             }
             await onUpdateJob(jobId, { 
-                scheduledDate: null, 
+                clearScheduledDate: true,
                 ...(newStatus && newStatus !== job?.status ? { status: newStatus } : {}),
                 sequenceOrder: 0 
             });
@@ -156,7 +158,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                                 <input
                                     type="date"
                                     disabled={loading}
-                                    min={format(new Date(), 'yyyy-MM-dd')}
+                                    min={format(getNYDate(), 'yyyy-MM-dd')}
                                     className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary disabled:opacity-50"
                                     onChange={(e) => {
                                         if (e.target.value) {
@@ -197,7 +199,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                             .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr)
                             .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
                         
-                        const isToday = isSameDay(day, new Date());
+                        const isToday = isSameDay(day, getNYDate());
 
                         return (
                             <div key={day.toISOString()} className={`flex-1 min-w-[200px] flex flex-col ${isToday ? 'bg-primary/5' : ''}`}>

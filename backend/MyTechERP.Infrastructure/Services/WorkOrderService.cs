@@ -123,7 +123,9 @@ namespace MyTechERP.Infrastructure.Services
             if (workOrder == null) return false;
 
             if (!string.IsNullOrEmpty(request.Description)) workOrder.Description = request.Description;
-            if (request.ScheduledDate.HasValue) workOrder.ScheduledDate = request.ScheduledDate.Value;
+            if (request.ClearScheduledDate) workOrder.ScheduledDate = null;
+            else if (request.ScheduledDate.HasValue) workOrder.ScheduledDate = request.ScheduledDate.Value;
+
             if (!string.IsNullOrEmpty(request.TechnicianId)) workOrder.TechnicianId = request.TechnicianId;
             if (!string.IsNullOrEmpty(request.Status) && Enum.TryParse<WorkOrderStatus>(request.Status, true, out var parsedStatus))
                 workOrder.Status = parsedStatus;

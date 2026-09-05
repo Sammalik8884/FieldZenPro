@@ -16,5 +16,6 @@ namespace MytechERP.Application.DTOs.CRM
         public string? TechnicianNotes { get; set; }
         public int? AssetId { get; set; }   // Allow linking an asset to fix "not linked to Asset" error
         public int? SequenceOrder { get; set; }
+        public bool ClearScheduledDate { get; set; }
     }
 }

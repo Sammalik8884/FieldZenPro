@@ -14,6 +14,7 @@ import { apiClient } from "../services/apiClient";
 import { CreateInvoiceModal } from "../components/CreateInvoiceModal";
 import { ReviewJobModal } from "../components/ReviewJobModal";
 import { SchedulingBoard } from "../components/workorders/SchedulingBoard";
+import { getNYDate, formatNYDateString } from "../utils/dateUtils";
 
 const extractApiError = (error: any, fallback: string) => {
     if (!error || !error.response || !error.response.data) {
@@ -49,9 +50,9 @@ export const WorkOrdersPage = () => {
  const [searchQuery, setSearchQuery] = useState("");
  const [processingId, setProcessingId] = useState<number | null>(null);
 
- const activeWorkOrders = workOrders.filter(w => ['InProgress', 'Assigned', 'Initialized', 'PendingApproval'].includes(w.status)).length;
- const now = new Date();
- const completedThisMonth = workOrders.filter(w => {
+    const activeWorkOrders = workOrders.filter(w => ['InProgress', 'Assigned', 'Initialized', 'PendingApproval'].includes(w.status)).length;
+    const now = getNYDate();
+    const completedThisMonth = workOrders.filter(w => {
  if (w.status !== 'Completed' || !w.completedDate) return false;
  const d = new Date(w.completedDate);
  return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
@@ -64,13 +65,13 @@ export const WorkOrdersPage = () => {
  // Create modal state
  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
  const [createForm, setCreateForm] = useState<CreateWorkOrderDto>({
- description: "",
- customerId: 0,
- contractId: 0,
- scheduledDate: new Date().toISOString().split('T')[0],
- technicianId: null,
- assetId: undefined
- });
+        description: "",
+        customerId: 0,
+        contractId: 0,
+        scheduledDate: formatNYDateString(),
+        technicianId: null,
+        assetId: undefined
+    });
  const [createCustomerSearch, setCreateCustomerSearch] = useState("");
  const [createTechSearch, setCreateTechSearch] = useState("");
  const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
@@ -197,7 +198,7 @@ export const WorkOrdersPage = () => {
             });
             toast.success("Work Order created successfully!");
             setIsCreateModalOpen(false);
-            setCreateForm({ description: "", customerId: 0, contractId: 0, scheduledDate: new Date().toISOString().split('T')[0], technicianId: null, assetId: undefined });
+            setCreateForm({ description: "", customerId: 0, contractId: 0, scheduledDate: formatNYDateString(), technicianId: null, assetId: undefined });
             setCreateCustomerSearch("");
             setCreateTechSearch("");
             fetchData();
