@@ -501,6 +501,7 @@ export const JobExecutionPage = () => {
          onClose={() => setInvoiceModalOpen(false)}
          onSuccess={() => {
              setInvoiceModalOpen(false);
+             window.location.reload();
          }}
          initialCustomerId={invoiceModalProps.customerId}
          initialLaborCost={invoiceModalProps.laborCost}

@@ -112,6 +112,27 @@ namespace MyTechERP.Infrastructure.Services
                 {
                     wo.Status = MytechERP.domain.Enums.WorkOrderStatus.Completed;
                     wo.CompletedDate = DateTime.UtcNow;
+
+                    // Sync WorkOrderItems with the generated invoice items
+                    var existingWoItems = await _context.Set<MytechERP.domain.Entities.Finance.WorkOrderItem>()
+                        .Where(wi => wi.WorkOrderId == dto.WorkOrderId.Value && wi.TenantId == tId)
+                        .ToListAsync();
+                    
+                    _context.RemoveRange(existingWoItems);
+
+                    foreach(var item in dto.Items)
+                    {
+                        _context.Add(new MytechERP.domain.Entities.Finance.WorkOrderItem
+                        {
+                            WorkOrderId = dto.WorkOrderId.Value,
+                            Description = item.Description,
+                            Quantity = item.Quantity,
+                            UnitPrice = item.UnitPrice,
+                            IsTaxable = false, // Mapping default
+                            TenantId = tId,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                    }
                 }
             }
             

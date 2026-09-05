@@ -22,13 +22,16 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
         try {
             const data = await workOrderService.getItems(jobId);
             setItems(data);
-            onItemsChange?.(data);
         } catch {
             // silently ignore
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        onItemsChange?.([...items, ...newItems] as WorkOrderItemDto[]);
+    }, [items, newItems, onItemsChange]);
 
     useEffect(() => {
         fetchItems();
