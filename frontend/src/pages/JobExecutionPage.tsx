@@ -503,6 +503,20 @@ export const JobExecutionPage = () => {
            {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
            <span>Complete Job</span>
        </button>
+
+       {job.status === 'Completed' && (
+           <div className="pt-4 border-t border-border mt-4">
+               <button
+                   type="button"
+                   onClick={handleGenerateInvoice}
+                   disabled={actionLoading}
+                   className="w-full bg-green-500/10 text-green-500 font-semibold py-3 flex items-center justify-center gap-2 rounded-xl hover:bg-green-500/20 transition-all border border-green-500/30 disabled:opacity-50 mb-3"
+               >
+                   {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Receipt className="h-5 w-5" />}
+                   <span>Generate Invoice & Collect Payment</span>
+               </button>
+           </div>
+       )}
    </div>
  </form>
  ) : (
