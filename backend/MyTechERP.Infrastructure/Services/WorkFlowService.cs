@@ -14,16 +14,16 @@ namespace MyTechERP.Infrastructure.Services
         {
             { WorkOrderStatus.Created,         new() { WorkOrderStatus.Assigned, WorkOrderStatus.Unscheduled, WorkOrderStatus.Cancelled } },
             { WorkOrderStatus.Unscheduled,     new() { WorkOrderStatus.Created, WorkOrderStatus.Assigned, WorkOrderStatus.Cancelled } },
-            { WorkOrderStatus.Assigned,        new() { WorkOrderStatus.Initialized, WorkOrderStatus.InProgress, WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.Cancelled } },
-            { WorkOrderStatus.Initialized,     new() { WorkOrderStatus.InProgress, WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.Cancelled } },
-            { WorkOrderStatus.InProgress,      new() { WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.PendingApproval, WorkOrderStatus.Cancelled } },
+            { WorkOrderStatus.Assigned,        new() { WorkOrderStatus.Initialized, WorkOrderStatus.InProgress, WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.PendingQuote, WorkOrderStatus.Cancelled } },
+            { WorkOrderStatus.Initialized,     new() { WorkOrderStatus.InProgress, WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.PendingQuote, WorkOrderStatus.Cancelled } },
+            { WorkOrderStatus.InProgress,      new() { WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.PendingQuote, WorkOrderStatus.PendingApproval, WorkOrderStatus.Cancelled } },
             { WorkOrderStatus.WaitingForParts, new() { WorkOrderStatus.Unscheduled, WorkOrderStatus.InProgress, WorkOrderStatus.Completed, WorkOrderStatus.PendingQuote, WorkOrderStatus.Cancelled } },
-            { WorkOrderStatus.PendingQuote,    new() { WorkOrderStatus.WaitingForParts, WorkOrderStatus.Cancelled } },
+            { WorkOrderStatus.PendingQuote,    new() { WorkOrderStatus.Unscheduled, WorkOrderStatus.InProgress, WorkOrderStatus.Completed, WorkOrderStatus.WaitingForParts, WorkOrderStatus.Cancelled } },
             { WorkOrderStatus.PendingApproval, new() { WorkOrderStatus.Approved, WorkOrderStatus.Rejected } },
             { WorkOrderStatus.Approved,        new() { WorkOrderStatus.Completed } },
             { WorkOrderStatus.Rejected,        new() { WorkOrderStatus.Assigned, WorkOrderStatus.InProgress } },
-            { WorkOrderStatus.Cancelled,       new() { } },
-            { WorkOrderStatus.Completed,       new() { } }
+            { WorkOrderStatus.Cancelled,       new() { WorkOrderStatus.Unscheduled } },
+            { WorkOrderStatus.Completed,       new() { WorkOrderStatus.InProgress, WorkOrderStatus.Unscheduled, WorkOrderStatus.PendingQuote, WorkOrderStatus.WaitingForParts } }
         };
         public bool CanTransition(WorkOrderStatus current, WorkOrderStatus target)
         {
