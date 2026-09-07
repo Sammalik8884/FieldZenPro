@@ -13,7 +13,7 @@ export const MyJobsPage = () => {
  const [loading, setLoading] = useState(true);
  const [checkInLoadingId, setCheckInLoadingId] = useState<number | null>(null);
  const navigate = useNavigate();
- const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+ const [viewMode, setViewMode] = useState<"list" | "calendar">("calendar");
  const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeek(getNYDate(), { weekStartsOn: 1 }));
 
  const fetchJobs = async () => {
@@ -64,8 +64,20 @@ export const MyJobsPage = () => {
  );
  };
 
- const activeJobs = jobs.filter(j => j.status !== 'Completed' && j.status !== 'Approved');
- const pastJobs = jobs.filter(j => j.status === 'Completed' || j.status === 'Approved');
+ const weekEnd = addDays(currentWeekStart, 7);
+ const activeJobs = jobs.filter(j => 
+     j.status !== 'Completed' && 
+     j.status !== 'Approved' && 
+     j.scheduledDate && 
+     new Date(j.scheduledDate) >= currentWeekStart && 
+     new Date(j.scheduledDate) < weekEnd
+ );
+ const pastJobs = jobs.filter(j => 
+     (j.status === 'Completed' || j.status === 'Approved') && 
+     j.scheduledDate && 
+     new Date(j.scheduledDate) >= currentWeekStart && 
+     new Date(j.scheduledDate) < weekEnd
+ );
 
  return (
  <div className="p-4 md:p-8 max-w-4xl mx-auto animate-in fade-in duration-500">
@@ -75,7 +87,25 @@ export const MyJobsPage = () => {
             <Wrench className="h-6 w-6 md:h-8 md:w-8 text-primary" />
             My Jobs
         </h1>
-        <p className="text-muted-foreground mt-1 text-sm">Your field service schedule.</p>
+        <div className="flex items-center gap-3 mt-2">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Week of {format(currentWeekStart, "MMM d, yyyy")}
+            </h2>
+            <div className="flex gap-1 bg-muted/50 rounded-md border border-border p-0.5">
+                <button
+                    onClick={() => setCurrentWeekStart(addDays(currentWeekStart, -7))}
+                    className="px-2 py-1 hover:bg-background rounded text-xs text-muted-foreground font-medium transition-colors"
+                >
+                    &lt; Prev
+                </button>
+                <button
+                    onClick={() => setCurrentWeekStart(addDays(currentWeekStart, 7))}
+                    className="px-2 py-1 hover:bg-background rounded text-xs text-muted-foreground font-medium transition-colors"
+                >
+                    Next &gt;
+                </button>
+            </div>
+        </div>
     </div>
     <div className="flex bg-muted/30 p-1 rounded-lg border border-border w-fit">
         <button
@@ -196,26 +226,6 @@ export const MyJobsPage = () => {
  </div>
  ) : (
     <div className="space-y-6">
-        <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-border">
-            <h2 className="text-lg font-bold text-foreground">
-                Week of {format(currentWeekStart, "MMM d, yyyy")}
-            </h2>
-            <div className="flex gap-2">
-                <button
-                    onClick={() => setCurrentWeekStart(addDays(currentWeekStart, -7))}
-                    className="p-2 border border-border rounded hover:bg-muted text-muted-foreground"
-                >
-                    &lt; Prev
-                </button>
-                <button
-                    onClick={() => setCurrentWeekStart(addDays(currentWeekStart, 7))}
-                    className="p-2 border border-border rounded hover:bg-muted text-muted-foreground"
-                >
-                    Next &gt;
-                </button>
-            </div>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
             {Array.from({ length: 7 }).map((_, i) => {
                 const day = addDays(currentWeekStart, i);
