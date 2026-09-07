@@ -73,10 +73,12 @@ export interface CreateWorkOrderDto {
 
 export interface UpdateWorkOrderDto {
     id: number;
-    description: string;
-    status: string;
+    description?: string;
+    status?: string;
     scheduledDate?: string | null;
+    clearScheduledDate?: boolean;
     technicianId?: string | null;
+    technicianNotes?: string;
     assetId?: number | null;
 }
 

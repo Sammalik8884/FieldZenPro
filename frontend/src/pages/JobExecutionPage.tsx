@@ -76,18 +76,7 @@ export const JobExecutionPage = () => {
         }
     };
 
-     const handleWaitingForParts = async () => {
-         try {
-             setActionLoading(true);
-             await workOrderService.markWaitingForParts(Number(id), notes);
-             toast.success("Job marked as Waiting for Parts. It has been unscheduled.");
-             fetchJob();
-         } catch (error: any) {
-             toast.error(extractApiError(error, "Failed to update job."));
-         } finally {
-             setActionLoading(false);
-         }
-     };
+
 
  const fetchJob = async () => {
  try {

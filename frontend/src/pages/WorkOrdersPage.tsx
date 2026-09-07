@@ -14,7 +14,7 @@ import { apiClient } from "../services/apiClient";
 import { CreateInvoiceModal } from "../components/CreateInvoiceModal";
 import { ReviewJobModal } from "../components/ReviewJobModal";
 import { SchedulingBoard } from "../components/workorders/SchedulingBoard";
-import { getNYDate, formatNYDateString } from "../utils/dateUtils";
+import { getNYDate } from "../utils/dateUtils";
 
 const extractApiError = (error: any, fallback: string) => {
     if (!error || !error.response || !error.response.data) {

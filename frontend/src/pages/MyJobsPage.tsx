@@ -192,6 +192,8 @@ export const MyJobsPage = () => {
  ))}
  </div>
  </div>
+ )}
+ </div>
  ) : (
     <div className="space-y-6">
         <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-border">
@@ -218,7 +220,7 @@ export const MyJobsPage = () => {
             {Array.from({ length: 7 }).map((_, i) => {
                 const day = addDays(currentWeekStart, i);
                 const dayJobs = jobs.filter(wo =>
-                    wo.scheduledDate && isSameDay(getNYDate(wo.scheduledDate), day)
+                    wo.scheduledDate && isSameDay(new Date(wo.scheduledDate), day)
                 );
                 
                 return (
