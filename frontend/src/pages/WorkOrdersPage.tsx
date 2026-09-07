@@ -68,7 +68,7 @@ export const WorkOrdersPage = () => {
         description: "",
         customerId: 0,
         contractId: 0,
-        scheduledDate: formatNYDateString(),
+        scheduledDate: "",
         technicianId: null,
         assetId: undefined
     });
@@ -198,7 +198,7 @@ export const WorkOrdersPage = () => {
             });
             toast.success("Work Order created successfully!");
             setIsCreateModalOpen(false);
-            setCreateForm({ description: "", customerId: 0, contractId: 0, scheduledDate: formatNYDateString(), technicianId: null, assetId: undefined });
+            setCreateForm({ description: "", customerId: 0, contractId: 0, scheduledDate: "", technicianId: null, assetId: undefined });
             setCreateCustomerSearch("");
             setCreateTechSearch("");
             fetchData();

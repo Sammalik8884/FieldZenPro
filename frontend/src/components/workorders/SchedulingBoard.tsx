@@ -23,7 +23,14 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
     // Unscheduled: null date OR Unscheduled status
     const unscheduledJobs = workOrders
         .filter(wo => !wo.scheduledDate || wo.status === 'Unscheduled')
-        .sort((a, b) => a.id - b.id); // Oldest first (by ID)
+        .sort((a, b) => {
+            const aPriority = (a.status !== 'Unscheduled' && a.status !== 'Created') ? 1 : 0;
+            const bPriority = (b.status !== 'Unscheduled' && b.status !== 'Created') ? 1 : 0;
+            if (aPriority !== bPriority) {
+                return bPriority - aPriority; // Priority ones go first
+            }
+            return a.id - b.id; // Oldest first (by ID)
+        });
 
     const nextWeek = () => setCurrentWeekStart(addDays(currentWeekStart, 7));
     const prevWeek = () => setCurrentWeekStart(addDays(currentWeekStart, -7));

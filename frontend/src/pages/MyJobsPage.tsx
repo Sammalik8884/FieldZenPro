@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Loader2, Wrench, MapPin, CalendarClock, ChevronRight } from "lucide-react";
+import { Loader2, Wrench, MapPin, CalendarClock, ChevronRight, Calendar, List } from "lucide-react";
+import { startOfWeek, addDays, format, isSameDay } from "date-fns";
+import { getNYDate } from "../utils/dateUtils";
 import { workOrderService } from "../services/workOrderService";
 import { timeTrackingService } from "../services/timeTrackingService";
 import { WorkOrderDto } from "../types/field";
@@ -11,6 +13,8 @@ export const MyJobsPage = () => {
  const [loading, setLoading] = useState(true);
  const [checkInLoadingId, setCheckInLoadingId] = useState<number | null>(null);
  const navigate = useNavigate();
+ const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+ const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeek(getNYDate(), { weekStartsOn: 1 }));
 
  const fetchJobs = async () => {
  try {
@@ -65,12 +69,28 @@ export const MyJobsPage = () => {
 
  return (
  <div className="p-4 md:p-8 max-w-4xl mx-auto animate-in fade-in duration-500">
- <div className="mb-6">
- <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
- <Wrench className="h-6 w-6 md:h-8 md:w-8 text-primary" />
- My Jobs
- </h1>
- <p className="text-muted-foreground mt-1 text-sm">Your field service schedule.</p>
+ <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
+            <Wrench className="h-6 w-6 md:h-8 md:w-8 text-primary" />
+            My Jobs
+        </h1>
+        <p className="text-muted-foreground mt-1 text-sm">Your field service schedule.</p>
+    </div>
+    <div className="flex bg-muted/30 p-1 rounded-lg border border-border w-fit">
+        <button
+            onClick={() => setViewMode("list")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === "list" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+        >
+            <List className="h-4 w-4" /> List
+        </button>
+        <button
+            onClick={() => setViewMode("calendar")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === "calendar" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+        >
+            <Calendar className="h-4 w-4" /> Calendar
+        </button>
+    </div>
  </div>
 
  {loading ? (
@@ -78,6 +98,8 @@ export const MyJobsPage = () => {
  <Loader2 className="h-8 w-8 animate-spin text-primary" />
  </div>
  ) : (
+ <>
+ {viewMode === "list" ? (
  <div className="space-y-8">
  {/* Active Jobs */}
  <div>
@@ -170,8 +192,78 @@ export const MyJobsPage = () => {
  ))}
  </div>
  </div>
+ ) : (
+    <div className="space-y-6">
+        <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-border">
+            <h2 className="text-lg font-bold text-foreground">
+                Week of {format(currentWeekStart, "MMM d, yyyy")}
+            </h2>
+            <div className="flex gap-2">
+                <button
+                    onClick={() => setCurrentWeekStart(addDays(currentWeekStart, -7))}
+                    className="p-2 border border-border rounded hover:bg-muted text-muted-foreground"
+                >
+                    &lt; Prev
+                </button>
+                <button
+                    onClick={() => setCurrentWeekStart(addDays(currentWeekStart, 7))}
+                    className="p-2 border border-border rounded hover:bg-muted text-muted-foreground"
+                >
+                    Next &gt;
+                </button>
+            </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
+            {Array.from({ length: 7 }).map((_, i) => {
+                const day = addDays(currentWeekStart, i);
+                const dayJobs = jobs.filter(wo =>
+                    wo.scheduledDate && isSameDay(getNYDate(wo.scheduledDate), day)
+                );
+                
+                return (
+                    <div key={i} className="flex flex-col bg-card border border-border rounded-xl overflow-hidden min-h-[200px]">
+                        <div className="bg-muted px-4 py-2 border-b border-border text-center">
+                            <div className="text-xs font-semibold uppercase text-muted-foreground">{format(day, "EEE")}</div>
+                            <div className="text-lg font-bold text-foreground">{format(day, "d")}</div>
+                        </div>
+                        <div className="p-2 flex-1 flex flex-col gap-2 bg-background/50">
+                            {dayJobs.length === 0 ? (
+                                <div className="text-center text-xs text-muted-foreground py-4">No jobs</div>
+                            ) : (
+                                dayJobs.map(job => (
+                                    <div
+                                        key={job.id}
+                                        onClick={() => navigate(`/job/${job.id}`)}
+                                        className="bg-card border border-border p-3 rounded-lg text-xs shadow-sm hover:border-primary/50 cursor-pointer transition-colors relative group"
+                                    >
+                                        <div className="font-semibold text-foreground mb-1">#{job.id} - {job.customerName}</div>
+                                        <div className="text-muted-foreground line-clamp-2 mb-2">{job.description}</div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="font-medium px-2 py-0.5 bg-primary/10 text-primary rounded-full">
+                                                {job.status}
+                                            </span>
+                                            <button 
+                                                className="opacity-0 group-hover:opacity-100 bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-medium transition-opacity"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigate(`/job/${job.id}`);
+                                                }}
+                                            >
+                                                Start
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    </div>
  )}
- </div>
+ </>
  )}
  </div>
  );

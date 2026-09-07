@@ -138,102 +138,100 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                         )}
 
                         {items.map(item => (
-                            <div key={`saved-${item.id}`} className="flex flex-wrap md:flex-nowrap gap-4 items-end animate-in slide-in-from-left-4 duration-300">
-                                <div className="flex-1 min-w-[200px]">
-                                    <label className="block text-xs text-muted-foreground mb-1">Description</label>
-                                    <div className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground">
+                            <div key={`saved-${item.id}`} className="grid grid-cols-12 gap-x-2 gap-y-3 md:flex md:flex-nowrap md:gap-4 items-end animate-in slide-in-from-left-4 duration-300 bg-muted/5 p-2 rounded-lg border border-border">
+                                <div className="col-span-12 md:flex-1 md:min-w-[200px]">
+                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Description</label>
+                                    <div className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground">
                                         {item.description}
                                     </div>
                                 </div>
-                                <div className="w-24">
-                                    <label className="block text-xs text-muted-foreground mb-1">Qty</label>
-                                    <div className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground text-right">
+                                <div className="col-span-3 md:w-20">
+                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Qty</label>
+                                    <div className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground text-right">
                                         {item.quantity}
                                     </div>
                                 </div>
-                                <div className="w-32">
-                                    <label className="block text-xs text-muted-foreground mb-1">Unit Price ($)</label>
-                                    <div className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground text-right">
+                                <div className="col-span-4 md:w-24">
+                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Price</label>
+                                    <div className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground text-right">
                                         {item.unitPrice.toFixed(2)}
                                     </div>
                                 </div>
-                                <div className="w-16 flex flex-col items-center">
-                                    <label className="block text-xs text-muted-foreground mb-3">Tax</label>
-                                    <input type="checkbox" checked={item.isTaxable} readOnly className="w-4 h-4 accent-primary cursor-not-allowed opacity-50" />
+                                <div className="col-span-2 md:w-12 flex flex-col items-center justify-center h-full pb-2 md:pb-3">
+                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Tax</label>
+                                    <input type="checkbox" checked={item.isTaxable} readOnly className="w-4 h-4 accent-primary cursor-not-allowed opacity-50 mt-1" />
                                 </div>
-                                <div className="w-32">
-                                    <label className="block text-xs text-muted-foreground mb-1">Total</label>
-                                    <div className="w-full bg-white/5 border border-transparent rounded-lg px-4 py-2 text-sm text-muted-foreground flex justify-between items-center">
-                                        <span>${(item.quantity * item.unitPrice).toFixed(2)}</span>
-                                        <button
-                                            onClick={() => handleDelete(item.id)}
-                                            className="text-muted-foreground hover:text-destructive transition-colors ml-2"
-                                            title="Remove item"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
+                                <div className="col-span-3 flex justify-end md:w-32 items-center h-full pb-1 md:pb-0 gap-2">
+                                    <div className="w-full text-right text-sm font-medium text-muted-foreground pr-1 mt-auto">
+                                        ${(item.quantity * item.unitPrice).toFixed(2)}
                                     </div>
+                                    <button
+                                        onClick={() => handleDelete(item.id)}
+                                        className="text-muted-foreground hover:text-destructive transition-colors mt-auto p-1"
+                                        title="Remove item"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
                                 </div>
                             </div>
                         ))}
 
                         {newItems.map((item, index) => (
-                            <div key={`new-${index}`} className="flex flex-wrap md:flex-nowrap gap-4 items-end animate-in slide-in-from-left-4 duration-300 bg-muted/20 p-3 rounded-lg border border-border">
-                                <div className="flex-1 min-w-[200px]">
-                                    <label className="block text-xs text-muted-foreground mb-1">Description</label>
+                            <div key={`new-${index}`} className="grid grid-cols-12 gap-x-2 gap-y-3 md:flex md:flex-nowrap md:gap-4 items-end animate-in slide-in-from-left-4 duration-300 bg-muted/20 p-2 rounded-lg border border-border">
+                                <div className="col-span-12 md:flex-1 md:min-w-[200px]">
+                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Description</label>
                                     <input
                                         type="text"
                                         list={`job-product-list-${index}`}
                                         value={item.description}
                                         onChange={e => handleProductSelect(index, e.target.value)}
                                         placeholder="Type or select a product..."
-                                        className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                        className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                     />
                                     <datalist id={`job-product-list-${index}`}>
                                         {products.map(p => <option key={p.id} value={p.name} />)}
                                     </datalist>
                                 </div>
-                                <div className="w-24">
-                                    <label className="block text-xs text-muted-foreground mb-1">Qty</label>
+                                <div className="col-span-3 md:w-20">
+                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Qty</label>
                                     <input
                                         type="number"
                                         min="0.01" step="0.01"
                                         value={item.quantity}
                                         onChange={e => handleNewItemChange(index, 'quantity', parseFloat(e.target.value) || 0)}
-                                        className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                        className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                     />
                                 </div>
-                                <div className="w-32">
-                                    <label className="block text-xs text-muted-foreground mb-1">Unit Price ($)</label>
+                                <div className="col-span-4 md:w-24">
+                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Price</label>
                                     <input
                                         type="number"
                                         min="0" step="0.01"
                                         value={item.unitPrice}
                                         onChange={e => handleNewItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-                                        className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                        className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                     />
                                 </div>
-                                <div className="w-16 flex flex-col items-center">
-                                    <label className="block text-xs text-muted-foreground mb-3">Tax</label>
-                                    <input 
-                                        type="checkbox" 
+                                <div className="col-span-2 md:w-12 flex flex-col items-center justify-center h-full pb-2 md:pb-3">
+                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Tax</label>
+                                    <input
+                                        type="checkbox"
                                         checked={item.isTaxable}
                                         onChange={e => handleNewItemChange(index, 'isTaxable', e.target.checked)}
-                                        className="w-4 h-4 accent-primary cursor-pointer" 
+                                        className="w-4 h-4 accent-primary cursor-pointer mt-1"
                                     />
                                 </div>
-                                <div className="w-32 flex flex-col gap-2">
-                                    <label className="block text-xs text-muted-foreground mb-1">Total</label>
-                                    <div className="w-full bg-white/5 border border-transparent rounded-lg px-4 py-2 text-sm text-muted-foreground flex justify-between items-center">
-                                        <span>${(item.quantity * item.unitPrice).toFixed(2)}</span>
-                                        <button
-                                            onClick={() => handleRemoveNewItem(index)}
-                                            className="text-muted-foreground hover:text-destructive transition-colors ml-2"
-                                            title="Remove item"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
+                                <div className="col-span-3 flex justify-end md:w-32 items-center h-full pb-1 md:pb-0 gap-2">
+                                    <div className="w-full text-right text-sm font-medium text-muted-foreground pr-1 mt-auto">
+                                        ${(item.quantity * item.unitPrice).toFixed(2)}
                                     </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveNewItem(index)}
+                                        className="text-destructive hover:bg-destructive/10 p-1 rounded transition-colors mt-auto"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
                                 </div>
                             </div>
                         ))}

@@ -58,6 +58,24 @@ export const JobExecutionPage = () => {
  });
  };
 
+     const handleSaveProgress = async (newStatus: string) => {
+        try {
+            setActionLoading(true);
+            await workOrderService.update(Number(id), { 
+                id: Number(id), 
+                status: newStatus, 
+                technicianNotes: notes,
+                clearScheduledDate: true 
+            });
+            toast.success(`Job saved and marked as ${newStatus.replace(/([A-Z])/g, ' $1').trim()}.`);
+            fetchJob();
+        } catch (error: any) {
+            toast.error(extractApiError(error, "Failed to update job."));
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
      const handleWaitingForParts = async () => {
          try {
              setActionLoading(true);
@@ -106,7 +124,31 @@ export const JobExecutionPage = () => {
 
 
 
- const handleComplete = async (e: React.FormEvent) => {
+    const uploadPhotosNow = async () => {
+        if (!id || evidenceFiles.length === 0) return;
+        setActionLoading(true);
+        try {
+            const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true };
+            for (const file of evidenceFiles) {
+                let uploadFile = file;
+                if (file.type.startsWith('image/')) {
+                    uploadFile = await imageCompression(file, options);
+                }
+                const formData = new FormData();
+                formData.append('File', uploadFile, uploadFile.name);
+                await workOrderService.uploadEvidence(Number(id), formData);
+            }
+            toast.success("Photos uploaded and saved successfully!");
+            setEvidenceFiles([]);
+            fetchJob(); // Reload job to fetch new evidence URLs
+        } catch (error: any) {
+            toast.error(extractApiError(error, "Failed to upload photos."));
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleComplete = async (e: React.FormEvent) => {
  e.preventDefault();
  confirmAction(
  "Complete Job",
@@ -201,7 +243,7 @@ export const JobExecutionPage = () => {
 
  if (!job) return null;
 
- const isJobActive = !['Completed', 'PendingApproval', 'Approved'].includes(job.status);
+    const isJobActive = true;
 
  return (
  <div className="p-4 md:p-8 max-w-3xl mx-auto animate-in fade-in duration-500 pb-24">
@@ -347,35 +389,64 @@ export const JobExecutionPage = () => {
  <UploadCloud className="h-5 w-5 text-primary" />
  Job Evidence / Photos
  </h3>
- {isJobActive ? (
- <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:bg-muted transition-colors">
- <input
- type="file"
- accept="image/*"
- id="evidence-upload"
- multiple
- className="hidden"
- onChange={(e) => {
- if (e.target.files && e.target.files.length > 0) {
- setEvidenceFiles(Array.from(e.target.files));
- }
- }}
- />
- <label htmlFor="evidence-upload" className="cursor-pointer flex flex-col items-center justify-center">
- <UploadCloud className="h-8 w-8 text-muted-foreground mb-2" />
- <span className="text-sm font-medium text-primary">Click to take photos or upload</span>
- <span className="text-xs text-muted-foreground mt-1">JPEG, PNG, HEIC up to 10MB</span>
- </label>
- {evidenceFiles.length > 0 && (
- <div className="mt-4 space-y-2">
- {evidenceFiles.map((file, i) => (
- <div key={i} className="p-2 bg-primary/10 border border-primary/20 text-primary text-sm rounded-lg flex justify-between items-center">
- <span className="truncate max-w-[200px]">{file.name}</span>
- <button type="button" onClick={() => setEvidenceFiles(prev => prev.filter((_, index) => index !== i))} className="text-xs hover:underline">Remove</button>
- </div>
- ))}
- </div>
+
+ {/* Saved Evidences */}
+ {job.evidences && job.evidences.length > 0 && (
+     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+         {job.evidences.map((ev) => (
+             <div key={ev.id} className="relative group rounded-lg overflow-hidden border border-border aspect-square bg-muted">
+                 <img src={ev.fileUrl} alt={ev.fileName} className="w-full h-full object-cover" />
+             </div>
+         ))}
+     </div>
  )}
+
+ {isJobActive ? (
+ <div className="space-y-4">
+     <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:bg-muted transition-colors">
+     <input
+     type="file"
+     accept="image/*"
+     id="evidence-upload"
+     multiple
+     className="hidden"
+     onChange={(e) => {
+     if (e.target.files && e.target.files.length > 0) {
+     setEvidenceFiles(prev => [...prev, ...Array.from(e.target.files!)]);
+     }
+     }}
+     />
+     <label htmlFor="evidence-upload" className="cursor-pointer flex flex-col items-center justify-center">
+     <UploadCloud className="h-8 w-8 text-muted-foreground mb-2" />
+     <span className="text-sm font-medium text-primary">Click to take photos or upload</span>
+     <span className="text-xs text-muted-foreground mt-1">JPEG, PNG, HEIC up to 10MB</span>
+     </label>
+     </div>
+
+     {evidenceFiles.length > 0 && (
+         <div className="space-y-4">
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                 {evidenceFiles.map((file, i) => (
+                     <div key={i} className="relative group rounded-lg overflow-hidden border border-border aspect-square bg-muted">
+                         <img src={URL.createObjectURL(file)} alt={file.name} className="w-full h-full object-cover" />
+                         <button type="button" onClick={() => setEvidenceFiles(prev => prev.filter((_, index) => index !== i))} className="absolute top-2 right-2 bg-destructive text-destructive-foreground p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                             <span className="sr-only">Remove</span>
+                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                         </button>
+                     </div>
+                 ))}
+             </div>
+             <button
+                 type="button"
+                 onClick={uploadPhotosNow}
+                 disabled={actionLoading}
+                 className="w-full bg-primary text-primary-foreground py-2 rounded-lg font-semibold hover:bg-primary/90 flex justify-center items-center gap-2"
+             >
+                 {actionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
+                 Upload Photos Now
+             </button>
+         </div>
+     )}
  </div>
  ) : (
  <div className="text-sm text-muted-foreground">Photos cannot be uploaded for completed jobs.</div>
@@ -414,28 +485,36 @@ export const JobExecutionPage = () => {
  </select>
  </div>
 
- <div className="flex gap-2">
- {job.status !== 'WaitingForParts' && (
-      <button
-      type="button"
-      onClick={handleWaitingForParts}
-      disabled={actionLoading || !notes}
-      className="flex-1 bg-orange-500/10 text-orange-500 border border-orange-500/20 font-semibold py-3.5 flex items-center justify-center gap-2 rounded-xl hover:bg-orange-500/20 transition-all shadow-sm disabled:opacity-50"
-      >
-      {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Clock className="h-5 w-5" />}
-      <span>Waiting for Parts</span>
-      </button>
- )}
-
-      <button
-      type="submit"
-      disabled={actionLoading || !notes}
-      className="flex-1 bg-primary text-primary-foreground font-semibold py-3.5 flex items-center justify-center gap-2 rounded-xl hover:-translate-y-0.5 transition-all shadow-sm disabled:opacity-50 disabled:hover:translate-y-0"
-      >
-      {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
-      <span>Complete Job</span>
-      </button>
-  </div>
+   <div className="flex flex-col gap-2">
+       <div className="flex gap-2">
+           <button
+               type="button"
+               onClick={() => handleSaveProgress('WaitingForParts')}
+               disabled={actionLoading || !notes}
+               className="flex-1 bg-orange-500/10 text-orange-500 border border-orange-500/20 font-semibold py-3.5 flex items-center justify-center gap-2 rounded-xl hover:bg-orange-500/20 transition-all shadow-sm disabled:opacity-50"
+           >
+               {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Clock className="h-5 w-5" />}
+               <span>Waiting for Parts</span>
+           </button>
+           <button
+               type="button"
+               onClick={() => handleSaveProgress('PendingQuote')}
+               disabled={actionLoading || !notes}
+               className="flex-1 bg-yellow-500/10 text-yellow-600 border border-yellow-500/20 font-semibold py-3.5 flex items-center justify-center gap-2 rounded-xl hover:bg-yellow-500/20 transition-all shadow-sm disabled:opacity-50"
+           >
+               {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <ClipboardCheck className="h-5 w-5" />}
+               <span>Pending Quote</span>
+           </button>
+       </div>
+       <button
+           type="submit"
+           disabled={actionLoading || !notes}
+           className="w-full bg-primary text-primary-foreground font-semibold py-3.5 flex items-center justify-center gap-2 rounded-xl hover:-translate-y-0.5 transition-all shadow-sm disabled:opacity-50 disabled:hover:translate-y-0 mt-2"
+       >
+           {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
+           <span>Complete Job</span>
+       </button>
+   </div>
  </form>
  ) : (
  <div className="space-y-4 text-sm bg-background/50 p-4 rounded-xl border border-border">

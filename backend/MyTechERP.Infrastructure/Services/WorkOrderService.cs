@@ -334,7 +334,10 @@ namespace MyTechERP.Infrastructure.Services
             var workOrder = await _context.WorkOrders.FindAsync(id);
             if (workOrder == null) return false;
 
-            _workflowService.ValidateTransition(workOrder.Status, WorkOrderStatus.Completed);
+            if (workOrder.Status != WorkOrderStatus.Completed)
+            {
+                _workflowService.ValidateTransition(workOrder.Status, WorkOrderStatus.Completed);
+            }
 
             var evidenceCount = await _context.JobEvidences.CountAsync(e => e.WorkOrderId == id);
             if (evidenceCount == 0)
