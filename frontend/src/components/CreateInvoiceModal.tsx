@@ -413,9 +413,9 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                             </div>
                             <div className="p-4 space-y-4">
                                 {items.map((item, index) => (
-                                    <div key={index} className="flex flex-wrap md:flex-nowrap gap-4 items-end animate-in slide-in-from-left-4 duration-300">
-                                        <div className="flex-1 min-w-[200px]">
-                                            <label className="block text-xs text-muted-foreground mb-1">
+                                    <div key={index} className="grid grid-cols-12 md:flex gap-4 md:items-end p-4 md:p-0 bg-muted/10 md:bg-transparent rounded-xl border border-border/50 md:border-none animate-in slide-in-from-left-4 duration-300">
+                                        <div className="col-span-12 md:flex-1 md:min-w-[200px]">
+                                            <label className="block text-xs text-muted-foreground mb-1.5 md:mb-1">
                                                 {item.type === "product" ? "Product" : item.type === "asset" ? "Asset" : "Service Description"}
                                             </label>
                                             {item.type === "product" ? (
@@ -436,7 +436,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                                             setItems(newItems);
                                                         }}
                                                         placeholder="Type or select a product..."
-                                                        className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                                        className="w-full bg-background md:bg-white/5 border border-border rounded-lg px-4 py-2.5 md:py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                                     />
                                                     <datalist id={`product-options-${index}`}>
                                                         {products.map(p => <option key={p.id} value={p.name} />)}
@@ -447,7 +447,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                                     required
                                                     value={item.itemId || ""}
                                                     onChange={(e) => handleSelectOption(index, Number(e.target.value), "asset")}
-                                                    className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                                    className="w-full bg-background md:bg-white/5 border border-border rounded-lg px-4 py-2.5 md:py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                                 >
                                                     <option value="" className="bg-card text-foreground">Select Asset...</option>
                                                     {assets.map(a => <option key={a.id} value={a.id} className="bg-card text-foreground">{a.name} ({a.serialNumber})</option>)}
@@ -459,50 +459,68 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                                     value={item.description}
                                                     onChange={(e) => handleItemChange(index, "description", e.target.value)}
                                                     placeholder="Description..."
-                                                    className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                                    className="w-full bg-background md:bg-white/5 border border-border rounded-lg px-4 py-2.5 md:py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                                 />
                                             )}
                                         </div>
-                                        <div className="w-24">
-                                            <label className="block text-xs text-muted-foreground mb-1">Qty</label>
+                                        <div className="col-span-5 md:w-24">
+                                            <label className="block text-xs text-muted-foreground mb-1.5 md:mb-1">Qty</label>
                                             <input
                                                 type="number"
                                                 required
                                                 min="0.01" step="0.01"
                                                 value={item.quantity}
                                                 onChange={(e) => handleItemChange(index, "quantity", parseFloat(e.target.value))}
-                                                className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
-                                                disabled={item.type === "asset"} // Assets usually have quantity 1
+                                                className="w-full bg-background md:bg-white/5 border border-border rounded-lg px-4 py-2.5 md:py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                                disabled={item.type === "asset"}
                                             />
                                         </div>
-                                        <div className="w-32">
-                                            <label className="block text-xs text-muted-foreground mb-1">Unit Price ($)</label>
+                                        <div className="col-span-7 md:w-32">
+                                            <label className="block text-xs text-muted-foreground mb-1.5 md:mb-1">Unit Price ($)</label>
                                             <input
                                                 type="number"
                                                 required
                                                 min="0" step="0.01"
                                                 value={item.unitPrice}
                                                 onChange={(e) => handleItemChange(index, "unitPrice", parseFloat(e.target.value))}
-                                                className="w-full bg-white/5 border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                                className="w-full bg-background md:bg-white/5 border border-border rounded-lg px-4 py-2.5 md:py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                             />
                                         </div>
-                                        <div className="w-16 flex flex-col items-center">
-                                            <label className="block text-xs text-muted-foreground mb-1">Tax</label>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleItemChange(index, "isTaxable", !item.isTaxable)}
-                                                className={`w-10 h-6 rounded-full transition-colors relative flex-shrink-0 border-2 ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
-                                            >
-                                                <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-4' : 'translate-x-0.5'}`} />
-                                            </button>
+                                        <div className="col-span-12 flex items-center justify-between pt-3 border-t border-border/50 md:pt-0 md:justify-start md:w-16 md:border-none md:flex-col md:items-center mt-1 md:mt-0">
+                                            <div className="flex items-center gap-3 md:flex-col md:gap-1.5">
+                                                <label className="block text-sm md:text-xs font-medium md:font-normal text-muted-foreground md:mb-1">Tax</label>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleItemChange(index, "isTaxable", !item.isTaxable)}
+                                                    className={`w-11 h-6 md:w-10 md:h-6 rounded-full transition-colors relative flex-shrink-0 border-2 ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
+                                                >
+                                                    <span className={`absolute top-[1px] md:top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-5 md:translate-x-4' : 'translate-x-0.5'}`} />
+                                                </button>
+                                            </div>
+                                            {/* Mobile Total & Trash */}
+                                            <div className="flex md:hidden items-center gap-4">
+                                                <div className="text-base font-bold text-foreground">
+                                                    ${(item.quantity * item.unitPrice).toFixed(2)}
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemoveItem(index)}
+                                                    disabled={items.length === 1}
+                                                    className="text-muted-foreground hover:text-destructive disabled:opacity-30 transition-colors p-2 bg-background border border-border rounded-lg"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div className="w-32">
+                                        
+                                        {/* Desktop Only Total & Trash */}
+                                        <div className="hidden md:block w-32">
                                             <label className="block text-xs text-muted-foreground mb-1">Total</label>
                                             <div className="w-full bg-white/5 border border-transparent rounded-lg px-4 py-2 text-sm text-muted-foreground">
                                                 ${(item.quantity * item.unitPrice).toFixed(2)}
                                             </div>
                                         </div>
-                                        <div className="w-10 flex justify-center pb-2">
+                                        <div className="hidden md:flex w-10 justify-center pb-2">
                                             <button
                                                 type="button"
                                                 onClick={() => handleRemoveItem(index)}

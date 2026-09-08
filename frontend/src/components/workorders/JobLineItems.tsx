@@ -159,7 +159,13 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                 </div>
                                 <div className="col-span-2 md:w-12 flex flex-col items-center justify-center h-full pb-2 md:pb-3">
                                     <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Tax</label>
-                                    <input type="checkbox" checked={item.isTaxable} readOnly className="w-4 h-4 accent-primary cursor-not-allowed opacity-50 mt-1" />
+                                    <button
+                                        type="button"
+                                        disabled
+                                        className={`w-9 h-5 rounded-full transition-colors relative flex-shrink-0 border-2 opacity-60 cursor-not-allowed ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
+                                    >
+                                        <span className={`absolute top-[1px] h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                                    </button>
                                 </div>
                                 <div className="col-span-3 flex justify-end md:w-32 items-center h-full pb-1 md:pb-0 gap-2">
                                     <div className="w-full text-right text-sm font-medium text-muted-foreground pr-1 mt-auto">
@@ -214,12 +220,13 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                 </div>
                                 <div className="col-span-2 md:w-12 flex flex-col items-center justify-center h-full pb-2 md:pb-3">
                                     <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Tax</label>
-                                    <input
-                                        type="checkbox"
-                                        checked={item.isTaxable}
-                                        onChange={e => handleNewItemChange(index, 'isTaxable', e.target.checked)}
-                                        className="w-4 h-4 accent-primary cursor-pointer mt-1"
-                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleNewItemChange(index, 'isTaxable', !item.isTaxable)}
+                                        className={`w-9 h-5 rounded-full transition-colors relative flex-shrink-0 border-2 ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
+                                    >
+                                        <span className={`absolute top-[1px] h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                                    </button>
                                 </div>
                                 <div className="col-span-3 flex justify-end md:w-32 items-center h-full pb-1 md:pb-0 gap-2">
                                     <div className="w-full text-right text-sm font-medium text-muted-foreground pr-1 mt-auto">
