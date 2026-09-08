@@ -216,9 +216,10 @@ export const WorkOrdersPage = () => {
  const inputCls = "w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[48px]";
 
  return (
-  <div className="animate-in fade-in duration-500">
+  <>
+   <div className="animate-in fade-in duration-500">
 
-   {/* Header */}
+    {/* Header */}
    <div className="flex justify-between items-center mb-6">
     <div>
      <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
@@ -393,11 +394,12 @@ export const WorkOrdersPage = () => {
       </div>
      </>
     )}
+    </div>
    </div>
 
    {/* ── Edit Modal — bottom sheet on mobile ── */}
    {isEditModalOpen && editingJob && (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
+    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
      <div className="bg-card border border-border w-full md:max-w-md md:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden relative max-h-[90vh] flex flex-col">
       <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
       <div className="flex justify-center pt-3 pb-1 md:hidden"><div className="w-10 h-1 bg-border rounded-full" /></div>
@@ -452,7 +454,7 @@ export const WorkOrdersPage = () => {
 
    {/* ── Create Modal — bottom sheet on mobile ── */}
    {isCreateModalOpen && (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
+    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
      <div className="bg-card border border-border w-full md:max-w-lg md:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden relative max-h-[92vh] flex flex-col">
       <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
       <div className="flex justify-between items-center px-5 pt-5 pb-1">
@@ -538,6 +540,6 @@ export const WorkOrdersPage = () => {
 
    <CreateInvoiceModal isOpen={invoiceModalOpen} onClose={() => setInvoiceModalOpen(false)} onSuccess={() => { setInvoiceModalOpen(false); fetchData(); }} initialCustomerId={invoiceModalProps.customerId} initialLaborCost={invoiceModalProps.laborCost} workOrderId={invoiceModalProps.workOrderId} />
    <ReviewJobModal isOpen={reviewModalOpen} onClose={() => setReviewModalOpen(false)} workOrder={reviewWorkOrder} />
-  </div>
- );
-};
+   </>
+  );
+ };
