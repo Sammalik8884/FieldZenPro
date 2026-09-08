@@ -258,8 +258,8 @@ export const CustomersPage = () => {
 
    {/* Add/Edit Modal — Full screen bottom sheet on mobile, centered dialog on desktop */}
    {isModalOpen && (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in">
-     <div className="bg-card border border-border w-full md:max-w-md md:rounded-2xl rounded-t-3xl shadow-xl overflow-hidden relative max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
+     <div className="bg-card border border-border w-full md:max-w-md md:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden relative max-h-[92vh] flex flex-col">
       <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
 
       {/* Mobile drag handle */}

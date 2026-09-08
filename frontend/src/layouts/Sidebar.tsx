@@ -165,7 +165,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             </nav>
 
             {/* User profile + logout */}
-            <div className="p-3 border-t border-border shrink-0">
+            <div className="p-3 border-t border-border shrink-0 pb-24 md:pb-3">
                 <div className="flex items-center space-x-3 px-2 py-2 rounded-xl hover:bg-secondary/50 transition-colors mb-1">
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                         <span className="text-primary font-bold text-sm">{user?.fullName?.[0] || 'U'}</span>
