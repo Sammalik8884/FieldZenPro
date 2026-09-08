@@ -213,8 +213,6 @@ export const WorkOrdersPage = () => {
   }
  };
 
- const inputCls = "w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[48px]";
-
  return (
   <>
    <div className="animate-in fade-in duration-500">
@@ -397,25 +395,36 @@ export const WorkOrdersPage = () => {
     </div>
    </div>
 
-   {/* ── Edit Modal — bottom sheet on mobile ── */}
+   {/* ── Edit Modal ── */}
    {isEditModalOpen && editingJob && (
-    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
-     <div className="bg-card border border-border w-full md:max-w-md md:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden relative max-h-[90vh] flex flex-col">
-      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
-      <div className="flex justify-center pt-3 pb-1 md:hidden"><div className="w-10 h-1 bg-border rounded-full" /></div>
-      <div className="p-5 md:p-6 overflow-y-auto flex-1">
-       <h2 className="text-xl font-bold mb-5 flex items-center gap-2">
-        <BriefcaseBusiness className="h-5 w-5 text-primary" />
+    <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in">
+     <div className="flex flex-col flex-1 w-full md:max-w-md md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[90vh] md:flex-none overflow-hidden relative">
+      <div className="hidden md:block absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
+      
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 md:px-6 md:pt-6 md:pb-5 border-b border-border md:border-none bg-card shrink-0 shadow-sm md:shadow-none">
+       {/* Mobile Cancel */}
+       <button type="button" onClick={() => setIsEditModalOpen(false)} className="md:hidden text-sm font-medium text-muted-foreground p-2 -ml-2">Cancel</button>
+       
+       <h2 className="font-bold text-base md:text-xl flex items-center gap-2 text-foreground truncate px-2">
+        <BriefcaseBusiness className="hidden md:block h-5 w-5 text-primary shrink-0" />
         Edit WO-{editingJob.id.toString().padStart(4, '0')}
        </h2>
-       <form onSubmit={handleSaveEdit} className="space-y-4">
+       
+       {/* Mobile Save */}
+       <button type="button" onClick={handleSaveEdit} className="md:hidden text-sm font-bold text-primary p-2 -mr-2">Save</button>
+      </div>
+      
+      {/* Form */}
+      <div className="flex-1 overflow-y-auto p-5 md:p-6">
+       <form onSubmit={handleSaveEdit} className="space-y-4 md:space-y-5 pb-20 md:pb-0">
         <div>
          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Description / Notes</label>
-         <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary" rows={3} />
+         <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[80px]" rows={3} />
         </div>
         <div>
          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Status</label>
-         <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })} className={inputCls}>
+         <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px] text-base">
           <option value="Created">Created</option>
           <option value="Assigned">Assigned</option>
           <option value="Initialized">Initialized</option>
@@ -432,17 +441,19 @@ export const WorkOrdersPage = () => {
         </div>
         <div>
          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Scheduled Date</label>
-         <input type="date" value={formData.scheduledDate || ""} onChange={e => setFormData({ ...formData, scheduledDate: e.target.value })} className={inputCls} />
+         <input type="date" value={formData.scheduledDate || ""} onChange={e => setFormData({ ...formData, scheduledDate: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px] text-base" />
         </div>
         <div>
          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Assign Technician</label>
-         <select value={formData.technicianId || ""} onChange={e => setFormData({ ...formData, technicianId: e.target.value })} className={inputCls}>
+         <select value={formData.technicianId || ""} onChange={e => setFormData({ ...formData, technicianId: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px] text-base">
           <option value="">-- Unassigned --</option>
           {technicians.map(t => (<option key={t.id} value={t.id}>{t.fullName}</option>))}
           {technicians.length === 0 && <option value="" disabled>No technicians found.</option>}
          </select>
         </div>
-        <div className="flex gap-3 pt-4 border-t border-border">
+        
+        {/* Desktop Save/Cancel (hidden on mobile) */}
+        <div className="hidden md:flex gap-3 pt-4 border-t border-border mt-6">
          <button type="button" onClick={() => setIsEditModalOpen(false)} className="flex-1 px-4 py-3 text-sm font-medium border border-border hover:bg-muted rounded-xl transition-colors min-h-[48px]">Cancel</button>
          <button type="submit" className="flex-1 px-4 py-3 text-sm font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all min-h-[48px]">Save Changes</button>
         </div>
@@ -452,23 +463,36 @@ export const WorkOrdersPage = () => {
     </div>
    )}
 
-   {/* ── Create Modal — bottom sheet on mobile ── */}
+   {/* ── Create Modal ── */}
    {isCreateModalOpen && (
-    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
-     <div className="bg-card border border-border w-full md:max-w-lg md:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden relative max-h-[92vh] flex flex-col">
-      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
-      <div className="flex justify-between items-center px-5 pt-5 pb-1">
-       <div className="flex items-center gap-3">
-        <div className="md:hidden w-10 h-1 bg-border rounded-full absolute top-3 left-1/2 -translate-x-1/2" />
-        <h2 className="text-xl font-bold flex items-center gap-2 text-foreground">
-         <PlusCircle className="h-5 w-5 text-primary" /> Create Work Order
-        </h2>
-       </div>
-       <button onClick={() => { setIsCreateModalOpen(false); setCreateCustomerSearch(""); setCreateTechSearch(""); }} className="p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors">
+    <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in">
+     <div className="flex flex-col flex-1 w-full md:max-w-lg md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[92vh] md:flex-none overflow-hidden relative">
+      <div className="hidden md:block absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
+      
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 md:px-6 md:pt-6 md:pb-4 border-b border-border md:border-none bg-card shrink-0 shadow-sm md:shadow-none">
+       {/* Mobile Cancel */}
+       <button type="button" onClick={() => { setIsCreateModalOpen(false); setCreateCustomerSearch(""); setCreateTechSearch(""); }} className="md:hidden text-sm font-medium text-muted-foreground p-2 -ml-2">Cancel</button>
+       
+       <h2 className="font-bold text-base md:text-xl flex items-center gap-2 text-foreground truncate px-2">
+        <PlusCircle className="hidden md:block h-5 w-5 text-primary shrink-0" />
+        Create Work Order
+       </h2>
+       
+       {/* Mobile Save */}
+       <button type="button" onClick={handleCreateSubmit as any} disabled={processingId === -10 || !createForm.customerId} className="md:hidden text-sm font-bold text-primary p-2 -mr-2 disabled:opacity-50 flex items-center gap-1">
+        {processingId === -10 && <Loader2 className="h-3 w-3 animate-spin" />}
+        Create
+       </button>
+       
+       {/* Desktop Close */}
+       <button onClick={() => { setIsCreateModalOpen(false); setCreateCustomerSearch(""); setCreateTechSearch(""); }} className="hidden md:block p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors">
         <X className="h-5 w-5" />
        </button>
       </div>
-      <div className="p-5 md:p-6 overflow-y-auto flex-1 space-y-4">
+      
+      {/* Form */}
+      <div className="flex-1 overflow-y-auto p-5 md:p-6 space-y-4 md:space-y-5 pb-20 md:pb-6">
        {/* Customer search */}
        <div>
         <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Customer *</label>
@@ -476,7 +500,7 @@ export const WorkOrdersPage = () => {
          <input type="text" required placeholder="Search customer..." value={createCustomerSearch}
           onChange={e => { setCreateCustomerSearch(e.target.value); setShowCustomerDropdown(true); if (!e.target.value) setCreateForm({ ...createForm, customerId: 0 }); }}
           onFocus={() => setShowCustomerDropdown(true)} onBlur={() => setTimeout(() => setShowCustomerDropdown(false), 150)}
-          className={inputCls} />
+          className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
          {showCustomerDropdown && (
           <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-xl shadow-lg max-h-48 overflow-y-auto">
            {customers.filter(c => (c.companyName || c.name).toLowerCase().includes(createCustomerSearch.toLowerCase())).length === 0
@@ -493,13 +517,13 @@ export const WorkOrdersPage = () => {
        {/* Description */}
        <div>
         <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Description *</label>
-        <textarea required value={createForm.description} onChange={e => setCreateForm({ ...createForm, description: e.target.value })} className="w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary" rows={3} placeholder="Describe the work to be done..." />
+        <textarea required value={createForm.description} onChange={e => setCreateForm({ ...createForm, description: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[80px]" rows={3} placeholder="Describe the work to be done..." />
        </div>
 
        {/* Scheduled Date */}
        <div>
         <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Scheduled Date</label>
-        <input type="date" value={createForm.scheduledDate || ""} onChange={e => setCreateForm({ ...createForm, scheduledDate: e.target.value })} className={inputCls} />
+        <input type="date" value={createForm.scheduledDate || ""} onChange={e => setCreateForm({ ...createForm, scheduledDate: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
        </div>
 
        {/* Technician search */}
@@ -509,7 +533,7 @@ export const WorkOrdersPage = () => {
          <input type="text" placeholder="Search technician..." value={createTechSearch}
           onChange={e => { setCreateTechSearch(e.target.value); setShowTechDropdown(true); if (!e.target.value) setCreateForm({ ...createForm, technicianId: null }); }}
           onFocus={() => setShowTechDropdown(true)} onBlur={() => setTimeout(() => setShowTechDropdown(false), 150)}
-          className={inputCls} />
+          className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
          {showTechDropdown && (
           <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-xl shadow-lg max-h-48 overflow-y-auto">
            <button type="button" onMouseDown={() => { setCreateForm({ ...createForm, technicianId: null }); setCreateTechSearch(""); setShowTechDropdown(false); }} className="w-full text-left px-3 py-3 text-sm text-muted-foreground hover:bg-muted transition-colors italic">-- Unassigned --</button>
@@ -522,7 +546,8 @@ export const WorkOrdersPage = () => {
         </div>
        </div>
 
-       <div className="flex gap-3 pt-4 border-t border-border">
+       {/* Desktop Save/Cancel (hidden on mobile) */}
+       <div className="hidden md:flex gap-3 pt-4 border-t border-border mt-6">
         <button type="button" onClick={() => { setIsCreateModalOpen(false); setCreateCustomerSearch(""); setCreateTechSearch(""); }} className="flex-1 px-4 py-3 text-sm font-medium border border-border hover:bg-muted rounded-xl transition-colors min-h-[48px] text-muted-foreground">Cancel</button>
         <button type="button" onClick={handleCreateSubmit as any} disabled={processingId === -10 || !createForm.customerId} className="flex-1 px-4 py-3 text-sm font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 min-h-[48px]">
          {processingId === -10 ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
