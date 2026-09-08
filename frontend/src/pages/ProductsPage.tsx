@@ -322,66 +322,85 @@ export const ProductsPage = () => {
  </div>
  </div>
 
- {/* Add/Edit Modal — bottom sheet on mobile */}
+ {/* Add/Edit Modal */}
  {isModalOpen && (
- <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
-  <div className="bg-card border border-border w-full md:max-w-xl md:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden relative max-h-[92vh] flex flex-col">
-   <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
-   <div className="flex items-center justify-between px-5 pt-5 pb-1 shrink-0">
-    <div className="md:hidden absolute top-3 left-1/2 -translate-x-1/2 w-10 h-1 bg-border rounded-full" />
-    <h2 className="text-xl font-bold flex items-center gap-2"><Package className="h-5 w-5 text-primary" />{editingProduct ? 'Edit Item' : 'Add New Item'}</h2>
-    <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors"><X className="h-5 w-5" /></button>
-   </div>
-   <div className="p-5 md:p-6 overflow-y-auto flex-1 space-y-4">
-    <form onSubmit={handleSubmit} className="space-y-4">
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <div>
-    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Item Name *</label>
-    <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary min-h-[48px]" />
+  <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in">
+   <div className="flex flex-col flex-1 w-full md:max-w-xl md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[92vh] md:flex-none overflow-hidden relative">
+    <div className="hidden md:block absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
+    
+    {/* Header */}
+    <div className="flex items-center justify-between px-4 py-3 md:px-6 md:pt-6 md:pb-5 border-b border-border md:border-none bg-card shrink-0 shadow-sm md:shadow-none">
+     {/* Mobile Cancel */}
+     <button type="button" onClick={() => setIsModalOpen(false)} className="md:hidden text-sm font-medium text-muted-foreground p-2 -ml-2">Cancel</button>
+     
+     <h2 className="font-bold text-base md:text-xl flex items-center gap-2 text-foreground truncate px-2">
+      <Package className="hidden md:block h-5 w-5 text-primary shrink-0" />
+      {editingProduct ? 'Edit Item' : 'Add New Item'}
+     </h2>
+     
+     {/* Mobile Save */}
+     <button type="button" onClick={handleSubmit as any} disabled={formLoading} className="md:hidden text-sm font-bold text-primary p-2 -mr-2 disabled:opacity-50">Save</button>
+     
+     {/* Desktop Close */}
+     <button onClick={() => setIsModalOpen(false)} className="hidden md:block p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors"><X className="h-5 w-5" /></button>
     </div>
-    <div>
-    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Category *</label>
-    <select required value={formData.categoryId} onChange={e => setFormData({ ...formData, categoryId: Number(e.target.value) })} className="w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary appearance-none min-h-[48px]">
-    <option value={0} disabled>Select category...</option>
-    {categories.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
-    </select>
+    
+    {/* Form */}
+    <div className="flex-1 overflow-y-auto p-5 md:p-6">
+     <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5 pb-20 md:pb-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
+       <div>
+        <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Item Name *</label>
+        <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+       </div>
+       <div>
+        <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Category *</label>
+        <select required value={formData.categoryId} onChange={e => setFormData({ ...formData, categoryId: Number(e.target.value) })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary appearance-none text-base min-h-[52px]">
+         <option value={0} disabled>Select category...</option>
+         {categories.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
+        </select>
+       </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
+       <div>
+        <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Price (\$) *</label>
+        <input type="number" step="0.01" required min="0" value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+       </div>
+       <div>
+        <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Item Code / SKU</label>
+        <input type="text" value={formData.itemCode} onChange={e => setFormData({ ...formData, itemCode: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+       </div>
+      </div>
+      <div>
+       <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Description</label>
+       <textarea rows={3} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary resize-none text-base min-h-[80px]" />
+      </div>
+      <div className="flex items-center gap-3 p-4 border border-border rounded-xl bg-background mt-2">
+       <input type="checkbox" id="isTaxable" checked={formData.isTaxable ?? false} onChange={e => setFormData({ ...formData, isTaxable: e.target.checked })} className="w-6 h-6 accent-primary cursor-pointer shrink-0" />
+       <div>
+        <label htmlFor="isTaxable" className="text-sm font-semibold cursor-pointer">Taxable (Sales Tax applies)</label>
+        <p className="text-xs text-muted-foreground">Check for parts/materials. Uncheck for labor.</p>
+       </div>
+      </div>
+      <div>
+       <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Item Image (Optional)</label>
+       <label className="w-full border-2 border-dashed border-border/60 hover:border-primary/50 transition-colors rounded-xl flex items-center justify-center p-6 cursor-pointer min-h-[100px]">
+        <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+        <div className="flex flex-col items-center space-y-2 text-muted-foreground"><ImageIcon className="h-8 w-8" /><span className="text-sm font-medium">{formData.image ? formData.image.name : 'Tap to upload image'}</span></div>
+       </label>
+      </div>
+      
+      {/* Desktop Save/Cancel */}
+      <div className="hidden md:flex gap-3 pt-4 border-t border-border mt-6">
+       <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-4 py-3 text-sm font-medium border border-border hover:bg-muted rounded-xl transition-colors min-h-[48px]">Cancel</button>
+       <button type="submit" disabled={formLoading} className="flex-1 px-4 py-3 text-sm font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all min-h-[48px] flex items-center justify-center gap-2 disabled:opacity-50">
+        {formLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}<span>Save Item</span>
+       </button>
+      </div>
+     </form>
     </div>
-    </div>
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <div>
-    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Price (\$) *</label>
-    <input type="number" step="0.01" required min="0" value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} className="w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary min-h-[48px]" />
-    </div>
-    <div>
-    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Item Code / SKU</label>
-    <input type="text" value={formData.itemCode} onChange={e => setFormData({ ...formData, itemCode: e.target.value })} className="w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary min-h-[48px]" />
-    </div>
-    </div>
-    <div>
-    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Description</label>
-    <textarea rows={3} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary resize-none" />
-    </div>
-    <div className="flex items-center gap-3 p-3 border border-border rounded-xl bg-background">
-    <input type="checkbox" id="isTaxable" checked={formData.isTaxable ?? false} onChange={e => setFormData({ ...formData, isTaxable: e.target.checked })} className="w-5 h-5 accent-primary cursor-pointer shrink-0" />
-    <div><label htmlFor="isTaxable" className="text-sm font-semibold cursor-pointer">Taxable (Sales Tax applies)</label><p className="text-xs text-muted-foreground">Check for parts/materials. Uncheck for labor.</p></div>
-    </div>
-    <div>
-    <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Item Image (Optional)</label>
-    <label className="w-full border-2 border-dashed border-border/60 hover:border-primary/50 transition-colors rounded-xl flex items-center justify-center p-4 cursor-pointer">
-    <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
-    <div className="flex flex-col items-center space-y-1 text-muted-foreground"><ImageIcon className="h-6 w-6" /><span className="text-xs font-medium">{formData.image ? formData.image.name : 'Tap to upload image'}</span></div>
-    </label>
-    </div>
-    <div className="flex gap-3 pt-4 border-t border-border">
-    <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-4 py-3 text-sm font-medium border border-border hover:bg-muted rounded-xl transition-colors min-h-[48px]">Cancel</button>
-    <button type="submit" disabled={formLoading} className="flex-1 px-4 py-3 text-sm font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all min-h-[48px] flex items-center justify-center gap-2 disabled:opacity-50">
-    {formLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}<span>Save Item</span>
-    </button>
-    </div>
-    </form>
    </div>
   </div>
- </div>
  )}
 
  {/* Import Excel Modal — bottom sheet */}

@@ -279,23 +279,31 @@ export const InvoicesPage = () => {
     )}
    </div>
 
-   {/* Payment Modal — bottom sheet on mobile */}
+   {/* Payment Modal */}
    {paymentModal.isOpen && (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
-     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setPaymentModal({ isOpen: false, invoiceId: null })} />
-     <div className="relative bg-card border border-border w-full md:max-w-md md:rounded-2xl rounded-t-3xl shadow-2xl p-6">
-      <div className="flex justify-between items-center mb-4">
-       <h3 className="text-lg font-bold text-foreground flex items-center gap-2"><DollarSign className="h-5 w-5 text-green-500" /> Record Payment</h3>
-       <button onClick={() => setPaymentModal({ isOpen: false, invoiceId: null })} className="text-muted-foreground hover:text-foreground p-1"><X className="h-5 w-5" /></button>
+    <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in">
+     <div className="flex flex-col flex-1 w-full md:max-w-md md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[90vh] md:flex-none overflow-hidden relative">
+      <div className="hidden md:block absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
+      
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 md:px-6 md:pt-6 md:pb-5 border-b border-border md:border-none bg-card shrink-0 shadow-sm md:shadow-none">
+       <button onClick={() => setPaymentModal({ isOpen: false, invoiceId: null })} className="md:hidden text-sm font-medium text-muted-foreground p-2 -ml-2">Cancel</button>
+       <h3 className="text-base md:text-lg font-bold text-foreground flex items-center gap-2 truncate px-2"><DollarSign className="hidden md:block h-5 w-5 text-green-500 shrink-0" /> Record Payment</h3>
+       <button onClick={handleConfirmPaid} className="md:hidden text-sm font-bold text-primary p-2 -mr-2">Confirm</button>
+       <button onClick={() => setPaymentModal({ isOpen: false, invoiceId: null })} className="hidden md:block text-muted-foreground hover:text-foreground p-1"><X className="h-5 w-5" /></button>
       </div>
-      <p className="text-sm text-muted-foreground mb-4">Enter check number, CC auth code, or any payment reference. <strong>Optional</strong> but helps track payments.</p>
-      <div className="mb-4">
-       <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Payment Reference (Check #, CC Auth, etc.)</label>
-       <input type="text" value={paymentRef} onChange={e => setPaymentRef(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleConfirmPaid()} placeholder="e.g., Check #4521 or CC Auth: 89234" autoFocus className="w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary min-h-[48px]" />
-      </div>
-      <div className="flex gap-3">
-       <button onClick={() => setPaymentModal({ isOpen: false, invoiceId: null })} className="flex-1 border border-border px-4 py-3 rounded-xl text-sm font-medium hover:bg-muted transition-colors min-h-[48px]">Cancel</button>
-       <button onClick={handleConfirmPaid} className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl text-sm font-semibold min-h-[48px] active:scale-95 transition-all">Mark as Paid</button>
+      
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-5 md:p-6 pb-20 md:pb-6">
+       <p className="text-sm text-muted-foreground mb-4">Enter check number, CC auth code, or any payment reference. <strong>Optional</strong> but helps track payments.</p>
+       <div className="mb-4">
+        <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Payment Reference (Check #, CC Auth, etc.)</label>
+        <input type="text" value={paymentRef} onChange={e => setPaymentRef(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleConfirmPaid()} placeholder="e.g., Check #4521 or CC Auth: 89234" autoFocus className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+       </div>
+       <div className="hidden md:flex gap-3 mt-6">
+        <button onClick={() => setPaymentModal({ isOpen: false, invoiceId: null })} className="flex-1 border border-border px-4 py-3 rounded-xl text-sm font-medium hover:bg-muted transition-colors min-h-[48px]">Cancel</button>
+        <button onClick={handleConfirmPaid} className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl text-sm font-semibold min-h-[48px] active:scale-95 transition-all">Mark as Paid</button>
+       </div>
       </div>
      </div>
     </div>
