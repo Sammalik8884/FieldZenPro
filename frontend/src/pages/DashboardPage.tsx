@@ -138,89 +138,78 @@ export const DashboardPage: React.FC = () => {
 
  if (!user?.roles?.includes('Admin')) {
  return (
- <div className="min-h-screen p-8 animate-in fade-in duration-500 relative">
- <CustomizationModal isOpen={showCustomizationModal} onClose={closeCustomizationModal} />
- <h1 className="text-4xl font-black tracking-tight text-foreground leading-tight">
- {greeting},&nbsp;
- <span className="text-primary">
- {user?.fullName?.split(' ')[0] ?? 'User'}
- </span>
- </h1>
- <p className="text-muted-foreground mt-4 text-lg">Welcome to your dashboard.</p>
- <div className="mt-8">
- <SystemSetupGuide />
- </div>
- </div>
+  <div className="animate-in fade-in duration-500 relative">
+   <CustomizationModal isOpen={showCustomizationModal} onClose={closeCustomizationModal} />
+   <h1 className="text-2xl md:text-4xl font-black tracking-tight text-foreground leading-tight">
+    {greeting},&nbsp;
+    <span className="text-primary">
+     {user?.fullName?.split(' ')[0] ?? 'User'}
+    </span>
+   </h1>
+   <p className="text-muted-foreground mt-2 text-sm">Welcome to your dashboard.</p>
+   <div className="mt-6">
+    <SystemSetupGuide />
+   </div>
+  </div>
  );
  }
 
  return (
- <div className="min-h-screen pb-20 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
+ <div className="pb-20 md:pb-0 space-y-6 animate-in fade-in duration-500 relative">
  <CustomizationModal isOpen={showCustomizationModal} onClose={closeCustomizationModal} />
- {/* ⚡⚡ Header ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡ */}
- <div className="flex items-end justify-between gap-4">
- <div>
- <h1 className="text-4xl font-black tracking-tight text-foreground leading-tight">
- {greeting},&nbsp;
- <span className="text-primary">
- {user?.fullName?.split(' ')[0] ?? 'Admin'}
- </span>
- </h1>
- <p className="text-muted-foreground mt-1 text-sm">
- Global Analytics Command Center
- </p>
- </div>
- <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
- {/* Date Range Selector */}
- <div className="flex items-center gap-2 bg-muted border border-border rounded-lg p-1">
- <Calendar size={14} className="text-muted-foreground ml-2 shrink-0" />
- <select
- value={dateRange}
- onChange={(e) => setDateRange(e.target.value as any)}
- className="bg-secondary text-foreground text-sm border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer py-1.5 pl-2 pr-6"
- >
- <option value="30days">Last 30 Days</option>
- <option value="6months">Last 6 Months</option>
- <option value="1year">Last 1 Year</option>
- <option value="all">All Time</option>
- <option value="custom">Custom Range</option>
- </select>
+
+ {/* Header */}
+ <div className="flex items-start justify-between gap-3">
+  <div className="min-w-0">
+   <h1 className="text-2xl md:text-4xl font-black tracking-tight text-foreground leading-tight">
+    {greeting},&nbsp;
+    <span className="text-primary">
+     {user?.fullName?.split(' ')[0] ?? 'Admin'}
+    </span>
+   </h1>
+   <p className="text-muted-foreground mt-0.5 text-sm hidden sm:block">
+    Global Analytics Command Center
+   </p>
+  </div>
+  <div className="flex items-center gap-2 shrink-0">
+   {/* Date Range */}
+   <div className="flex items-center gap-1.5 bg-muted border border-border rounded-xl p-1 pl-2">
+    <Calendar size={13} className="text-muted-foreground shrink-0" />
+    <select
+     value={dateRange}
+     onChange={(e) => setDateRange(e.target.value as any)}
+     className="bg-transparent text-foreground text-xs font-medium border-none focus:outline-none cursor-pointer py-1 pr-5 max-w-[100px] md:max-w-none"
+    >
+     <option value="30days">30 Days</option>
+     <option value="6months">6 Months</option>
+     <option value="1year">1 Year</option>
+     <option value="all">All Time</option>
+     <option value="custom">Custom</option>
+    </select>
+   </div>
+   <button
+    onClick={fetchMetrics}
+    className="p-2 rounded-xl border border-border hover:bg-muted transition-all min-h-[36px] min-w-[36px] flex items-center justify-center"
+    title={`Refreshed ${lastRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+   >
+    <RefreshCw size={14} className={loading ? 'animate-spin text-primary' : 'text-muted-foreground'} />
+   </button>
+  </div>
  </div>
 
+ {/* Custom date range — shown below header on mobile */}
  {dateRange === 'custom' && (
- <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4">
- <input
- type="date"
- value={customStartDate}
- onChange={(e) => setCustomStartDate(e.target.value)}
- className="bg-card border border-border text-sm rounded-lg px-2 py-1.5"
- />
- <span className="text-muted-foreground">-</span>
- <input
- type="date"
- value={customEndDate}
- onChange={(e) => setCustomEndDate(e.target.value)}
- className="bg-card border border-border text-sm rounded-lg px-2 py-1.5"
- />
- <button onClick={fetchMetrics} className="bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-primary/90">
- Apply
- </button>
- </div>
+  <div className="flex flex-wrap items-center gap-2 bg-card border border-border rounded-2xl p-3 animate-in fade-in slide-in-from-top-2">
+   <input type="date" value={customStartDate} onChange={(e) => setCustomStartDate(e.target.value)}
+    className="bg-background border border-border text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-primary flex-1 min-w-[130px] min-h-[40px]" />
+   <span className="text-muted-foreground text-sm">to</span>
+   <input type="date" value={customEndDate} onChange={(e) => setCustomEndDate(e.target.value)}
+    className="bg-background border border-border text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-primary flex-1 min-w-[130px] min-h-[40px]" />
+   <button onClick={fetchMetrics} className="bg-primary text-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all min-h-[40px]">Apply</button>
+  </div>
  )}
 
- <button
- onClick={fetchMetrics}
- className="flex items-center space-x-2 text-xs text-muted-foreground hover:text-foreground border border-border hover:border-border px-3 py-2 rounded-lg transition-all"
- >
- <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
- <span>
- Refreshed {lastRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
- </span>
- </button>
- </div>
- </div>
-
- {/* System Setup Guide for New Admins */}
+ {/* System Setup Guide */}
  <SystemSetupGuide />
 
  {loading ? (
@@ -271,14 +260,14 @@ export const DashboardPage: React.FC = () => {
  height={200}
  />
  {/* Embedded Pipeline Summary within charts area */}
- <div className="bg-card border border-border rounded-xl p-6 flex items-center justify-between shadow-sm">
- <div>
- <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">Total Pipeline Value</p>
- <p className="text-4xl font-black text-primary">{fmt(metrics.totalQuotationValue)}</p>
+ <div className="bg-card border border-border rounded-xl p-4 md:p-6 flex items-center justify-between shadow-sm gap-4">
+ <div className="min-w-0">
+  <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">Total Pipeline</p>
+  <p className="text-2xl md:text-4xl font-black text-primary truncate">{fmt(metrics.totalQuotationValue)}</p>
  </div>
- <div className="text-right">
- <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">Pending Quotes</p>
- <p className="text-3xl font-bold text-foreground">{metrics.pendingQuotations}</p>
+ <div className="text-right shrink-0">
+  <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">Pending Quotes</p>
+  <p className="text-2xl md:text-3xl font-bold text-foreground">{metrics.pendingQuotations}</p>
  </div>
  </div>
  </div>
