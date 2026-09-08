@@ -146,6 +146,7 @@ export const InvoicesPage = () => {
  };
 
  return (
+  <>
   <div className="animate-in fade-in duration-500">
    {/* Header */}
    <div className="flex justify-between items-center mb-6">
@@ -309,8 +310,10 @@ export const InvoicesPage = () => {
     </div>
    )}
 
-   <CreateInvoiceModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} onSuccess={fetchInvoices} />
-   <ConfirmModal isOpen={confirmModal.isOpen} title={confirmModal.title} message={confirmModal.message} type={confirmModal.type} confirmText={confirmModal.confirmText} onConfirm={confirmModal.onConfirm} onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))} />
   </div>
+  
+  <CreateInvoiceModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} onSuccess={fetchInvoices} />
+  <ConfirmModal isOpen={confirmModal.isOpen} title={confirmModal.title} message={confirmModal.message} type={confirmModal.type} confirmText={confirmModal.confirmText} onConfirm={confirmModal.onConfirm} onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))} />
+  </>
  );
 };

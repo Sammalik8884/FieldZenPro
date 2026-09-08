@@ -195,8 +195,8 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
     };
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-start md:items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
-            <div className="bg-card w-full max-w-4xl max-h-[90vh] flex flex-col border border-border rounded-2xl shadow-2xl relative my-auto">
+        <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="flex flex-col flex-1 w-full md:max-w-4xl md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[92vh] overflow-hidden relative md:flex-none">
                 {createdInvoice ? (
                     <div className="p-8 flex flex-col items-center justify-center text-center space-y-6">
                         <div className="h-16 w-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-2">
@@ -298,12 +298,19 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                     </div>
                 ) : (
                     <>
-                <div className="flex justify-between items-center p-6 border-b border-border shrink-0 bg-card z-10 rounded-t-2xl">
-                    <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+                <div className="flex justify-between items-center px-4 py-3 md:px-6 md:py-4 border-b border-border shrink-0 bg-card z-10 md:rounded-t-2xl">
+                    <button type="button" onClick={onClose} className="md:hidden text-sm font-medium text-muted-foreground p-2 -ml-2">Cancel</button>
+                    
+                    <h2 className="text-base md:text-xl font-semibold text-foreground flex items-center gap-2 px-2 truncate">
                         Create Custom Invoice
                         {dataLoading && <Loader2 className="h-4 w-4 text-primary animate-spin ml-2" />}
                     </h2>
-                    <button onClick={onClose} className="p-2 text-muted-foreground hover:bg-secondary hover:text-foreground rounded-full transition-colors">
+                    
+                    <button type="submit" form="invoice-form" disabled={loading} className="md:hidden text-sm font-bold text-primary p-2 -mr-2 flex items-center gap-1 disabled:opacity-50">
+                        {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : null} Create
+                    </button>
+                    
+                    <button onClick={onClose} className="hidden md:block p-2 text-muted-foreground hover:bg-secondary hover:text-foreground rounded-full transition-colors">
                         <X className="h-5 w-5" />
                     </button>
                 </div>
@@ -540,7 +547,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                     </form>
                 </div>
 
-                <div className="p-6 border-t border-border bg-card shrink-0 flex justify-end space-x-4 rounded-b-2xl">
+                <div className="hidden md:flex p-6 border-t border-border bg-card shrink-0 justify-end space-x-4 rounded-b-2xl">
                     <button
                         type="button"
                         onClick={onClose}

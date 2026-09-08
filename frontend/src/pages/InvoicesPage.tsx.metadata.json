@@ -1,4 +1,4 @@
 {
-  "summary": "Complete InvoicesPage with payment reference modal, isTaxable display, and all original functionality",
-  "updatedAt": "2026-09-01T18:12:06.831131700Z"
+  "summary": "Full mobile-first rewrite of InvoicesPage - card list on mobile, table on desktop, bottom-sheet modals.",
+  "updatedAt": "2026-09-08T10:52:47.353012500Z"
 }

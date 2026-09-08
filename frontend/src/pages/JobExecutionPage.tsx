@@ -242,6 +242,7 @@ export const JobExecutionPage = () => {
  const isCompleted = job.status === 'Completed' || job.status === 'Approved';
 
  return (
+  <>
   <div className="max-w-3xl mx-auto animate-in fade-in duration-300 pb-36 md:pb-24">
 
    {/* Sticky Header */}
@@ -492,6 +493,8 @@ export const JobExecutionPage = () => {
     </div>
    )}
 
+  </div>
+  
    <ConfirmModal isOpen={confirmModal.isOpen} title={confirmModal.title} message={confirmModal.message} type={confirmModal.type} onConfirm={confirmModal.onConfirm} onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))} confirmText="Confirm" />
 
    {invoiceModalOpen && (
@@ -505,6 +508,6 @@ export const JobExecutionPage = () => {
      preloadedItems={jobItems}
     />
    )}
-  </div>
+  </>
  );
 };
