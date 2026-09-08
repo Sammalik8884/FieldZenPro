@@ -241,8 +241,8 @@ export const WorkOrdersPage = () => {
    </div>
 
    {/* Stats */}
-   <div className="mb-6 grid gap-4 grid-cols-2 md:grid-cols-4">
-    <StatCard title="Active" value={activeWorkOrders} subtitle="In progress / assigned" icon={Briefcase} href="#" accentColor="blue" />
+   <div className="mb-6 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+    <StatCard title="Active Jobs" value={activeWorkOrders} subtitle="In progress or assigned" icon={Briefcase} href="#" accentColor="blue" />
     <StatCard title="Completed MTD" value={completedThisMonth} subtitle="This month" icon={CheckCircle} href="#" accentColor="cyan" trend={completedThisMonth > 0 ? 'up' : 'neutral'} trendLabel="This month" />
    </div>
 

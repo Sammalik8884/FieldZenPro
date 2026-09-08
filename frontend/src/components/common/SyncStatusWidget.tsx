@@ -14,7 +14,7 @@ const SyncStatusWidget: React.FC = () => {
     // Let's make it a small pill that expands on hover, but always visible if offline/pending.
 
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-2 pointer-events-none">
+        <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-50 flex flex-col items-end space-y-2 pointer-events-none">
             <AnimatePresence>
                 {!isOnline && (
                     <motion.div 
