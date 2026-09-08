@@ -88,7 +88,7 @@ export const JobExecutionPage = () => {
  const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
 
  const [notes, setNotes] = useState("");
- const [result, setResult] = useState(1);
+ const result = 1; // Always completes as "Completed"
 
  const [jobItems, setJobItems] = useState<WorkOrderItemDto[]>([]);
 
@@ -430,33 +430,25 @@ export const JobExecutionPage = () => {
       </div>
 
       <div>
-       <label className="text-xs font-semibold text-muted-foreground mb-1.5 block uppercase tracking-wider">Job Result</label>
-       <select value={result} onChange={e => setResult(Number(e.target.value))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 min-h-[48px]">
-        <option value={1}>✅ Pass — Job Completed</option>
-        <option value={2}>❌ Fail — Failed Inspection</option>
-        <option value={3}>🔧 Repairs Needed</option>
-        <option value={4}>➖ Not Applicable</option>
-       </select>
+       {/* Save Progress Buttons */}
+       <div className="flex gap-2">
+        <button type="button" onClick={() => handleSaveProgress('WaitingForParts')} disabled={actionLoading || !notes} className="flex-1 bg-orange-500/10 text-orange-600 border border-orange-500/20 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-40 text-sm min-h-[48px]">
+         <Clock className="h-4 w-4" />
+         <span className="hidden sm:inline">Waiting for Parts</span>
+         <span className="sm:hidden">Parts</span>
+        </button>
+        <button type="button" onClick={() => handleSaveProgress('PendingQuote')} disabled={actionLoading || !notes} className="flex-1 bg-yellow-500/10 text-yellow-700 border border-yellow-500/20 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-40 text-sm min-h-[48px]">
+         <AlertCircle className="h-4 w-4" />
+         <span className="hidden sm:inline">Pending Quote</span>
+         <span className="sm:hidden">Quote</span>
+        </button>
+       </div>
       </div>
 
-      {/* Save Progress Buttons */}
-      <div className="flex gap-2">
-       <button type="button" onClick={() => handleSaveProgress('WaitingForParts')} disabled={actionLoading || !notes} className="flex-1 bg-orange-500/10 text-orange-600 border border-orange-500/20 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-40 text-sm min-h-[48px]">
-        <Clock className="h-4 w-4" />
-        <span className="hidden sm:inline">Waiting for Parts</span>
-        <span className="sm:hidden">Parts</span>
-       </button>
-       <button type="button" onClick={() => handleSaveProgress('PendingQuote')} disabled={actionLoading || !notes} className="flex-1 bg-yellow-500/10 text-yellow-700 border border-yellow-500/20 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-40 text-sm min-h-[48px]">
-        <AlertCircle className="h-4 w-4" />
-        <span className="hidden sm:inline">Pending Quote</span>
-        <span className="sm:hidden">Quote</span>
-       </button>
-      </div>
-
-      {/* Complete button — shown inline in the accordion */}
+      {/* Close Job button */}
       <button type="submit" disabled={actionLoading || !notes} className="w-full bg-primary text-primary-foreground font-bold py-4 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-40 text-base shadow-lg shadow-primary/20 min-h-[56px]">
        {actionLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
-       Complete Job
+       Close Job
       </button>
 
       {/* Generate Invoice (if completed) */}

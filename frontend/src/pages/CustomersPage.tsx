@@ -256,28 +256,79 @@ export const CustomersPage = () => {
     )}
    </div>
 
-   {/* Add/Edit Modal — Full screen bottom sheet on mobile, centered dialog on desktop */}
+   {/* Add/Edit Modal — Full screen on mobile, centered dialog on desktop */}
    {isModalOpen && (
-    <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
-     <div className="bg-card border border-border w-full md:max-w-md md:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden relative max-h-[92vh] flex flex-col">
-      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
+    <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center md:bg-black/60 md:backdrop-blur-sm md:animate-in md:fade-in">
 
-      {/* Mobile drag handle */}
-      <div className="flex justify-center pt-3 pb-1 md:hidden">
-       <div className="w-10 h-1 bg-border rounded-full" />
+     {/* Mobile: full bg-background page-style overlay */}
+     <div className="flex-1 flex flex-col bg-background md:hidden overflow-hidden">
+      {/* Mobile top bar */}
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-card shrink-0">
+       <button
+        onClick={() => setIsModalOpen(false)}
+        className="p-2 rounded-xl hover:bg-muted active:scale-90 transition-all min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground"
+       >
+        ← Back
+       </button>
+       <h2 className="font-bold text-lg text-foreground">{editingCustomer ? "Edit Customer" : "Add Customer"}</h2>
       </div>
+      {/* Mobile scrollable form */}
+      <div className="flex-1 overflow-y-auto p-5">
+       <form onSubmit={handleSubmit} className="space-y-4">
+        {[
+         { label: "Full Name *", field: "name", type: "text", required: true },
+         { label: "Email *", field: "email", type: "email", required: true },
+         { label: "Phone", field: "phone", type: "tel", required: false },
+         { label: "Alt Phone", field: "altPhone", type: "tel", required: false },
+         { label: "Address", field: "address", type: "text", required: false },
+         { label: "Tax Number", field: "taxNumber", type: "text", required: false },
+        ].map(({ label, field, type, required }) => (
+         <div key={field}>
+          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">{label}</label>
+          <input
+           type={type}
+           required={required}
+           value={(formData as any)[field]}
+           onChange={e => setFormData({ ...formData, [field]: e.target.value })}
+           className="w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[52px] text-base"
+          />
+         </div>
+        ))}
+        {/* Extra bottom padding for keyboard clearance */}
+        <div className="h-28" />
+       </form>
+      </div>
+      {/* Mobile sticky footer */}
+      <div className="shrink-0 bg-card border-t border-border p-4 pb-safe flex gap-3 safe-bottom">
+       <button
+        type="button"
+        onClick={() => setIsModalOpen(false)}
+        className="flex-1 px-4 py-3.5 text-sm font-medium border border-border hover:bg-muted rounded-xl transition-colors min-h-[52px]"
+       >
+        Cancel
+       </button>
+       <button
+        onClick={handleSubmit}
+        disabled={formLoading}
+        className="flex-1 px-4 py-3.5 text-sm font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[52px]"
+       >
+        {formLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+        <span>Save Customer</span>
+       </button>
+      </div>
+     </div>
 
-      <div className="p-5 md:p-6 overflow-y-auto flex-1">
-       <h2 className="text-xl font-bold mb-5">
-        {editingCustomer ? "Edit Customer" : "Add New Customer"}
-       </h2>
-
+     {/* Desktop: centered dialog */}
+     <div className="hidden md:flex bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative flex-col max-h-[90vh]">
+      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
+      <div className="p-6 overflow-y-auto flex-1">
+       <h2 className="text-xl font-bold mb-5">{editingCustomer ? "Edit Customer" : "Add New Customer"}</h2>
        <form onSubmit={handleSubmit} className="space-y-4">
         {[
          { label: "Name *", field: "name", type: "text", required: true },
          { label: "Email *", field: "email", type: "email", required: true },
-         { label: "Phone", field: "phone", type: "text", required: false },
-         { label: "Alt Phone", field: "altPhone", type: "text", required: false },
+         { label: "Phone", field: "phone", type: "tel", required: false },
+         { label: "Alt Phone", field: "altPhone", type: "tel", required: false },
          { label: "Address", field: "address", type: "text", required: false },
          { label: "Tax Number", field: "taxNumber", type: "text", required: false },
         ].map(({ label, field, type, required }) => (
@@ -292,7 +343,6 @@ export const CustomersPage = () => {
           />
          </div>
         ))}
-
         <div className="flex gap-3 pt-4 border-t border-border mt-4">
          <button
           type="button"

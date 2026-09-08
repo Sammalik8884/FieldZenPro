@@ -480,16 +480,16 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                             />
                                         </div>
                                         <div className="w-16 flex flex-col items-center">
-                                            <label className="block text-xs text-muted-foreground mb-3">Tax</label>
-                                            <input
-                                                type="checkbox"
-                                                checked={item.isTaxable || false}
-                                                onChange={(e) => handleItemChange(index, "isTaxable", e.target.checked)}
-                                                className="w-4 h-4 accent-primary cursor-pointer"
-                                            />
+                                            <label className="block text-xs text-muted-foreground mb-1">Tax</label>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleItemChange(index, "isTaxable", !item.isTaxable)}
+                                                className={`w-10 h-6 rounded-full transition-colors relative flex-shrink-0 border-2 ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
+                                            >
+                                                <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                                            </button>
                                         </div>
                                         <div className="w-32">
-
                                             <label className="block text-xs text-muted-foreground mb-1">Total</label>
                                             <div className="w-full bg-white/5 border border-transparent rounded-lg px-4 py-2 text-sm text-muted-foreground">
                                                 ${(item.quantity * item.unitPrice).toFixed(2)}
@@ -525,7 +525,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                             min="0" max="100" step="0.1"
                                             value={taxRate}
                                             onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
-                                            className="w-20 bg-white/5 border border-border rounded text-right px-2 py-1 focus:outline-none"
+                                            className="w-20 bg-white/5 border border-border rounded-lg text-right px-2 py-2 focus:outline-none min-h-[40px] text-sm"
                                         />
                                     </span>
                                     <span>${taxAmount.toFixed(2)}</span>

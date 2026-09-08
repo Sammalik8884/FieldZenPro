@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { WorkOrderDto } from '../../types/field';
 import { format, addDays, startOfWeek, isSameDay, isToday } from 'date-fns';
-import { ChevronLeft, ChevronRight, Calendar, ArrowUp, ArrowDown, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, ArrowUp, ArrowDown, ChevronDown, Printer } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { getNYDate } from '../../utils/dateUtils';
 
@@ -56,6 +56,85 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
     const currentWeek = () => { const t = startOfWeek(getNYDate(), { weekStartsOn: 1 }); setCurrentWeekStart(t); setSelectedDay(getNYDate()); };
 
     const weekDays = Array.from({ length: 7 }).map((_, i) => addDays(currentWeekStart, i));
+
+    const handlePrintSchedule = () => {
+        const pw = window.open('', '_blank');
+        if (!pw) { toast.error('Pop-up blocked. Please allow pop-ups.'); return; }
+
+        const weekLabel = `${format(weekDays[0], 'MMMM d')} – ${format(weekDays[6], 'MMMM d, yyyy')}`;
+
+        const dayBlocks = weekDays.map(day => {
+            const dateStr = format(day, 'yyyy-MM-dd');
+            const dayJobs = workOrders
+                .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr)
+                .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
+            if (dayJobs.length === 0) return '';
+
+            const statusLabel = (s: string) => {
+                if (s === 'WaitingForParts') return '⚠️ WAITING FOR PARTS';
+                if (s === 'PendingQuote') return '📝 PENDING QUOTE';
+                return '🆕 NEW';
+            };
+
+            const stops = dayJobs.map((job, i) => `
+                <div class="stop">
+                    <div class="stop-header">
+                        <span class="stop-num">Stop #${i + 1}</span>
+                        <span class="stop-wo">WO-${job.id.toString().padStart(4, '0')}</span>
+                        <span class="stop-status">${statusLabel(job.status)}</span>
+                    </div>
+                    <div class="stop-name">${job.customerName || '—'}</div>
+                    <div class="stop-detail">📍 ${job.customerAddress || job.siteName || 'No address on file'}</div>
+                    ${job.customerPhone ? `<div class="stop-detail">📞 ${job.customerPhone}</div>` : ''}
+                    ${job.customerAltPhone ? `<div class="stop-detail">📞 Alt: ${job.customerAltPhone}</div>` : ''}
+                    <div class="stop-desc">${job.description || '—'}</div>
+                    <div class="stop-notes-line">Notes: _______________________________________________</div>
+                    <div class="stop-notes-line">Appt: _______________________________________________</div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="day-block">
+                    <div class="day-header">${format(day, 'EEEE, MMMM d, yyyy')} — ${dayJobs.length} stop${dayJobs.length !== 1 ? 's' : ''}</div>
+                    ${stops}
+                </div>
+            `;
+        }).join('');
+
+        pw.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Service Schedule – ${weekLabel}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #111; padding: 20px; }
+  h1 { font-size: 18px; margin-bottom: 4px; }
+  .subtitle { font-size: 11px; color: #555; margin-bottom: 20px; border-bottom: 2px solid #111; padding-bottom: 8px; }
+  .day-block { margin-bottom: 24px; page-break-inside: avoid; }
+  .day-header { background: #1a1a2e; color: white; font-weight: bold; font-size: 13px; padding: 6px 10px; border-radius: 4px; margin-bottom: 8px; }
+  .stop { border: 1px solid #ccc; border-radius: 4px; padding: 10px; margin-bottom: 8px; page-break-inside: avoid; }
+  .stop-header { display: flex; gap: 12px; align-items: center; margin-bottom: 4px; }
+  .stop-num { background: #1a1a2e; color: white; font-weight: bold; font-size: 11px; padding: 2px 6px; border-radius: 3px; }
+  .stop-wo { font-weight: bold; font-size: 11px; color: #444; }
+  .stop-status { font-size: 10px; font-weight: bold; margin-left: auto; }
+  .stop-name { font-size: 15px; font-weight: bold; margin-bottom: 3px; }
+  .stop-detail { font-size: 11px; color: #333; margin-bottom: 2px; }
+  .stop-desc { font-size: 11px; color: #222; background: #f5f5f5; padding: 4px 6px; border-radius: 3px; margin-top: 6px; margin-bottom: 6px; }
+  .stop-notes-line { font-size: 11px; color: #555; margin-top: 5px; border-bottom: 1px solid #ddd; padding-bottom: 2px; }
+  @media print { body { padding: 10px; } }
+</style>
+</head>
+<body>
+<h1>FieldZenPro — Weekly Service Schedule</h1>
+<div class="subtitle">Week of ${weekLabel} &nbsp;|&nbsp; Printed: ${format(getNYDate(), 'PPP')}</div>
+${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
+</body>
+</html>`);
+        pw.document.close();
+        pw.focus();
+        setTimeout(() => pw.print(), 600);
+    };
 
     const handleAssignToDate = async (jobId: number, dateStr: string) => {
         setLoading(true);
@@ -179,17 +258,20 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
             {/* ── MOBILE LAYOUT (hidden on lg+) ── */}
             <div className="block lg:hidden space-y-4">
 
-                {/* Week Nav */}
+                {/* Week Nav + Print */}
                 <div className="flex items-center justify-between bg-card border border-border rounded-2xl px-4 py-3">
                     <button onClick={prevWeek} className="p-2 rounded-xl hover:bg-muted active:scale-90 transition-all min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground">
                         <ChevronLeft className="h-5 w-5" />
                     </button>
-                    <div className="text-center">
+                    <div className="text-center flex-1">
                         <p className="text-sm font-semibold">{format(weekDays[0], 'MMM d')} – {format(weekDays[6], 'MMM d, yyyy')}</p>
                         <button onClick={currentWeek} className="text-xs text-primary font-medium hover:underline mt-0.5">Today</button>
                     </div>
                     <button onClick={nextWeek} className="p-2 rounded-xl hover:bg-muted active:scale-90 transition-all min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground">
                         <ChevronRight className="h-5 w-5" />
+                    </button>
+                    <button onClick={handlePrintSchedule} className="p-2 rounded-xl hover:bg-muted active:scale-90 transition-all min-w-[44px] min-h-[44px] flex items-center justify-center text-primary ml-1" title="Print Schedule">
+                        <Printer className="h-5 w-5" />
                     </button>
                 </div>
 
@@ -386,6 +468,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
                                 <button onClick={prevWeek} className="p-1.5 hover:bg-muted rounded border border-transparent hover:border-border"><ChevronLeft className="h-4 w-4" /></button>
                                 <button onClick={currentWeek} className="px-3 py-1 text-xs hover:bg-muted rounded border border-transparent hover:border-border font-medium">Today</button>
                                 <button onClick={nextWeek} className="p-1.5 hover:bg-muted rounded border border-transparent hover:border-border"><ChevronRight className="h-4 w-4" /></button>
+                                <button onClick={handlePrintSchedule} title="Print Schedule" className="p-1.5 hover:bg-primary/10 rounded border border-transparent hover:border-primary/30 text-primary ml-1"><Printer className="h-4 w-4" /></button>
                             </div>
                         </div>
                     </div>

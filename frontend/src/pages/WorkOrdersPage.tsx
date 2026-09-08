@@ -5,11 +5,10 @@ import { ConfirmModal } from "../components/common/ConfirmModal";
 import { workOrderService } from "../services/workOrderService";
 import { invoiceService } from "../services/invoiceService";
 import { customerService } from "../services/customerService";
-import { WorkOrderDto, UpdateWorkOrderDto, AssetDto, CreateWorkOrderDto } from "../types/field";
+import { WorkOrderDto, UpdateWorkOrderDto, CreateWorkOrderDto } from "../types/field";
 import { CustomerDto } from "../types/customer";
 import { toast } from "react-hot-toast";
 import { authService } from "../services/authService";
-import { apiClient } from "../services/apiClient";
 import { CreateInvoiceModal } from "../components/CreateInvoiceModal";
 import { ReviewJobModal } from "../components/ReviewJobModal";
 import { SchedulingBoard } from "../components/workorders/SchedulingBoard";
@@ -61,7 +60,6 @@ export const WorkOrdersPage = () => {
  }).length;
 
  const [technicians, setTechnicians] = useState<any[]>([]);
- const [assets, setAssets] = useState<AssetDto[]>([]);
  const [customers, setCustomers] = useState<CustomerDto[]>([]);
 
  // Create modal state
@@ -86,15 +84,13 @@ export const WorkOrdersPage = () => {
  const fetchData = async () => {
   try {
    setLoading(true);
-   const [woData, usersData, assetData, custData] = await Promise.all([
+   const [woData, usersData, custData] = await Promise.all([
     workOrderService.getAll(),
     authService.getUsers().catch(() => []),
-    apiClient.get<AssetDto[]>("/Assets").then(r => r.data).catch(() => []),
     customerService.getAll().catch(() => [])
    ]);
    setWorkOrders(woData);
    setTechnicians(usersData.filter((u: any) => u.roles && (u.roles.includes("Tech") || u.roles.includes("Worker") || u.roles.includes("Technician"))));
-   setAssets(Array.isArray(assetData) ? assetData : []);
    setCustomers(Array.isArray(custData) ? custData : []);
   } catch (error) {
    toast.error("Failed to load work orders.");
@@ -435,15 +431,6 @@ export const WorkOrdersPage = () => {
         <div>
          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Scheduled Date</label>
          <input type="date" value={formData.scheduledDate || ""} onChange={e => setFormData({ ...formData, scheduledDate: e.target.value })} className={inputCls} />
-        </div>
-        <div>
-         <label className="text-xs font-semibold text-muted-foreground mb-1.5 flex items-center gap-1 block">
-          Linked Asset <span className="text-yellow-500 text-[10px] font-normal">(required for Initialize)</span>
-         </label>
-         <select value={formData.assetId || 0} onChange={e => setFormData({ ...formData, assetId: Number(e.target.value) || null })} className={inputCls}>
-          <option value={0}>-- No Asset --</option>
-          {assets.map(a => (<option key={a.id} value={a.id}>[{a.assetType}] {a.name} — S/N: {a.serialNumber}</option>))}
-         </select>
         </div>
         <div>
          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Assign Technician</label>

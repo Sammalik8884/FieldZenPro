@@ -1,7 +1,7 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
     Home, Users, MapPin, Briefcase, LogOut, FileText, FolderTree, Package, Receipt,
-    ShieldAlert, X, Box, Wrench, DollarSign, FileSignature, ShoppingCart, ClipboardList,
+    ShieldAlert, X, Wrench, FileSignature, ClipboardList,
     Activity, RefreshCw, CreditCard, Lock, HelpCircle
 } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
@@ -29,14 +29,11 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     { label: "Foundation", isHeader: true, allowedRoles: ["Admin", "Manager"] },
     { label: "Users & Roles", href: "/users", icon: ShieldAlert, allowedRoles: ["Admin", "Manager"] },
 
-    { label: "CRM & Assets", isHeader: true, allowedRoles: ["Admin", "Manager"] },
+    { label: "CRM", isHeader: true, allowedRoles: ["Admin", "Manager"] },
     { label: "Customers (CRM)", href: "/customers", icon: Users, paths: ["/customers", "/sites"], allowedRoles: ["Admin", "Manager"] },
-    { label: "Assets", href: "/assets", icon: Box, allowedRoles: ["Admin", "Manager"] },
 
-    { label: "Inventory", isHeader: true, allowedRoles: ["Admin", "Manager", "Engineer"] },
+    { label: "Catalog", isHeader: true, allowedRoles: ["Admin", "Manager", "Engineer"] },
     { label: "Catalog (Items)", href: "/products", icon: Package, paths: ["/products"], allowedRoles: ["Admin", "Manager", "Engineer"] },
-    { label: "Procurement (POs)", href: "/procurement", icon: ShoppingCart, allowedRoles: ["Admin", "Manager"] },
-    { label: "Inventory", href: "/inventory", icon: FolderTree, allowedRoles: ["Admin", "Manager"] },
 
     { label: "Operations & Jobs", isHeader: true, allowedRoles: ["Admin", "Manager", "Engineer", "Worker", "Technician"] },
     { label: "Sales & Quotes", href: "/quotations", icon: FileText, paths: ["/quotations", "/quotations/new", "/quotations/edit"], allowedRoles: ["Admin", "Manager", "Engineer"] },
@@ -48,7 +45,6 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     { label: "Financials", isHeader: true, allowedRoles: ["Admin", "Manager"] },
     { label: "Invoices", href: "/invoices", icon: Receipt, allowedRoles: ["Admin", "Manager"] },
     { label: "Weekly Report", href: "/weekly-report", icon: FileText, allowedRoles: ["Admin", "Manager"] },
-    { label: "HR & Payroll", href: "/payroll", icon: DollarSign, allowedRoles: ["Admin", "Manager"], requiredFeature: PlanFeature.HrPayroll },
 
     { label: "System", isHeader: true, allowedRoles: ["Admin", "Manager"] },
     { label: "Audit Logs", href: "/audit-logs", icon: Activity, allowedRoles: ["Admin", "Manager"], requiredFeature: PlanFeature.AuditLogs },
