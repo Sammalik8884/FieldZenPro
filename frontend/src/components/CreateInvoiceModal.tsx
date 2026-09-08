@@ -195,7 +195,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
     };
 
     return (
-        <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-start md:items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
+        <div className="fixed inset-0 z-[200] flex items-start md:items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
             <div className="bg-card w-full max-w-4xl max-h-[90vh] flex flex-col border border-border rounded-2xl shadow-2xl relative my-auto">
                 {createdInvoice ? (
                     <div className="p-8 flex flex-col items-center justify-center text-center space-y-6">
