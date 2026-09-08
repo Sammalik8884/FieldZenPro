@@ -14,7 +14,7 @@ export const BottomNav = ({ onMenuClick }: BottomNavProps) => {
     const isActive = (path: string) => location.pathname.startsWith(path);
 
     return (
-        <nav className="fixed bottom-0 inset-x-0 z-50 bg-card border-t border-border flex md:hidden safe-area-inset-bottom">
+        <nav className="fixed bottom-0 inset-x-0 z-50 bg-card border-t border-border flex md:hidden safe-area-inset-bottom safe-bottom">
             <NavLink
                 to="/dashboard"
                 className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors ${isActive('/dashboard') ? 'text-primary' : 'text-muted-foreground'}`}
