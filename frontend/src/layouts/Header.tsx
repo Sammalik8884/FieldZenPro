@@ -124,12 +124,13 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
                 <div className="flex flex-1 items-center space-x-2 md:space-x-4">
                     <button
                         onClick={onMenuClick}
-                        className="p-2 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors"
+                        className="p-2 rounded-xl text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                     >
                         <Menu className="h-5 w-5" />
                     </button>
 
-                    <div className="relative w-48 md:w-96 group" ref={searchRef}>
+                    {/* Search — full bar on desktop, icon on mobile */}
+                    <div className="relative hidden sm:block w-48 md:w-96 group" ref={searchRef}>
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <input
                             type="text"
@@ -142,8 +143,6 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
                             onFocus={() => setShowDropdown(true)}
                             className="w-full bg-muted border-none rounded-full pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:bg-card focus:shadow-md transition-all text-foreground"
                         />
-                        
-                        {/* Search Dropdown */}
                         {showDropdown && searchQuery.length >= 2 && (
                             <div className="absolute top-full mt-2 w-full max-w-md bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50">
                                 {isSearching ? (
@@ -175,6 +174,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
                         )}
                     </div>
                 </div>
+
 
                 <div className="flex items-center space-x-2 md:space-x-5">
                     <button
