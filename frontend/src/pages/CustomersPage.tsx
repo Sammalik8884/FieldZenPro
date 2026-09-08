@@ -263,18 +263,28 @@ export const CustomersPage = () => {
      {/* Mobile: full bg-background page-style overlay */}
      <div className="flex-1 flex flex-col bg-background md:hidden overflow-hidden">
       {/* Mobile top bar */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-card shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card shrink-0 shadow-sm">
        <button
+        type="button"
         onClick={() => setIsModalOpen(false)}
-        className="p-2 rounded-xl hover:bg-muted active:scale-90 transition-all min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground"
+        className="text-sm font-medium text-muted-foreground p-2 -ml-2"
        >
-        ← Back
+        Cancel
        </button>
-       <h2 className="font-bold text-lg text-foreground">{editingCustomer ? "Edit Customer" : "Add Customer"}</h2>
+       <h2 className="font-bold text-base text-foreground truncate px-2">{editingCustomer ? "Edit Customer" : "Add Customer"}</h2>
+       <button
+        type="button"
+        onClick={handleSubmit}
+        disabled={formLoading}
+        className="text-sm font-bold text-primary p-2 -mr-2 disabled:opacity-50 flex items-center gap-1"
+       >
+        {formLoading && <Loader2 className="h-3 w-3 animate-spin" />}
+        Save
+       </button>
       </div>
       {/* Mobile scrollable form */}
       <div className="flex-1 overflow-y-auto p-5">
-       <form onSubmit={handleSubmit} className="space-y-4">
+       <form onSubmit={handleSubmit} className="space-y-4 pb-20">
         {[
          { label: "Full Name *", field: "name", type: "text", required: true },
          { label: "Email *", field: "email", type: "email", required: true },
@@ -290,31 +300,11 @@ export const CustomersPage = () => {
            required={required}
            value={(formData as any)[field]}
            onChange={e => setFormData({ ...formData, [field]: e.target.value })}
-           className="w-full bg-background border border-border rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[52px] text-base"
+           className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[52px] text-base"
           />
          </div>
         ))}
-        {/* Extra bottom padding for keyboard clearance */}
-        <div className="h-28" />
        </form>
-      </div>
-      {/* Mobile sticky footer */}
-      <div className="shrink-0 bg-card border-t border-border p-4 pb-safe flex gap-3 safe-bottom">
-       <button
-        type="button"
-        onClick={() => setIsModalOpen(false)}
-        className="flex-1 px-4 py-3.5 text-sm font-medium border border-border hover:bg-muted rounded-xl transition-colors min-h-[52px]"
-       >
-        Cancel
-       </button>
-       <button
-        onClick={handleSubmit}
-        disabled={formLoading}
-        className="flex-1 px-4 py-3.5 text-sm font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all flex items-center justify-center gap-2 min-h-[52px]"
-       >
-        {formLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-        <span>Save Customer</span>
-       </button>
       </div>
      </div>
 

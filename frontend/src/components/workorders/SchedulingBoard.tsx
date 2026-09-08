@@ -211,7 +211,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                         Remove
                     </button>
                 </div>
-                <p className="font-semibold text-xs text-foreground truncate">{job.customerName}</p>
+                <p className="font-bold text-sm text-foreground truncate mt-1">{job.customerName || 'No Customer Name'}</p>
                 <p className="text-[10px] text-muted-foreground line-clamp-2 mt-0.5">{job.description}</p>
                 <p
                     className={`text-[10px] text-muted-foreground cursor-pointer mt-0.5 ${expandedAddresses[job.id] ? '' : 'truncate'}`}
@@ -421,7 +421,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                         {job.status === 'PendingQuote' && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20">Quote</span>}
                                     </div>
                                 </div>
-                                <p className="text-sm font-medium leading-tight mb-1">{job.customerName}</p>
+                                <p className="text-sm font-bold text-foreground leading-tight mb-1">{job.customerName || 'No Customer Name'}</p>
                                 <p className="text-xs text-muted-foreground line-clamp-2 mb-2">{job.description}</p>
                                 {job.technicianNotes && (
                                     <div className="mb-3">
@@ -494,7 +494,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                                         <span className="text-[10px] uppercase">Remove</span>
                                                     </button>
                                                 </div>
-                                                <p className="font-semibold text-xs truncate">{job.customerName}</p>
+                                                <p className="font-bold text-sm text-foreground truncate mt-1">{job.customerName || 'No Customer Name'}</p>
                                                 <p className="text-[10px] text-muted-foreground line-clamp-2 mt-0.5">{job.description}</p>
                                                 <p className={`text-[10px] text-muted-foreground cursor-pointer mt-0.5 ${expandedAddresses[job.id] ? '' : 'truncate'}`} onClick={() => toggleAddress(job.id)}>
                                                     {job.customerAddress || job.siteName}
