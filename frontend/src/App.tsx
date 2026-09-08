@@ -42,15 +42,13 @@ import { useAuth } from "./auth/AuthContext";
 import { SyncProvider } from "./contexts/SyncContext";
 import SyncStatusWidget from "./components/common/SyncStatusWidget";
 
-// Smart root route: Logged out -> landing.html, Logged in -> dashboard/portal
+// Smart root route: Logged out -> /landing, Logged in -> dashboard/portal
 const RootRoute = () => {
     const { isAuthenticated, hasRole } = useAuth();
-    
     if (!isAuthenticated) {
         window.location.href = "/landing";
         return null;
     }
-    
     return hasRole(["Customer"]) ? <Navigate to="/portal" replace /> : <Navigate to="/dashboard" replace />;
 };
 
@@ -59,97 +57,109 @@ function App() {
         <AuthProvider>
             <SyncProvider>
                 <Router>
-                <Routes>
-                    {/* Public Routes */}
-                    <Route path="/" element={<RootRoute />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignupPage />} />
-                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                    <Route path="/reset-password" element={<ResetPasswordPage />} />
+                    <Routes>
+                        {/* ── Public Routes ── */}
+                        <Route path="/" element={<RootRoute />} />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/signup" element={<SignupPage />} />
+                        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-                    {/* Protected Routes */}
-                    <Route element={<ProtectedRoute />}>
-                        <Route element={<DashboardLayout />}>
-                            <Route path="/dashboard" element={<DashboardPage />} />
-                            {/* CRM - Manager/Admin Only */}
-                            <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
-                                <Route path="/customers" element={<CustomersPage />} />
-                                <Route path="/sites" element={<SitesPage />} />
-                            </Route>
+                        {/* ── Main App (protected) ── */}
+                        <Route element={<ProtectedRoute />}>
+                            <Route element={<DashboardLayout />}>
+                                <Route path="/dashboard" element={<DashboardPage />} />
 
-                            {/* Catalog & Sales - Engineer/Manager/Admin Only */}
-                            <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager", "Engineer"]} />}>
-                                <Route path="/categories" element={<CategoriesPage />} />
-                                <Route path="/products" element={<ProductsPage />} />
-                                <Route path="/quotations" element={<QuotationsPage />} />
-                                <Route path="/quotations/new" element={<QuotationFormPage />} />
-                                <Route path="/quotations/edit/:id" element={<QuotationFormPage />} />
-                                <Route path="/contracts" element={<ContractsPage />} />
-                            </Route>
-
-                            {/* System Area / Admin - Manager/Admin Only */}
-                            <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
-                                <Route path="/users" element={<UsersPage />} />
-                                <Route element={<FeatureProtectedRoute requiredFeature={PlanFeature.HrPayroll} />}>
-                                    <Route path="/payroll" element={<PayrollPage />} />
+                                {/* CRM - Admin/Manager */}
+                                <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
+                                    <Route path="/customers" element={<CustomersPage />} />
+                                    <Route path="/sites" element={<SitesPage />} />
                                 </Route>
-                                <Route element={<FeatureProtectedRoute requiredFeature={PlanFeature.ChecklistFormBuilder} />}>
-                                    <Route path="/checklists" element={<ChecklistBuilderPage />} />
+
+                                {/* Catalog & Sales - Engineer/Manager/Admin */}
+                                <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager", "Engineer"]} />}>
+                                    <Route path="/categories" element={<CategoriesPage />} />
+                                    <Route path="/products" element={<ProductsPage />} />
+                                    <Route path="/quotations" element={<QuotationsPage />} />
+                                    <Route path="/quotations/new" element={<QuotationFormPage />} />
+                                    <Route path="/quotations/edit/:id" element={<QuotationFormPage />} />
+                                    <Route path="/contracts" element={<ContractsPage />} />
                                 </Route>
-                                <Route element={<FeatureProtectedRoute requiredFeature={PlanFeature.AuditLogs} />}>
-                                    <Route path="/audit-logs" element={<AuditLogsPage />} />
+
+                                {/* System / Admin */}
+                                <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
+                                    <Route path="/users" element={<UsersPage />} />
+                                    <Route element={<FeatureProtectedRoute requiredFeature={PlanFeature.HrPayroll} />}>
+                                        <Route path="/payroll" element={<PayrollPage />} />
+                                    </Route>
+                                    <Route element={<FeatureProtectedRoute requiredFeature={PlanFeature.ChecklistFormBuilder} />}>
+                                        <Route path="/checklists" element={<ChecklistBuilderPage />} />
+                                    </Route>
+                                    <Route element={<FeatureProtectedRoute requiredFeature={PlanFeature.AuditLogs} />}>
+                                        <Route path="/audit-logs" element={<AuditLogsPage />} />
+                                    </Route>
+                                    <Route element={<FeatureProtectedRoute requiredFeature={PlanFeature.OfflineSync} />}>
+                                        <Route path="/sync-dashboard" element={<SyncDashboardPage />} />
+                                    </Route>
+                                    <Route path="/subscription/plans" element={<SubscriptionPlansPage />} />
+                                    <Route path="/support" element={<SupportPage />} />
                                 </Route>
-                                <Route element={<FeatureProtectedRoute requiredFeature={PlanFeature.OfflineSync} />}>
-                                    <Route path="/sync-dashboard" element={<SyncDashboardPage />} />
+
+                                {/* Operations / Dispatch - Admin/Manager */}
+                                <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
+                                    <Route path="/assets" element={<AssetsPage />} />
+                                    <Route path="/work-orders" element={<WorkOrdersPage />} />
+                                    <Route path="/inventory" element={<InventoryPage />} />
+                                    <Route path="/procurement" element={<ProcurementPage />} />
                                 </Route>
-                                <Route path="/subscription/plans" element={<SubscriptionPlansPage />} />
-                                <Route path="/support" element={<SupportPage />} />
+
+                                {/* Finance - Admin/Manager */}
+                                <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
+                                    <Route path="/invoices" element={<InvoicesPage />} />
+                                    <Route path="/weekly-report" element={<WeeklyReportPage />} />
+                                </Route>
+
+                                {/* Field Services - all staff */}
+                                <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager", "Engineer", "Worker", "Technician"]} />}>
+                                    <Route path="/my-jobs" element={<MyJobsPage />} />
+                                    <Route path="/job/:id" element={<JobExecutionPage />} />
+                                </Route>
                             </Route>
-                            {/* Operations / Dispatch - Manager/Admin Only */}
+
+                            {/* Subscription full-screen routes (no sidebar) */}
                             <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
-                                <Route path="/assets" element={<AssetsPage />} />
-                                <Route path="/work-orders" element={<WorkOrdersPage />} />
-                                <Route path="/inventory" element={<InventoryPage />} />
-                                <Route path="/procurement" element={<ProcurementPage />} />
+                                <Route path="/subscription/success" element={<SubscriptionSuccessPage />} />
+                                <Route path="/subscription/cancel" element={<SubscriptionCancelPage />} />
                             </Route>
-
-                            {/* Finance & Invoicing - Manager/Admin Only */}
-                            <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
-                                <Route path="/invoices" element={<InvoicesPage />} />
-                                <Route path="/weekly-report" element={<WeeklyReportPage />} />
-                            </Route>
-
-                            {/* Field Services - Anyone with a Job (Engineer/Worker/Tech/Admin) */}
-                            <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager", "Engineer", "Worker", "Technician"]} />}>
-                                <Route path="/my-jobs" element={<MyJobsPage />} />
-                                <Route path="/job/:id" element={<JobExecutionPage />} />
-                            </Route>
-
-                            {/* Future Iterations will add more routes here */}
                         </Route>
 
-                        {/* Subscription Finalization Routes (Full Screen, No Sidebar) */}
-                        <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
-                            <Route path="/subscription/success" element={<SubscriptionSuccessPage />} />
-                            <Route path="/subscription/cancel" element={<SubscriptionCancelPage />} />
-                        </Route>
-                    </Route>
-
-                    {/* ===== CUSTOMER PORTAL ===== */}
-                    <Route element={<ProtectedRoute />}>
-                        <Route element={<RoleProtectedRoute allowedRoles={["Customer"]} />}>
-                            <Route element={<CustomerPortalLayout />}>
-                                <Route path="/portal" element={<CustomerPortalDashboardPage />} />
-                                <Route path="/portal/invoices" element={<CustomerInvoicesPage />} />
+                        {/* ── Customer Portal ── */}
+                        <Route element={<ProtectedRoute />}>
+                            <Route element={<RoleProtectedRoute allowedRoles={["Customer"]} />}>
+                                <Route element={<CustomerPortalLayout />}>
+                                    <Route path="/portal" element={<CustomerPortalDashboardPage />} />
+                                    <Route path="/portal/invoices" element={<CustomerInvoicesPage />} />
+                                </Route>
                             </Route>
                         </Route>
-                    </Route>
-                </Routes>
-            </Router>
-            <SyncStatusWidget />
-            <Toaster position="top-right" toastOptions={{
-                className: 'bg-secondary/90 text-foreground border border-border backdrop-blur',
-            }} />
+                    </Routes>
+                </Router>
+
+                <SyncStatusWidget />
+
+                {/* Toast — bottom-center, above BottomNav on mobile */}
+                <Toaster
+                    position="bottom-center"
+                    gutter={8}
+                    containerStyle={{ bottom: '5rem' }}
+                    toastOptions={{
+                        className: 'bg-card text-foreground border border-border shadow-lg rounded-xl text-sm font-medium',
+                        duration: 3500,
+                        style: { maxWidth: '380px' },
+                        success: { iconTheme: { primary: '#22c55e', secondary: '#fff' } },
+                        error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+                    }}
+                />
             </SyncProvider>
         </AuthProvider>
     );

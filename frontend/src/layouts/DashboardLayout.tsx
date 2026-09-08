@@ -14,7 +14,7 @@ export const DashboardLayout = () => {
             {/* Blocking wall for expired trials */}
             {isTrialExpired && <TrialExpiredWall />}
 
-            {/* Sidebar Overlay (mobile only) */}
+            {/* Mobile overlay — only shown when sidebar is open on mobile */}
             {isSidebarOpen && (
                 <div
                     className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 transition-all duration-300 md:hidden"
@@ -22,14 +22,17 @@ export const DashboardLayout = () => {
                 />
             )}
 
+            {/* Sidebar — permanent on desktop, slide-in on mobile */}
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-            <div className="flex-1 flex flex-col relative w-full h-full overflow-hidden bg-secondary/30">
-
+            {/* Main content area */}
+            <div className="flex-1 flex flex-col relative min-w-0 h-full overflow-hidden bg-secondary/30">
+                {/* Header — on desktop the hamburger opens sidebar as overlay still works but isn't needed */}
                 <Header onMenuClick={() => setIsSidebarOpen(true)} />
                 <TrialBanner />
-                <main className="flex-1 overflow-y-auto relative z-10 custom-scrollbar flex flex-col items-center pb-20 md:pb-0">
-                    <div className="w-full max-w-7xl p-4 md:p-8 animate-fade-in">
+
+                <main className="flex-1 overflow-y-auto relative z-10 custom-scrollbar scroll-smooth-ios pb-20 md:pb-0">
+                    <div className="w-full max-w-7xl mx-auto p-4 md:p-8 animate-page-enter">
                         <Outlet />
                     </div>
                 </main>
