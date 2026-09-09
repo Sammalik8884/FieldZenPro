@@ -367,8 +367,8 @@ namespace MyTechERP.Infrastructure.Services
             var workOrder = await _context.WorkOrders.FindAsync(id);
             if (workOrder == null) return false;
 
-            if (workOrder.Status != WorkOrderStatus.PendingApproval)
-                throw new InvalidOperationException("Only jobs pending approval can be reopened.");
+            if (workOrder.Status != WorkOrderStatus.PendingApproval && workOrder.Status != WorkOrderStatus.Completed)
+                throw new InvalidOperationException("Only completed or pending approval jobs can be reopened.");
 
             workOrder.Status = WorkOrderStatus.InProgress;
             await _context.SaveChangesAsync();
