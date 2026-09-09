@@ -1,3 +1,4 @@
+import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
 import { FolderTree, Plus, Edit, Trash2, Loader2, Search } from "lucide-react";
 import { categoryService } from "../services/categoryService";
@@ -185,6 +186,7 @@ export const CategoriesPage = () => {
 
  {/* Modal */}
  {isModalOpen && (
+ <ModalPortal>
  <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
  <div className="bg-secondary border border-border rounded-2xl w-full max-w-md shadow-md overflow-hidden relative">
  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
@@ -236,6 +238,7 @@ export const CategoriesPage = () => {
  </div>
  </div>
  </div>
+ </ModalPortal>
  )}
 
  <ConfirmModal
@@ -249,3 +252,5 @@ export const CategoriesPage = () => {
  </div>
  );
 };
+
+

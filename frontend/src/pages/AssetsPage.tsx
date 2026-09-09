@@ -1,3 +1,4 @@
+import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Loader2, Search, Box } from "lucide-react";
 import { assetService } from "../services/assetService";
@@ -302,6 +303,7 @@ export const AssetsPage = () => {
 
  {/* Modal */}
  {isModalOpen && (
+ <ModalPortal>
  <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
  <div className="bg-secondary border border-border rounded-2xl w-full max-w-2xl shadow-md overflow-hidden relative">
  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
@@ -446,6 +448,7 @@ export const AssetsPage = () => {
  </div>
  </div>
  </div>
+ </ModalPortal>
  )}
 
  <ConfirmModal
@@ -460,3 +463,5 @@ export const AssetsPage = () => {
  </div>
  );
 };
+
+

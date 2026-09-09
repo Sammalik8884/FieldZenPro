@@ -1,3 +1,4 @@
+import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
 import { Loader2, Search, Receipt, Eye, Send, Plus, Copy, DollarSign, AlertTriangle, FileText, X } from "lucide-react";
 import { StatCard } from "../components/dashboard/StatCard";
@@ -282,6 +283,7 @@ export const InvoicesPage = () => {
 
    {/* Payment Modal */}
    {paymentModal.isOpen && (
+    <ModalPortal>
     <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in">
      <div className="flex flex-col flex-1 w-full md:max-w-md md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[90vh] md:flex-none overflow-hidden relative">
       <div className="hidden md:block absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
@@ -308,6 +310,7 @@ export const InvoicesPage = () => {
       </div>
      </div>
     </div>
+    </ModalPortal>
    )}
 
   </div>
@@ -317,3 +320,5 @@ export const InvoicesPage = () => {
   </>
  );
 };
+
+

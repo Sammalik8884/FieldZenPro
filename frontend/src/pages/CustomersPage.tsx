@@ -1,3 +1,4 @@
+import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, Loader2, Search, Users, Phone, Mail, MapPin } from "lucide-react";
 import { StatCard } from "../components/dashboard/StatCard";
@@ -261,6 +262,7 @@ export const CustomersPage = () => {
 
    {/* Add/Edit Modal — Full screen on mobile, centered dialog on desktop */}
    {isModalOpen && (
+    <ModalPortal>
     <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in duration-200">
 
      {/* Mobile: full bg-background page-style overlay */}
@@ -357,6 +359,7 @@ export const CustomersPage = () => {
       </div>
      </div>
     </div>
+    </ModalPortal>
    )}
 
    <ConfirmModal
@@ -371,3 +374,5 @@ export const CustomersPage = () => {
   </>
  );
 };
+
+

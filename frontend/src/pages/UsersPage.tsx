@@ -1,3 +1,4 @@
+import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
 import { Plus, Shield, Mail, CheckCircle, XCircle, Loader2, Eye, EyeOff, Edit2, Trash2 } from "lucide-react";
 import { authService } from "../services/authService";
@@ -246,6 +247,7 @@ export const UsersPage = () => {
 </div>
  {/* Add/Edit Modal */} 
  {isModalOpen && (
+ <ModalPortal>
  <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
  <div className="bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative">
  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
@@ -333,6 +335,7 @@ export const UsersPage = () => {
  </div>
  </div>
  </div>
+ </ModalPortal>
  )}
 
  <ConfirmModal
@@ -345,6 +348,8 @@ export const UsersPage = () => {
  onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
  />
  </> ); };
+
+
 
 
 

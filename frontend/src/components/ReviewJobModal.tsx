@@ -1,3 +1,4 @@
+import { ModalPortal } from "./common/ModalPortal";
 import { X } from "lucide-react";
 import { WorkOrderDto } from "../types/field";
 
@@ -11,6 +12,7 @@ export const ReviewJobModal = ({ isOpen, onClose, workOrder }: ReviewJobModalPro
     if (!isOpen || !workOrder) return null;
 
     return (
+        <ModalPortal>
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-secondary w-full max-w-3xl rounded-xl shadow-2xl border border-white/10 flex flex-col max-h-[90vh]">
                 <div className="flex items-center justify-between p-6 border-b border-border">
@@ -71,5 +73,7 @@ export const ReviewJobModal = ({ isOpen, onClose, workOrder }: ReviewJobModalPro
                 </div>
             </div>
         </div>
+        </ModalPortal>
     );
 };
+

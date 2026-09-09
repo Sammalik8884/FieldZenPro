@@ -1,3 +1,4 @@
+import { ModalPortal } from "./common/ModalPortal";
 import { useState, useEffect } from "react";
 import { X, Plus, Trash2, Loader2, CheckCircle2, Smartphone, Mail, Printer, Send, DollarSign } from "lucide-react";
 import { CreateInvoiceDto, CreateInvoiceItemDto } from "../types/finance";
@@ -195,7 +196,8 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
     };
 
     return (
-        <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in duration-200">
+        <ModalPortal>
+          <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in duration-200">
             <div className="flex flex-col flex-1 w-full md:max-w-4xl md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[92vh] overflow-hidden relative md:flex-none">
                 {createdInvoice ? (
                     <div className="p-8 flex flex-col items-center justify-center text-center space-y-6">
@@ -587,5 +589,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                 )}
             </div>
         </div>
+        </ModalPortal>
     );
 };
+

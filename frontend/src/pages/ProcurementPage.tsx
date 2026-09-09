@@ -1,3 +1,4 @@
+import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
 import { Loader2, Search, ShoppingCart, Plus, Download, CheckCircle2, Trash2, Pencil } from "lucide-react";
 import { procurementService } from "../services/procurementService";
@@ -550,6 +551,7 @@ export const ProcurementPage = () => {
 
  {/* Create Vendor Modal */}
  {showVendorModal && (
+ <ModalPortal>
  <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
  <div className="absolute inset-0 bg-black/60 " onClick={() => !isSubmittingVendor && setShowVendorModal(false)} />
  <div className="bg-secondary/95 border border-primary/20 p-8 rounded-2xl w-full max-w-md relative z-10 shadow-md">
@@ -608,10 +610,12 @@ export const ProcurementPage = () => {
  </form>
  </div>
  </div>
+ </ModalPortal>
  )}
 
  {/* Create PO Modal */}
  {showPOModal && (
+ <ModalPortal>
  <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
  <div className="absolute inset-0 bg-black/60 " onClick={() => !isSubmittingPO && setShowPOModal(false)} />
  <div className="bg-secondary/95 border border-primary/20 p-8 rounded-2xl w-full max-w-2xl relative z-10 shadow-md max-h-[90vh] overflow-y-auto">
@@ -771,6 +775,7 @@ export const ProcurementPage = () => {
  </form>
  </div>
  </div>
+ </ModalPortal>
  )}
 
  <ConfirmModal
@@ -785,3 +790,5 @@ export const ProcurementPage = () => {
  </div>
  );
 };
+
+

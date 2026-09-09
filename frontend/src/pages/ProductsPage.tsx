@@ -1,3 +1,4 @@
+import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
 import { Package, Plus, Edit, Trash2, Loader2, Search, ImageIcon, UploadCloud, AlertTriangle, X } from "lucide-react";
 import { StatCard } from "../components/dashboard/StatCard";
@@ -327,6 +328,7 @@ export const ProductsPage = () => {
   </div>
   {/* Add/Edit Modal */}
   {isModalOpen && (
+   <ModalPortal>
    <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in duration-200">
     <div className="flex flex-col flex-1 w-full md:max-w-xl md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[92vh] md:flex-none overflow-hidden relative">
      <div className="hidden md:block absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
@@ -404,10 +406,12 @@ export const ProductsPage = () => {
      </div>
     </div>
    </div>
+   </ModalPortal>
   )}
 
   {/* Import Excel Modal — bottom sheet */}
   {isImportModalOpen && (
+  <ModalPortal>
   <div className="fixed inset-0 z-[200] flex flex-col md:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 p-4">
    <div className="bg-card border border-border w-full md:max-w-md rounded-2xl shadow-2xl overflow-hidden relative">
     <div className="p-5">
@@ -427,6 +431,7 @@ export const ProductsPage = () => {
     </div>
    </div>
   </div>
+  </ModalPortal>
   )}
 
   <ConfirmModal
@@ -440,4 +445,6 @@ export const ProductsPage = () => {
   </>
  );
 };
+
+
 
