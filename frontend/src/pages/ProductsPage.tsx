@@ -323,6 +323,8 @@ export const ProductsPage = () => {
  </div>
   </div>
 
+
+  </div>
   {/* Add/Edit Modal */}
   {isModalOpen && (
    <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in duration-200">
@@ -438,3 +440,4 @@ export const ProductsPage = () => {
   </>
  );
 };
+

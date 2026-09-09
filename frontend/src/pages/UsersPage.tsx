@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Plus, Shield, Mail, CheckCircle, XCircle, Loader2, Eye, EyeOff, Edit2, Trash2 } from "lucide-react";
+import { Plus, Shield, Mail, CheckCircle, XCircle, Loader2, Eye, EyeOff, Edit2, Trash2 } from "lucide-react";
 import { authService } from "../services/authService";
 import { toast } from "react-hot-toast";
 import { ConfirmModal } from "../components/common/ConfirmModal";
@@ -345,4 +345,6 @@ export const UsersPage = () => {
  onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
  />
  </> ); };
+
+
 
