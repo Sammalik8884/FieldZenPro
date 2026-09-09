@@ -135,7 +135,7 @@ export const UsersPage = () => {
  }
  };
 
- return (
+ return (<>
  <div className="p-8 animate-in fade-in duration-500">
  <div className="flex justify-between items-center mb-8">
  <div>
@@ -242,16 +242,17 @@ export const UsersPage = () => {
  </div>
  </div>
 
- {/* Create/Edit User Modal */}
- {isModalOpen && (
- <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
- <div className="bg-secondary border border-border rounded-2xl w-full max-w-md shadow-md overflow-hidden relative">
- <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent pointer-events-none" />
 
+</div>
+ {/* Add/Edit Modal */} 
+ {isModalOpen && (
+ <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+ <div className="bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative">
+ <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
  <div className="p-6">
- <h2 className="text-xl font-bold mb-6 flex items-center space-x-2">
- <Users className="h-5 w-5 text-primary" />
- <span>{isEditMode ? "Edit User" : "Invite New User"}</span>
+ <h2 className="text-xl font-bold mb-5 flex items-center gap-2">
+ <Shield className="h-5 w-5 text-primary" />
+ {isEditMode ? "Edit User" : "Add New User"}
  </h2>
 
  <form onSubmit={handleSubmit} className="space-y-4">
@@ -343,6 +344,5 @@ export const UsersPage = () => {
  onConfirm={confirmModal.onConfirm}
  onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
  />
- </div>
- );
-};
+ </> ); };
+

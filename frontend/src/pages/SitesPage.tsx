@@ -116,7 +116,7 @@ export const SitesPage = () => {
  });
  };
 
- return (
+ return (<>
  <div className="p-8 animate-in fade-in duration-500">
  <div className="flex justify-between items-center mb-8">
  <div>
@@ -212,7 +212,9 @@ export const SitesPage = () => {
  </div>
  </div>
 
- {/* Modal */}
+
+</div>
+ {/* Modal */} 
  {isModalOpen && (
  <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
  <div className="bg-secondary border border-border rounded-2xl w-full max-w-md shadow-md overflow-hidden relative">
@@ -300,6 +302,4 @@ export const SitesPage = () => {
  onConfirm={confirmModal.onConfirm}
  onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
  />
- </div>
- );
-};
+ </> ); };

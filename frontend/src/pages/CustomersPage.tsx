@@ -110,6 +110,7 @@ export const CustomersPage = () => {
  };
 
  return (
+  <>
   <div className="animate-in fade-in duration-500">
    {/* Page Header */}
    <div className="flex justify-between items-center mb-6">
@@ -256,9 +257,11 @@ export const CustomersPage = () => {
     )}
    </div>
 
+  </div>
+
    {/* Add/Edit Modal — Full screen on mobile, centered dialog on desktop */}
    {isModalOpen && (
-    <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center md:bg-black/60 md:backdrop-blur-sm md:animate-in md:fade-in">
+    <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in duration-200">
 
      {/* Mobile: full bg-background page-style overlay */}
      <div className="flex-1 flex flex-col bg-background md:hidden overflow-hidden">
@@ -309,9 +312,9 @@ export const CustomersPage = () => {
      </div>
 
      {/* Desktop: centered dialog */}
-     <div className="hidden md:flex bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative flex-col max-h-[90vh]">
+     <div className="hidden md:flex bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
       <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
-      <div className="p-6 overflow-y-auto flex-1">
+      <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
        <h2 className="text-xl font-bold mb-5">{editingCustomer ? "Edit Customer" : "Add New Customer"}</h2>
        <form onSubmit={handleSubmit} className="space-y-4">
         {[
@@ -365,6 +368,6 @@ export const CustomersPage = () => {
     onConfirm={confirmModal.onConfirm}
     onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
    />
-  </div>
+  </>
  );
 };
