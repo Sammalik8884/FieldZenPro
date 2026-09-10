@@ -12,7 +12,8 @@ import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { WeeklyReportPage } from "./pages/WeeklyReportPage";
-import { CustomersPage } from "./pages/CustomersPage";`r`nimport { CustomerProfilePage } from "./pages/CustomerProfilePage";
+import { CustomersPage } from "./pages/CustomersPage";
+import { CustomerProfilePage } from "./pages/CustomerProfilePage";
 import { SitesPage } from "./pages/SitesPage";
 import { CategoriesPage } from "./pages/CategoriesPage";
 import { ProductsPage } from "./pages/ProductsPage";
@@ -72,7 +73,8 @@ function App() {
 
                                 {/* CRM - Admin/Manager */}
                                 <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager"]} />}>
-                                    <Route path="/customers" element={<CustomersPage />} />`r`n                                    <Route path="/customers/:id" element={<CustomerProfilePage />} />
+                                    <Route path="/customers" element={<CustomersPage />} />
+                                    <Route path="/customers/:id" element={<CustomerProfilePage />} />
                                     <Route path="/sites" element={<SitesPage />} />
                                 </Route>
 
@@ -166,4 +168,5 @@ function App() {
 }
 
 export default App;
+
 

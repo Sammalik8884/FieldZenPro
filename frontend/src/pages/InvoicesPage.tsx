@@ -1,6 +1,6 @@
 import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
-import { Loader2, Search, Receipt, Eye, Send, Plus, Copy, DollarSign, AlertTriangle, FileText, X } from "lucide-react";
+import { Loader2, Search, Receipt, Eye, Send, Plus, Copy, DollarSign, AlertTriangle, FileText, X, Printer } from "lucide-react";
 import { StatCard } from "../components/dashboard/StatCard";
 import { invoiceService } from "../services/invoiceService";
 import { customerService } from "../services/customerService";
@@ -158,13 +158,22 @@ export const InvoicesPage = () => {
      </h1>
      <p className="text-muted-foreground mt-0.5 text-sm">Manage receivables and process payments.</p>
     </div>
-    <button
-     onClick={() => setIsCreateModalOpen(true)}
-     className="bg-primary text-primary-foreground px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-medium hover:bg-primary/90 active:scale-95 transition-all shadow-sm flex items-center gap-2 min-h-[44px]"
-    >
-     <Plus className="h-5 w-5" />
-     <span className="hidden sm:inline">Create Invoice</span>
-    </button>
+    <div className="flex gap-2">
+      <button
+       onClick={() => setIsCreateModalOpen(true)}
+       className="bg-primary text-primary-foreground px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-medium hover:bg-primary/90 active:scale-95 transition-all shadow-sm flex items-center gap-2 min-h-[44px]"
+      >
+       <Plus className="h-5 w-5" />
+       <span className="hidden sm:inline">Create Invoice</span>
+      </button>
+      <button
+       onClick={() => window.open("/api/invoice/export-weekly-completed", "_blank")}
+       className="bg-secondary text-secondary-foreground px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-medium hover:bg-secondary/80 active:scale-95 transition-all shadow-sm flex items-center gap-2 min-h-[44px]"
+      >
+       <Printer className="h-5 w-5" />
+       <span className="hidden sm:inline">Print Weekly</span>
+      </button>
+    </div>
    </div>
 
    {/* Stats */}
@@ -320,6 +329,7 @@ export const InvoicesPage = () => {
   </>
  );
 };
+
 
 
 

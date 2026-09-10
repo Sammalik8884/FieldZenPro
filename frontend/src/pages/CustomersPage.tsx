@@ -195,20 +195,26 @@ export const CustomersPage = () => {
             </div>
            )}
           </div>
-          <div className="flex gap-2 shrink-0">
-           <button
-            onClick={() => handleOpenModal(customer)}
-            className="p-2.5 border border-primary/30 text-primary hover:bg-primary/10 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-           >
-            <Edit className="h-4 w-4" />
-           </button>
-           <button
-            onClick={() => handleDelete(customer.id)}
-            className="p-2.5 border border-destructive/30 text-destructive hover:bg-destructive/10 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-           >
-            <Trash2 className="h-4 w-4" />
-           </button>
-          </div>
+            <div className="flex gap-2 shrink-0">
+             <button
+              onClick={() => handleOpenModal(customer)}
+              className="p-2.5 border border-primary/30 text-primary hover:bg-primary/10 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+             >
+              <Edit className="h-4 w-4" />
+             </button>
+             <button
+              onClick={() => window.location.href=`/customers/${customer.id}`}
+              className="p-2.5 border border-secondary/30 text-secondary-foreground hover:bg-secondary/10 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+             >
+              <Users className="h-4 w-4" />
+             </button>
+             <button
+              onClick={() => handleDelete(customer.id)}
+              className="p-2.5 border border-destructive/30 text-destructive hover:bg-destructive/10 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+             >
+              <Trash2 className="h-4 w-4" />
+             </button>
+            </div>
          </div>
         </div>
        ))}
@@ -239,6 +245,13 @@ export const CustomersPage = () => {
              >
               <Edit className="h-4 w-4" />
               <span className="text-xs">Edit</span>
+             </button>
+             <button
+              onClick={() => window.location.href=`/customers/${customer.id}`}
+              className="p-2 border border-secondary/30 text-secondary-foreground hover:bg-secondary/20 hover:text-foreground rounded-lg transition-colors flex items-center space-x-1 font-medium bg-secondary/10"
+             >
+              <Users className="h-4 w-4" />
+              <span className="text-xs">Profile</span>
              </button>
              <button
               onClick={() => handleDelete(customer.id)}
