@@ -17,7 +17,7 @@ export const DashboardLayout = () => {
             {/* Mobile overlay — only shown when sidebar is open on mobile */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 transition-all duration-300 md:hidden"
+                    className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 transition-all duration-300"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}

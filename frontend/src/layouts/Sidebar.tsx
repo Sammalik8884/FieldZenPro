@@ -68,12 +68,8 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
     return (
         <aside className={cn(
-            // Mobile: fixed overlay slide-in. Desktop: always visible static column.
             "fixed inset-y-0 left-0 z-50 flex flex-col bg-card border-r border-border text-foreground w-64 transition-transform duration-300 ease-in-out h-full",
-            // On desktop (md+): always translate-x-0 and use relative positioning inside flex
-            "md:translate-x-0 md:static md:z-auto md:flex md:shrink-0",
-            // On mobile: slide based on isOpen
-            isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+            isOpen ? "translate-x-0" : "-translate-x-full"
         )}>
             {/* Logo + close button */}
             <div className="p-5 flex justify-between items-center border-b border-border/50 shrink-0">
@@ -86,9 +82,9 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     </span>
                 </div>
                 {/* Close button only on mobile */}
-                <button
-                    onClick={onClose}
-                    className="p-2 text-muted-foreground hover:bg-secondary/50 rounded-lg md:hidden"
+                <button 
+                    onClick={onClose} 
+                    className="p-2 text-muted-foreground hover:bg-secondary/50 rounded-lg"
                 >
                     <X className="h-5 w-5" />
                 </button>
