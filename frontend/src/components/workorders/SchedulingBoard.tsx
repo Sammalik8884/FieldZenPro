@@ -45,7 +45,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
         const unscheduledJobs = workOrders
         .filter(wo => !wo.scheduledDate || wo.status === 'Unscheduled' || wo.status === 'WaitingForParts')
         .sort((a, b) => {
-            const getPriority = (status) => {
+            const getPriority = (status: string) => {
                 if (status === 'WaitingForParts') return 2;
                 if (status !== 'Unscheduled' && status !== 'Created') return 1;
                 return 0;
@@ -533,4 +533,5 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
         </>
     );
 };
+
 

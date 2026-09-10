@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, User, Phone, Mail, MapPin, FileText, Camera, CheckCircle2, AlertTriangle, Printer } from "lucide-react";
+import { ArrowLeft, Phone, Mail, MapPin, FileText, Printer } from "lucide-react";
 import { customerService } from "../services/customerService";
 import { workOrderService } from "../services/workOrderService";
 import { invoiceService } from "../services/invoiceService";
-import { Customer } from "../types/crm";
-import { WorkOrderDto } from "../types/crm";
+import { CustomerDto as Customer } from "../types/customer";
+import { WorkOrderDto } from "../types/field";
 import { InvoiceDto } from "../types/finance";
 import { Loader2 } from "lucide-react";
 
@@ -28,10 +28,10 @@ export const CustomerProfilePage = () => {
                 if (matchedCust) setCustomer(matchedCust);
 
                 // Assuming we can fetch all work orders and invoices, then filter by customer name or ID
-                const wos = await workOrderService.getAll(1, 100);
+                const wos = await workOrderService.getAll();
                 // The WorkOrderDto doesn't strictly give us CustomerId easily, it gives CustomerName
                 // We'll filter loosely or if backend has it. 
-                const matchedWos = wos.data.filter(w => w.customerName === matchedCust?.name || w.customerName === matchedCust?.companyName);
+                const matchedWos = wos.filter((w: any) => w.customerName === matchedCust?.name || w.customerName === matchedCust?.companyName);
                 setWorkOrders(matchedWos);
 
                 const invs = await invoiceService.getAll();
@@ -107,8 +107,8 @@ export const CustomerProfilePage = () => {
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className="font-bold text-sm">{inv.invoiceNumber}</span>
-                                        <span className={`text-[10px] px-2 py-0.5 rounded-full border ${inv.status === 'Paid' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
-                                            {inv.status}
+                                        <span className={`text-[10px] px-2 py-0.5 rounded-full border ${inv.status === 2 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
+                                            {inv.statusString || inv.status}
                                         </span>
                                     </div>
                                     <p className="text-xs text-muted-foreground">Issued: {new Date(inv.issueDate).toLocaleDateString()}</p>
@@ -127,3 +127,6 @@ export const CustomerProfilePage = () => {
         </div>
     );
 };
+
+
+
