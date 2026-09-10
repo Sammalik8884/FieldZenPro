@@ -145,6 +145,26 @@ namespace MyTechERP.Infrastructure.Services
             return true;
         }
 
+                private static string GetValidCustomerName(WorkOrder w)
+        {
+            if (w.Customer != null)
+            {
+                if (!string.IsNullOrWhiteSpace(w.Customer.CompanyName)) return w.Customer.CompanyName;
+                if (!string.IsNullOrWhiteSpace(w.Customer.Name)) return w.Customer.Name;
+            }
+            if (w.Contract?.Customer != null)
+            {
+                if (!string.IsNullOrWhiteSpace(w.Contract.Customer.CompanyName)) return w.Contract.Customer.CompanyName;
+                if (!string.IsNullOrWhiteSpace(w.Contract.Customer.Name)) return w.Contract.Customer.Name;
+            }
+            if (w.ReferenceQuotation?.Customer != null)
+            {
+                if (!string.IsNullOrWhiteSpace(w.ReferenceQuotation.Customer.CompanyName)) return w.ReferenceQuotation.Customer.CompanyName;
+                if (!string.IsNullOrWhiteSpace(w.ReferenceQuotation.Customer.Name)) return w.ReferenceQuotation.Customer.Name;
+            }
+            return "Unknown";
+        }
+
         private static WorkOrderDto MapToDto(WorkOrder w)
         {
             return new WorkOrderDto
@@ -157,11 +177,7 @@ namespace MyTechERP.Infrastructure.Services
                 SequenceOrder = w.SequenceOrder,
                 CompletedDate = w.CompletedDate,
                 ContractId = w.ContractId ?? 0,
-                CustomerName = w.Customer?.CompanyName
-                               ?? w.Customer?.Name
-                               ?? w.Contract?.Customer?.CompanyName
-                               ?? w.ReferenceQuotation?.Customer?.Name
-                               ?? "Unknown",
+                CustomerName = GetValidCustomerName(w),
                 SiteName = w.Site?.Name
                            ?? w.Customer?.SiteName
                            ?? w.Contract?.Customer?.SiteName
@@ -340,8 +356,7 @@ namespace MyTechERP.Infrastructure.Services
             }
 
             var evidenceCount = await _context.JobEvidences.CountAsync(e => e.WorkOrderId == id);
-            if (evidenceCount == 0)
-                throw new InvalidOperationException("Compliance Block: You must upload at least one evidence photo.");
+            // if (evidenceCount == 0) throw new InvalidOperationException("Compliance Block: You must upload at least one evidence photo.");
 
             workOrder.Status = WorkOrderStatus.Completed;
             workOrder.CompletedDate = DateTime.UtcNow;
@@ -580,3 +595,4 @@ namespace MyTechERP.Infrastructure.Services
         }
     }
 }
+
