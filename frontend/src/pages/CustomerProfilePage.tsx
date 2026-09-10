@@ -115,7 +115,15 @@ export const CustomerProfilePage = () => {
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <span className="font-bold">${inv.totalAmount.toFixed(2)}</span>
-                                    <button onClick={() => window.open(`/api/invoice/${inv.id}/pdf`, "_blank")} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Print/Download PDF">
+                                    <button onClick={async () => {
+                                        try {
+                                            const blob = await invoiceService.downloadPdf(inv.id);
+                                            const url = window.URL.createObjectURL(blob);
+                                            window.open(url, "_blank");
+                                        } catch(e) {
+                                            console.error("Failed to load PDF");
+                                        }
+                                    }} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Print/Download PDF">
                                         <Printer className="h-4 w-4" />
                                     </button>
                                 </div>

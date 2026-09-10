@@ -1,5 +1,6 @@
 import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Edit, Trash2, Loader2, Search, Users, Phone, Mail, MapPin } from "lucide-react";
 import { StatCard } from "../components/dashboard/StatCard";
 import { customerService } from "../services/customerService";
@@ -8,6 +9,7 @@ import { ConfirmModal } from "../components/common/ConfirmModal";
 import { toast } from "react-hot-toast";
 
 export const CustomersPage = () => {
+ const navigate = useNavigate();
  const [customers, setCustomers] = useState<CustomerDto[]>([]);
  const [loading, setLoading] = useState(true);
  const [searchQuery, setSearchQuery] = useState("");
@@ -203,7 +205,7 @@ export const CustomersPage = () => {
               <Edit className="h-4 w-4" />
              </button>
              <button
-              onClick={() => window.location.href=`/customers/${customer.id}`}
+              onClick={() => navigate(`/customers/${customer.id}`)}
               className="p-2.5 border border-secondary/30 text-secondary-foreground hover:bg-secondary/10 rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
              >
               <Users className="h-4 w-4" />
@@ -247,7 +249,7 @@ export const CustomersPage = () => {
               <span className="text-xs">Edit</span>
              </button>
              <button
-              onClick={() => window.location.href=`/customers/${customer.id}`}
+              onClick={() => navigate(`/customers/${customer.id}`)}
               className="p-2 border border-secondary/30 text-secondary-foreground hover:bg-secondary/20 hover:text-foreground rounded-lg transition-colors flex items-center space-x-1 font-medium bg-secondary/10"
              >
               <Users className="h-4 w-4" />
@@ -387,6 +389,9 @@ export const CustomersPage = () => {
   </>
  );
 };
+
+
+
 
 
 

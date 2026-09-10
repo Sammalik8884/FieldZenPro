@@ -61,6 +61,13 @@ export const invoiceService = {
         return response.data;
     },
 
+    downloadWeeklyCompleted: async (): Promise<Blob> => {
+        const response = await apiClient.get('/Invoice/export-weekly-completed', {
+            responseType: 'blob'
+        });
+        return response.data;
+    },
+
     downloadPdf: async (id: number): Promise<Blob> => {
         const response = await apiClient.get(`/Invoice/${id}/pdf`, {
             responseType: 'blob'
@@ -68,3 +75,4 @@ export const invoiceService = {
         return response.data;
     }
 };
+

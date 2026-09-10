@@ -112,6 +112,24 @@ export const InvoicesPage = () => {
    .catch(() => toast.error("Failed to copy link."));
  };
 
+    const handleDownloadWeekly = async () => {
+        try {
+            toast.loading("Generating weekly report...", { id: 'weekly-pdf' });
+            const blob = await invoiceService.downloadWeeklyCompleted();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Weekly_Completed_Invoices.zip';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            toast.success("Downloaded successfully!", { id: 'weekly-pdf' });
+        } catch (error) {
+            toast.error("Failed to download weekly invoices.", { id: 'weekly-pdf' });
+        }
+    };
+
  const handleViewPdf = async (id: number) => {
   try {
    setProcessingId(id);
@@ -167,7 +185,7 @@ export const InvoicesPage = () => {
        <span className="hidden sm:inline">Create Invoice</span>
       </button>
       <button
-       onClick={() => window.open("/api/invoice/export-weekly-completed", "_blank")}
+       onClick={handleDownloadWeekly}
        className="bg-secondary text-secondary-foreground px-3 py-2 md:px-4 md:py-2.5 rounded-xl font-medium hover:bg-secondary/80 active:scale-95 transition-all shadow-sm flex items-center gap-2 min-h-[44px]"
       >
        <Printer className="h-5 w-5" />
