@@ -167,9 +167,7 @@ namespace MytechERP.API.Controllers
             }
         }
 
-        [HttpGet("weekly-report")]
-        [Authorize(Roles = "Admin,Manager")]
-                [Authorize(Roles = Roles.Admin + "," + Roles.Manager)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager)]
         [HttpGet("export-weekly-completed")]
         public async Task<IActionResult> ExportWeeklyCompleted()
         {
@@ -214,3 +212,5 @@ namespace MytechERP.API.Controllers
         }
     }
 }
+
+
