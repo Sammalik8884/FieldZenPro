@@ -119,7 +119,13 @@ export const CustomerProfilePage = () => {
                                         try {
                                             const blob = await invoiceService.downloadPdf(inv.id);
                                             const url = window.URL.createObjectURL(blob);
-                                            window.open(url, "_blank");
+                                            const a = document.createElement('a');
+                                            a.href = url;
+                                            a.download = `Invoice_${inv.invoiceNumber}.pdf`;
+                                            document.body.appendChild(a);
+                                            a.click();
+                                            document.body.removeChild(a);
+                                            window.URL.revokeObjectURL(url);
                                         } catch(e) {
                                             console.error("Failed to load PDF");
                                         }
