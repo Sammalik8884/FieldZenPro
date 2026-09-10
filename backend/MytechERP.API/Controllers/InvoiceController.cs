@@ -169,6 +169,19 @@ namespace MytechERP.API.Controllers
 
         [HttpGet("weekly-report")]
         [Authorize(Roles = "Admin,Manager")]
+                [Authorize(Roles = Roles.Admin + "," + Roles.Manager)]
+        [HttpGet("export-weekly-completed")]
+        public async Task<IActionResult> ExportWeeklyCompleted()
+        {
+            var userTenantId = User.Claims.FirstOrDefault(c => c.Type == "TenantId")?.Value;
+            if (string.IsNullOrEmpty(userTenantId)) return Unauthorized();
+
+            var zipBytes = await _service.ExportWeeklyCompletedZippedPdfsAsync(userTenantId);
+            return File(zipBytes, "application/zip", $"Completed_Invoices_WeekOf_{DateTime.UtcNow:yyyyMMdd}.zip");
+        }
+
+        [Authorize]
+        [HttpGet("weekly-report")]
         public async Task<IActionResult> GetWeeklyReport([FromQuery] DateTime start, [FromQuery] DateTime end)
         {
             var tenantId = User.FindFirst("TenantId")?.Value ?? "1";

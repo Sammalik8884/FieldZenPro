@@ -395,6 +395,34 @@ namespace MyTechERP.Infrastructure.Services
             await _emailService.SendEmailWithAttachmentAsync(recipientEmail, subject, body, pdfBytes, $"Invoice_{invoice.InvoiceNumber}.pdf");
         }
 
+                        public async Task<byte[]> ExportWeeklyCompletedZippedPdfsAsync(string tenantId)
+        {
+            var startOfWeek = DateTime.UtcNow.Date.AddDays(-(int)DateTime.UtcNow.DayOfWeek);
+            
+            var completedWorkOrderIds = await _context.WorkOrders
+                .Where(w => w.TenantId == int.Parse(tenantId) && w.Status == MytechERP.domain.Enums.WorkOrderStatus.Completed && w.CompletedDate >= startOfWeek)
+                .Select(w => w.Id)
+                .ToListAsync();
+
+            var invoices = await _context.Invoices
+                .Where(i => i.TenantId == int.Parse(tenantId) && i.WorkOrderId != null && completedWorkOrderIds.Contains(i.WorkOrderId.Value))
+                .ToListAsync();
+
+            using var memoryStream = new System.IO.MemoryStream();
+            using (var archive = new System.IO.Compression.ZipArchive(memoryStream, System.IO.Compression.ZipArchiveMode.Create, true))
+            {
+                foreach (var inv in invoices)
+                {
+                    var pdfBytes = await _pdfService.GenerateInvoicePdfAsync(inv.Id);
+                    var entry = archive.CreateEntry($"Invoice_{inv.InvoiceNumber}.pdf");
+                    using var entryStream = entry.Open();
+                    await entryStream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
+                }
+            }
+            memoryStream.Position = 0;
+            return memoryStream.ToArray();
+        }
+
         public async Task SendWeeklyReportEmailAsync(string tenantId, DateTime weekStart, DateTime weekEnd, string recipientEmail)
         {
             var report = await GetWeeklyAccountingReportAsync(tenantId, weekStart, weekEnd);
@@ -433,3 +461,8 @@ namespace MyTechERP.Infrastructure.Services
         }
     }
 }
+
+
+
+
+
