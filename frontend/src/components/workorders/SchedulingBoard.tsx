@@ -42,13 +42,18 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
         }
     }, [selectedDay]);
 
-    const unscheduledJobs = workOrders
-        .filter(wo => !wo.scheduledDate || wo.status === 'Unscheduled')
+        const unscheduledJobs = workOrders
+        .filter(wo => !wo.scheduledDate || wo.status === 'Unscheduled' || wo.status === 'WaitingForParts')
         .sort((a, b) => {
-            const aPriority = (a.status !== 'Unscheduled' && a.status !== 'Created') ? 1 : 0;
-            const bPriority = (b.status !== 'Unscheduled' && b.status !== 'Created') ? 1 : 0;
-            if (aPriority !== bPriority) return bPriority - aPriority;
-            return a.id - b.id;
+            const getPriority = (status) => {
+                if (status === 'WaitingForParts') return 2;
+                if (status !== 'Unscheduled' && status !== 'Created') return 1;
+                return 0;
+            };
+            const pA = getPriority(a.status);
+            const pB = getPriority(b.status);
+            if (pA !== pB) return pB - pA; // Higher priority first
+            return b.id - a.id; // Newest first for same priority
         });
 
     const nextWeek = () => { const n = addDays(currentWeekStart, 7); setCurrentWeekStart(n); setSelectedDay(n); };
@@ -528,3 +533,4 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
         </>
     );
 };
+

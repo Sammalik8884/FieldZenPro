@@ -325,8 +325,7 @@ namespace MyTechERP.Infrastructure.Services
 
              _workflowService.ValidateTransition(workOrder.Status, WorkOrderStatus.WaitingForParts);
 
-             workOrder.Status = WorkOrderStatus.WaitingForParts;
-             workOrder.TechnicianNotes = notes;
+             workOrder.Status = WorkOrderStatus.WaitingForParts;`r`n             workOrder.TechnicianNotes = notes;`r`n             workOrder.ScheduledDate = null;
 
              var log = new AuditLog
              {
@@ -595,4 +594,5 @@ namespace MyTechERP.Infrastructure.Services
         }
     }
 }
+
 
