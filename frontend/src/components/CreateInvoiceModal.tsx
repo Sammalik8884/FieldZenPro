@@ -204,8 +204,8 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
           <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in duration-200">
             <div className="flex flex-col flex-1 w-full md:max-w-4xl md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[92vh] overflow-hidden relative md:flex-none">
                 {createdInvoice ? (
-                    <div className="p-8 flex flex-col items-center justify-center text-center space-y-6">
-                        <div className="h-16 w-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-2">
+                    <div className="p-4 sm:p-8 flex flex-col items-center text-center space-y-6 overflow-y-auto flex-1 w-full">
+                        <div className="h-16 w-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-2 shrink-0 mt-4 sm:mt-auto">
                             <CheckCircle2 className="h-8 w-8" />
                         </div>
                         <h2 className="text-2xl font-bold">Invoice {createdInvoice.number} Created!</h2>
@@ -352,7 +352,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                 onSuccess();
                                 onClose();
                             }}
-                            className="mt-8 px-8 py-3 bg-muted text-foreground font-semibold rounded-lg hover:bg-muted/80 transition-colors"
+                            className="mt-8 mb-8 sm:mb-auto px-8 py-3 bg-muted text-foreground font-semibold rounded-lg hover:bg-muted/80 transition-colors shrink-0"
                         >
                             Done
                         </button>
