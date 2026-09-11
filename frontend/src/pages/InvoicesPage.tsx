@@ -21,7 +21,7 @@ export const InvoicesPage = () => {
  const [paymentModal, setPaymentModal] = useState<{ isOpen: boolean; invoiceId: number | null }>({ isOpen: false, invoiceId: null });
  const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Check' | 'CreditCard' | 'PaymentLink' | ''>('');
  const [paymentRef, setPaymentRef] = useState('');
- const needsRef = paymentMethod === 'Check' || paymentMethod === 'CreditCard';
+ const needsRef = paymentMethod === 'Check' || paymentMethod === 'CreditCard' || paymentMethod === 'PaymentLink';
 
  const confirmAction = (title: string, message: string, type: 'info' | 'warning' | 'danger', confirmText: string, action: () => Promise<void>) => {
   setConfirmModal({
@@ -363,14 +363,14 @@ export const InvoicesPage = () => {
        {needsRef && (
         <div className="animate-in fade-in slide-in-from-top-2 duration-200">
          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">
-          {paymentMethod === 'Check' ? 'Check Number *' : 'CC Transaction / Auth Number *'}
+          {paymentMethod === 'Check' ? 'Check Number *' : paymentMethod === 'PaymentLink' ? 'Transaction ID *' : 'CC Transaction / Auth Number *'}
          </label>
          <input
           type="text"
           value={paymentRef}
           onChange={e => setPaymentRef(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleConfirmPaid()}
-          placeholder={paymentMethod === 'Check' ? 'e.g. 4521' : 'e.g. AUTH-89234'}
+          placeholder={paymentMethod === 'Check' ? 'e.g. 4521' : paymentMethod === 'PaymentLink' ? 'e.g. pi_3Mtw...' : 'e.g. AUTH-89234'}
           autoFocus
           className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px]"
          />
