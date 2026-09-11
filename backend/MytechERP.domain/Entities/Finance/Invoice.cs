@@ -39,6 +39,9 @@ namespace MytechERP.domain.Entities.Finance
         /// <summary>Check number, credit card auth code, or other payment reference recorded when marking paid.</summary>
         public string? PaymentReference { get; set; }
 
+        /// <summary>Payment method: Cash, Check, CreditCard, PaymentLink</summary>
+        public string? PaymentMethod { get; set; }
+
         public string? TechnicianNotes { get; set; }
     }
 

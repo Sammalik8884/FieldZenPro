@@ -36,6 +36,10 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
     const [emailPromptVisible, setEmailPromptVisible] = useState(false);
     const [customerEmail, setCustomerEmail] = useState("");
     const [sendingEmail, setSendingEmail] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Check' | 'CreditCard' | 'PaymentLink' | ''>('');
+    const [paymentRef, setPaymentRef] = useState('');
+    const [paymentRecorded, setPaymentRecorded] = useState(false);
+    const needsRef = paymentMethod === 'Check' || paymentMethod === 'CreditCard';
 
     // Dropdown Data State
     const [customers, setCustomers] = useState<CustomerDto[]>([]);
@@ -236,21 +240,76 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                             >
                                 <Printer className="h-5 w-5" /> Print (Thermal / PDF)
                             </button>
-                            <button 
-                                type="button"
-                                onClick={async () => {
-                                    try {
-                                        await invoiceService.markAsPaidWithRef(createdInvoice.id, "Paid on site");
-                                        toast.success("Payment recorded successfully!");
-                                    } catch (err: any) {
-                                        toast.error(err.response?.data?.message || "Failed to record payment");
-                                    }
-                                }}
-                                className="flex items-center justify-center gap-2 p-4 bg-green-600 text-white border border-green-700 rounded-xl hover:bg-green-500 transition-colors font-medium shadow-sm"
-                            >
-                                <DollarSign className="h-5 w-5" /> Record Payment
-                            </button>
                         </div>
+
+                        {/* --- Payment Method Section --- */}
+                        {!paymentRecorded ? (
+                            <div className="w-full max-w-lg mt-2 space-y-3">
+                                <p className="text-sm font-semibold text-foreground">Record Payment Method</p>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {([
+                                        { key: 'Cash',        label: 'Cash',         icon: '💵' },
+                                        { key: 'Check',       label: 'Check',        icon: '📝' },
+                                        { key: 'CreditCard',  label: 'Credit Card',  icon: '💳' },
+                                        { key: 'PaymentLink', label: 'Payment Link', icon: '🔗' },
+                                    ] as const).map(opt => (
+                                        <button
+                                            key={opt.key}
+                                            type="button"
+                                            onClick={() => { setPaymentMethod(opt.key); setPaymentRef(''); }}
+                                            className={`flex flex-col items-center justify-center gap-1.5 p-4 rounded-xl border-2 transition-all min-h-[76px] text-sm font-semibold active:scale-95 ${
+                                                paymentMethod === opt.key
+                                                    ? 'border-green-500 bg-green-500/10 text-green-600 dark:text-green-400'
+                                                    : 'border-border bg-secondary/30 text-foreground hover:border-primary/40 hover:bg-secondary/60'
+                                            }`}
+                                        >
+                                            <span className="text-2xl">{opt.icon}</span>
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                                {needsRef && (
+                                    <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">
+                                            {paymentMethod === 'Check' ? 'Check Number *' : 'CC Transaction / Auth Number *'}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={paymentRef}
+                                            onChange={e => setPaymentRef(e.target.value)}
+                                            placeholder={paymentMethod === 'Check' ? 'e.g. 4521' : 'e.g. AUTH-89234'}
+                                            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[48px]"
+                                        />
+                                    </div>
+                                )}
+                                <button
+                                    type="button"
+                                    disabled={!paymentMethod || (needsRef && !paymentRef.trim())}
+                                    onClick={async () => {
+                                        if (!paymentMethod) return;
+                                        try {
+                                            await invoiceService.markAsPaidWithRef(createdInvoice.id, paymentRef.trim() || undefined, paymentMethod);
+                                            setPaymentRecorded(true);
+                                            const label = paymentMethod === 'CreditCard' ? 'Credit Card' : paymentMethod === 'PaymentLink' ? 'Payment Link' : paymentMethod;
+                                            toast.success(`Payment recorded! (${label}${paymentRef ? ` · ${paymentRef}` : ''})`);
+                                        } catch (err: any) {
+                                            toast.error(err.response?.data?.message || 'Failed to record payment');
+                                        }
+                                    }}
+                                    className="w-full flex items-center justify-center gap-2 p-4 bg-green-600 hover:bg-green-700 disabled:opacity-40 text-white rounded-xl transition-colors font-semibold shadow-sm active:scale-95 min-h-[52px]"
+                                >
+                                    <DollarSign className="h-5 w-5" /> Confirm Payment
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="w-full max-w-lg mt-2 flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+                                <CheckCircle2 className="h-6 w-6 text-green-500 shrink-0" />
+                                <div>
+                                    <p className="text-sm font-semibold text-green-600 dark:text-green-400">Payment Recorded!</p>
+                                    <p className="text-xs text-muted-foreground">{paymentMethod === 'CreditCard' ? 'Credit Card' : paymentMethod === 'PaymentLink' ? 'Payment Link' : paymentMethod}{paymentRef ? ` · ${paymentRef}` : ''}</p>
+                                </div>
+                            </div>
+                        )}
 
                         {emailPromptVisible && (
                                 <div className="w-full max-w-lg mt-4 p-4 border border-border rounded-xl bg-muted/50 text-left animate-in fade-in slide-in-from-top-2">

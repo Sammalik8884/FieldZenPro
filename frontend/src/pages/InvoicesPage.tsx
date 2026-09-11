@@ -19,7 +19,9 @@ export const InvoicesPage = () => {
  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; title: string; message: string; type: 'info'|'warning'|'danger'; confirmText: string; onConfirm: () => void }>({ isOpen: false, title: "", message: "", type: "info", confirmText: "Confirm", onConfirm: () => {} });
 
  const [paymentModal, setPaymentModal] = useState<{ isOpen: boolean; invoiceId: number | null }>({ isOpen: false, invoiceId: null });
+ const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Check' | 'CreditCard' | 'PaymentLink' | ''>('');
  const [paymentRef, setPaymentRef] = useState('');
+ const needsRef = paymentMethod === 'Check' || paymentMethod === 'CreditCard';
 
  const confirmAction = (title: string, message: string, type: 'info' | 'warning' | 'danger', confirmText: string, action: () => Promise<void>) => {
   setConfirmModal({
@@ -87,16 +89,23 @@ export const InvoicesPage = () => {
 
  const handleMarkAsPaid = (id: number) => {
   setPaymentRef('');
+  setPaymentMethod('');
   setPaymentModal({ isOpen: true, invoiceId: id });
  };
 
  const handleConfirmPaid = async () => {
   if (!paymentModal.invoiceId) return;
+  if (!paymentMethod) { toast.error('Please select a payment method.'); return; }
+  if (needsRef && !paymentRef.trim()) {
+   toast.error(paymentMethod === 'Check' ? 'Please enter the check number.' : 'Please enter the transaction number.');
+   return;
+  }
   try {
    setProcessingId(paymentModal.invoiceId);
    setPaymentModal({ isOpen: false, invoiceId: null });
-   await invoiceService.markAsPaidWithRef(paymentModal.invoiceId, paymentRef || undefined);
-   toast.success('Invoice marked as paid!' + (paymentRef ? ` (Ref: ${paymentRef})` : ''));
+   await invoiceService.markAsPaidWithRef(paymentModal.invoiceId, paymentRef.trim() || undefined, paymentMethod);
+   const label = paymentMethod === 'CreditCard' ? 'Credit Card' : paymentMethod === 'PaymentLink' ? 'Payment Link' : paymentMethod;
+   toast.success(`Invoice marked as paid! (${label}${paymentRef ? ` · ${paymentRef}` : ''})`);
    fetchInvoices();
   } catch (error) {
    toast.error((error as any).response?.data?.Error || (error as any).response?.data?.Message || 'Failed to mark invoice as paid.');
@@ -313,27 +322,79 @@ export const InvoicesPage = () => {
     <ModalPortal>
     <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in">
      <div className="flex flex-col flex-1 w-full md:max-w-md md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[90vh] md:flex-none overflow-hidden relative">
-      <div className="hidden md:block absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
-      
+      <div className="hidden md:block absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-green-500 to-emerald-400 rounded-t-2xl" />
+
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 md:px-6 md:pt-6 md:pb-5 border-b border-border md:border-none bg-card shrink-0 shadow-sm md:shadow-none">
+      <div className="flex items-center justify-between px-4 py-3 md:px-6 md:pt-6 md:pb-4 border-b border-border md:border-none bg-card shrink-0 shadow-sm md:shadow-none">
        <button onClick={() => setPaymentModal({ isOpen: false, invoiceId: null })} className="md:hidden text-sm font-medium text-muted-foreground p-2 -ml-2">Cancel</button>
-       <h3 className="text-base md:text-lg font-bold text-foreground flex items-center gap-2 truncate px-2"><DollarSign className="hidden md:block h-5 w-5 text-green-500 shrink-0" /> Record Payment</h3>
-       <button onClick={handleConfirmPaid} className="md:hidden text-sm font-bold text-primary p-2 -mr-2">Confirm</button>
+       <h3 className="text-base md:text-lg font-bold text-foreground flex items-center gap-2 px-2"><DollarSign className="hidden md:block h-5 w-5 text-green-500 shrink-0" /> Record Payment</h3>
        <button onClick={() => setPaymentModal({ isOpen: false, invoiceId: null })} className="hidden md:block text-muted-foreground hover:text-foreground p-1"><X className="h-5 w-5" /></button>
       </div>
-      
+
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-5 md:p-6 pb-20 md:pb-6">
-       <p className="text-sm text-muted-foreground mb-4">Enter check number, CC auth code, or any payment reference. <strong>Optional</strong> but helps track payments.</p>
-       <div className="mb-4">
-        <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Payment Reference (Check #, CC Auth, etc.)</label>
-        <input type="text" value={paymentRef} onChange={e => setPaymentRef(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleConfirmPaid()} placeholder="e.g., Check #4521 or CC Auth: 89234" autoFocus className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 space-y-4">
+       <p className="text-sm text-muted-foreground">How was this invoice paid?</p>
+
+       {/* 4 Payment Method Tiles */}
+       <div className="grid grid-cols-2 gap-3">
+        {([
+         { key: 'Cash',        label: 'Cash',         icon: '💵' },
+         { key: 'Check',       label: 'Check',        icon: '📝' },
+         { key: 'CreditCard',  label: 'Credit Card',  icon: '💳' },
+         { key: 'PaymentLink', label: 'Payment Link', icon: '🔗' },
+        ] as const).map(opt => (
+         <button
+          key={opt.key}
+          type="button"
+          onClick={() => { setPaymentMethod(opt.key); setPaymentRef(''); }}
+          className={`flex flex-col items-center justify-center gap-1.5 p-4 rounded-xl border-2 transition-all min-h-[80px] text-sm font-semibold active:scale-95 ${
+           paymentMethod === opt.key
+            ? 'border-green-500 bg-green-500/10 text-green-600 dark:text-green-400'
+            : 'border-border bg-card text-foreground hover:border-primary/40 hover:bg-secondary/50'
+          }`}
+         >
+          <span className="text-2xl">{opt.icon}</span>
+          {opt.label}
+         </button>
+        ))}
        </div>
-       <div className="hidden md:flex gap-3 mt-6">
+
+       {/* Conditional reference number field */}
+       {needsRef && (
+        <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+         <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">
+          {paymentMethod === 'Check' ? 'Check Number *' : 'CC Transaction / Auth Number *'}
+         </label>
+         <input
+          type="text"
+          value={paymentRef}
+          onChange={e => setPaymentRef(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleConfirmPaid()}
+          placeholder={paymentMethod === 'Check' ? 'e.g. 4521' : 'e.g. AUTH-89234'}
+          autoFocus
+          className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px]"
+         />
+        </div>
+       )}
+
+       {/* Desktop buttons */}
+       <div className="hidden md:flex gap-3 pt-2">
         <button onClick={() => setPaymentModal({ isOpen: false, invoiceId: null })} className="flex-1 border border-border px-4 py-3 rounded-xl text-sm font-medium hover:bg-muted transition-colors min-h-[48px]">Cancel</button>
-        <button onClick={handleConfirmPaid} className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl text-sm font-semibold min-h-[48px] active:scale-95 transition-all">Mark as Paid</button>
+        <button
+         onClick={handleConfirmPaid}
+         disabled={!paymentMethod || (needsRef && !paymentRef.trim())}
+         className="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-40 text-white px-4 py-3 rounded-xl text-sm font-semibold min-h-[48px] active:scale-95 transition-all"
+        >Mark as Paid</button>
        </div>
+      </div>
+
+      {/* Mobile sticky confirm */}
+      <div className="md:hidden fixed bottom-0 inset-x-0 p-4 bg-card border-t border-border">
+       <button
+        onClick={handleConfirmPaid}
+        disabled={!paymentMethod || (needsRef && !paymentRef.trim())}
+        className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-40 text-white py-4 rounded-xl text-base font-bold active:scale-95 transition-all min-h-[56px]"
+       >Confirm Payment</button>
       </div>
      </div>
     </div>

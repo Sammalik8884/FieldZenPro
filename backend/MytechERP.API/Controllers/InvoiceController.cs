@@ -9,6 +9,7 @@ namespace MytechERP.API.Controllers
     public class MarkAsPaidDto
     {
         public string? PaymentReference { get; set; }
+        public string? PaymentMethod { get; set; }
     }
 
     [Route("api/[controller]")]
@@ -134,7 +135,7 @@ namespace MytechERP.API.Controllers
         public async Task<IActionResult> MarkAsPaid(int id, [FromBody] MarkAsPaidDto dto)
         {
             var tenantId = User.FindFirst("TenantId")?.Value ?? "1";
-            var result = await _service.UpdateStatusAsync(id, 2, tenantId, dto?.PaymentReference);
+            var result = await _service.UpdateStatusAsync(id, 2, tenantId, dto?.PaymentReference, dto?.PaymentMethod);
             if (!result) return NotFound();
             return Ok(new { Message = "Invoice marked as paid successfully." });
         }

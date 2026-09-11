@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MytechERP.Application.Interfaces;
 using MytechERP.domain.Entities.Finance;
 using MytechERP.domain.Enums;
@@ -251,6 +251,8 @@ namespace MyTechERP.Infrastructure.Services
                 AmountPaid = i.AmountPaid,
                 Status = (int)i.Status,
                 StatusString = i.Status.ToString(),
+                PaymentReference = i.PaymentReference,
+                PaymentMethod = i.PaymentMethod,
                 Items = i.Items.Select(item => new InvoiceItemDto
                 {
                     Id = item.Id,
@@ -262,7 +264,7 @@ namespace MyTechERP.Infrastructure.Services
             };
         }
 
-        public async Task<bool> UpdateStatusAsync(int id, int status, string tenantId, string? paymentReference = null)
+        public async Task<bool> UpdateStatusAsync(int id, int status, string tenantId, string? paymentReference = null, string? paymentMethod = null)
         {
             int tId = int.Parse(tenantId);
             var invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.Id == id && i.TenantId == tId);
@@ -274,6 +276,8 @@ namespace MyTechERP.Infrastructure.Services
                 invoice.AmountPaid = invoice.TotalAmount;
                 if (!string.IsNullOrWhiteSpace(paymentReference))
                     invoice.PaymentReference = paymentReference;
+                if (!string.IsNullOrWhiteSpace(paymentMethod))
+                    invoice.PaymentMethod = paymentMethod;
             }
             await _context.SaveChangesAsync();
             return true;
@@ -281,7 +285,6 @@ namespace MyTechERP.Infrastructure.Services
 
         public async Task<IEnumerable<InvoiceDto>> GetByCustomerEmailAsync(string email)
         {
-            // Find the customer whose email matches the logged-in user
             var customer = await _context.Customers
                 .FirstOrDefaultAsync(c => c.Email.ToLower() == email.ToLower());
 
@@ -310,6 +313,8 @@ namespace MyTechERP.Infrastructure.Services
                 AmountPaid = i.AmountPaid,
                 Status = (int)i.Status,
                 StatusString = i.Status.ToString(),
+                PaymentReference = i.PaymentReference,
+                PaymentMethod = i.PaymentMethod,
                 Items = i.Items.Select(item => new InvoiceItemDto
                 {
                     Id = item.Id,

@@ -35,7 +35,6 @@ export const invoiceService = {
     },
 
     markAsIssued: async (id: number): Promise<any> => {
-        // Assuming hitting an endpoint to update status, or similar
         const response = await apiClient.put<any>(`/Invoice/${id}/status`, 1, {
             headers: { 'Content-Type': 'application/json' }
         });
@@ -49,8 +48,8 @@ export const invoiceService = {
         return response.data;
     },
 
-    markAsPaidWithRef: async (id: number, paymentReference?: string): Promise<any> => {
-        const response = await apiClient.put<any>(`/Invoice/${id}/mark-paid`, { paymentReference }, {
+    markAsPaidWithRef: async (id: number, paymentReference?: string, paymentMethod?: string): Promise<any> => {
+        const response = await apiClient.put<any>(`/Invoice/${id}/mark-paid`, { paymentReference, paymentMethod }, {
             headers: { 'Content-Type': 'application/json' }
         });
         return response.data;
@@ -75,4 +74,3 @@ export const invoiceService = {
         return response.data;
     }
 };
-
