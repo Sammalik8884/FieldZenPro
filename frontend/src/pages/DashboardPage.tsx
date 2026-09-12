@@ -325,7 +325,7 @@ export const DashboardPage: React.FC = () => {
  {loading ? (
  /* Skeleton */
  <div className="grid gap-6">
- <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
    <div className="h-32 rounded-2xl bg-muted animate-pulse" />
    <div className="h-32 rounded-2xl bg-muted animate-pulse" />
    <div className="h-32 rounded-2xl bg-muted animate-pulse" />
@@ -338,7 +338,7 @@ export const DashboardPage: React.FC = () => {
  
  {/* ADMIN METRICS ROW */}
  {adminMetrics && (
-   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
      <KPICard 
        title="Jobs Scheduled (This Week)" 
        value={adminMetrics.jobsScheduledThisWeek} 
