@@ -4,7 +4,7 @@ import { PremiumChart } from '../components/dashboard/PremiumChart';
 import { SystemSetupGuide } from '../components/SystemSetupGuide';
 import { apiClient } from '../services/apiClient';
 import {
- AlertTriangle, RefreshCw, Calendar, Zap, Briefcase, CheckCircle, Clock, FileText, Wrench, ArrowRight
+ AlertTriangle, AlertCircle, RefreshCw, Calendar, Zap, Briefcase, CheckCircle, Clock, FileText, Wrench, ArrowRight
 } from 'lucide-react';
 import { format, subDays, subMonths, subYears } from 'date-fns';
 import { Link } from 'react-router-dom';
