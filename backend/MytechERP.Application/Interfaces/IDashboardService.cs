@@ -10,5 +10,7 @@ namespace MytechERP.Application.Interfaces
     public interface IDashboardService
     {
         Task<DashboardMetricsDto> GetExecutiveMetricsAsync(DateTime? startDate = null, DateTime? endDate = null);
+        Task<AdminDashboardMetricsDto> GetAdminDashboardAsync();
+        Task<TechnicianDashboardMetricsDto> GetTechnicianDashboardAsync(string technicianUserId);
     }
 }

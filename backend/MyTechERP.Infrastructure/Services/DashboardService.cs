@@ -179,5 +179,94 @@ namespace MyTechERP.Infrastructure.Services
                 InvoiceStatusBreakdown = invoiceStatusRaw.Select(x => new ChartDataPoint { Name = x.Status, Value = x.Count }).ToList(),
             };
         }
+
+        public async Task<AdminDashboardMetricsDto> GetAdminDashboardAsync()
+        {
+            var now = DateTime.UtcNow;
+            var startOfWeek = now.Date.AddDays(-(int)now.DayOfWeek);
+            var endOfWeek = startOfWeek.AddDays(7);
+
+            var jobsScheduledThisWeek = await _context.WorkOrders
+                .CountAsync(w => w.ScheduledDate >= startOfWeek && w.ScheduledDate < endOfWeek 
+                              && (w.Status == WorkOrderStatus.Assigned || w.Status == WorkOrderStatus.InProgress || w.Status == WorkOrderStatus.Initialized || w.Status == WorkOrderStatus.Created));
+
+            var jobsCompletedThisWeek = await _context.WorkOrders
+                .CountAsync(w => w.Status == WorkOrderStatus.Completed && w.CompletedDate >= startOfWeek && w.CompletedDate < endOfWeek);
+
+            var jobsWaitingForParts = await _context.WorkOrders
+                .CountAsync(w => w.Status == WorkOrderStatus.WaitingForParts);
+
+            var jobsWaitingForQuote = await _context.WorkOrders
+                .CountAsync(w => w.Status == WorkOrderStatus.PendingQuote);
+
+            var unscheduledJobs = await _context.WorkOrders
+                .CountAsync(w => w.Status == WorkOrderStatus.Unscheduled || (w.Status == WorkOrderStatus.Created && w.ScheduledDate == null));
+
+            var outstandingInvoicesAmount = await _context.Invoices
+                .Where(i => i.Status == InvoiceStatus.Issued || i.Status == InvoiceStatus.Overdue)
+                .SumAsync(i => i.TotalAmount - i.AmountPaid);
+
+            var outstandingInvoicesCount = await _context.Invoices
+                .CountAsync(i => i.Status == InvoiceStatus.Issued || i.Status == InvoiceStatus.Overdue);
+
+            var weeklyJobsRaw = await _context.WorkOrders
+                .Where(w => w.ScheduledDate >= startOfWeek && w.ScheduledDate < endOfWeek)
+                .GroupBy(w => w.ScheduledDate.Value.DayOfWeek)
+                .Select(g => new { Day = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var weeklyJobsBreakdown = Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>()
+                .Select(d => new ChartDataPoint
+                {
+                    Name = d.ToString(),
+                    Value = weeklyJobsRaw.FirstOrDefault(x => x.Day == d)?.Count ?? 0
+                }).ToList();
+
+            return new AdminDashboardMetricsDto
+            {
+                JobsScheduledThisWeek = jobsScheduledThisWeek,
+                JobsCompletedThisWeek = jobsCompletedThisWeek,
+                JobsWaitingForParts = jobsWaitingForParts,
+                JobsWaitingForQuote = jobsWaitingForQuote,
+                UnscheduledJobs = unscheduledJobs,
+                OutstandingInvoicesAmountThisWeek = outstandingInvoicesAmount,
+                OutstandingInvoicesCountThisWeek = outstandingInvoicesCount,
+                WeeklyJobsBreakdown = weeklyJobsBreakdown
+            };
+        }
+
+        public async Task<TechnicianDashboardMetricsDto> GetTechnicianDashboardAsync(string technicianUserId)
+        {
+            var today = DateTime.UtcNow.Date;
+            var tomorrow = today.AddDays(1);
+
+            var jobsAssignedToday = await _context.WorkOrders
+                .CountAsync(w => w.TechnicianId == technicianUserId 
+                              && w.ScheduledDate >= today && w.ScheduledDate < tomorrow
+                              && w.Status != WorkOrderStatus.Completed && w.Status != WorkOrderStatus.Cancelled);
+
+            var jobsCompletedToday = await _context.WorkOrders
+                .CountAsync(w => w.TechnicianId == technicianUserId 
+                              && w.Status == WorkOrderStatus.Completed
+                              && w.CompletedDate >= today && w.CompletedDate < tomorrow);
+
+            var jobsInProgress = await _context.WorkOrders
+                .CountAsync(w => w.TechnicianId == technicianUserId 
+                              && w.Status == WorkOrderStatus.InProgress);
+
+            var rawStatus = await _context.WorkOrders
+                .Where(w => w.TechnicianId == technicianUserId && (w.ScheduledDate >= today && w.ScheduledDate < tomorrow || w.Status == WorkOrderStatus.InProgress))
+                .GroupBy(w => w.Status)
+                .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+                .ToListAsync();
+
+            return new TechnicianDashboardMetricsDto
+            {
+                JobsAssignedToday = jobsAssignedToday,
+                JobsCompletedToday = jobsCompletedToday,
+                JobsInProgress = jobsInProgress,
+                MyJobsBreakdown = rawStatus.Select(x => new ChartDataPoint { Name = x.Status, Value = x.Count }).ToList()
+            };
+        }
     }
 }

@@ -4,9 +4,10 @@ import { PremiumChart } from '../components/dashboard/PremiumChart';
 import { SystemSetupGuide } from '../components/SystemSetupGuide';
 import { apiClient } from '../services/apiClient';
 import {
- AlertTriangle, RefreshCw, Calendar, Zap
+ AlertTriangle, RefreshCw, Calendar, Zap, Briefcase, CheckCircle, Clock, FileText, Wrench, ArrowRight
 } from 'lucide-react';
 import { format, subDays, subMonths, subYears } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 interface ChartDataPoint { name: string; value: number; secondaryValue?: number }
 interface DashboardMetrics {
@@ -19,6 +20,24 @@ interface DashboardMetrics {
  topCustomersByRevenue: ChartDataPoint[];
  jobsCompletedOverTime: ChartDataPoint[];
  invoiceStatusBreakdown: ChartDataPoint[];
+}
+
+interface AdminMetrics {
+ jobsScheduledThisWeek: number;
+ jobsCompletedThisWeek: number;
+ jobsWaitingForParts: number;
+ jobsWaitingForQuote: number;
+ unscheduledJobs: number;
+ outstandingInvoicesAmountThisWeek: number;
+ outstandingInvoicesCountThisWeek: number;
+ weeklyJobsBreakdown: ChartDataPoint[];
+}
+
+interface TechnicianMetrics {
+ jobsAssignedToday: number;
+ jobsCompletedToday: number;
+ jobsInProgress: number;
+ myJobsBreakdown: ChartDataPoint[];
 }
 
 const fmt = (n: number) => 
@@ -62,9 +81,27 @@ const CustomizationModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () 
  );
 };
 
+// Sub-component for simple KPI Cards
+const KPICard = ({ title, value, icon, subtext, colorClass }: any) => (
+  <div className="bg-card border border-border rounded-2xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="text-sm font-semibold text-muted-foreground">{title}</h3>
+      <div className={`p-2 rounded-lg ${colorClass}`}>
+        {icon}
+      </div>
+    </div>
+    <div>
+      <p className="text-3xl font-black text-foreground">{value}</p>
+      {subtext && <p className="text-xs text-muted-foreground mt-1 font-medium">{subtext}</p>}
+    </div>
+  </div>
+);
+
 export const DashboardPage: React.FC = () => {
  const { user } = useAuth();
  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+ const [adminMetrics, setAdminMetrics] = useState<AdminMetrics | null>(null);
+ const [techMetrics, setTechMetrics] = useState<TechnicianMetrics | null>(null);
  const [loading, setLoading] = useState(true);
  const [lastRefresh, setLastRefresh] = useState(new Date());
 
@@ -73,6 +110,9 @@ export const DashboardPage: React.FC = () => {
  const [customStartDate, setCustomStartDate] = useState(format(subMonths(new Date(), 1), 'yyyy-MM-dd'));
  const [customEndDate, setCustomEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
  const [showCustomizationModal, setShowCustomizationModal] = useState(false);
+
+ const isAdmin = user?.roles?.includes('Admin');
+ const isTechnician = user?.roles?.includes('Technician') || user?.roles?.includes('Staff');
 
  useEffect(() => {
  if (user?.id) {
@@ -110,15 +150,22 @@ export const DashboardPage: React.FC = () => {
  startDate = customStartDate;
  endDate = customEndDate;
  } else if (dateRange === 'all') {
- // For all time, pass dates way in the past/future to capture everything
  startDate = '2000-01-01';
  endDate = '2100-01-01';
  }
 
- const { data } = await apiClient.get('/Dashboard/metrics', {
- params: { startDate, endDate }
- });
- setMetrics(data);
+ if (isAdmin) {
+   const [execData, adminData] = await Promise.all([
+     apiClient.get('/Dashboard/metrics', { params: { startDate, endDate } }),
+     apiClient.get('/Dashboard/admin-metrics')
+   ]);
+   setMetrics(execData.data);
+   setAdminMetrics(adminData.data);
+ } else if (isTechnician) {
+   const techData = await apiClient.get('/Dashboard/technician-metrics');
+   setTechMetrics(techData.data);
+ }
+ 
  setLastRefresh(new Date());
  } catch (e) {
  console.error('Dashboard fetch failed', e);
@@ -128,7 +175,7 @@ export const DashboardPage: React.FC = () => {
  };
 
  useEffect(() => {
- if (user?.roles?.includes('Admin')) {
+ if (user) {
  fetchMetrics();
  }
  }, [dateRange, user]);
@@ -136,17 +183,83 @@ export const DashboardPage: React.FC = () => {
  const hour = new Date().getHours();
  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
- if (!user?.roles?.includes('Admin')) {
+ if (!isAdmin) {
  return (
-  <div className="animate-in fade-in duration-500 relative">
+  <div className="animate-in fade-in duration-500 relative max-w-5xl mx-auto space-y-6">
    <CustomizationModal isOpen={showCustomizationModal} onClose={closeCustomizationModal} />
-   <h1 className="text-2xl md:text-4xl font-black tracking-tight text-foreground leading-tight">
-    {greeting},&nbsp;
-    <span className="text-primary">
-     {user?.fullName?.split(' ')[0] ?? 'User'}
-    </span>
-   </h1>
-   <p className="text-muted-foreground mt-2 text-sm">Welcome to your dashboard.</p>
+   
+   <div className="flex items-center justify-between">
+     <div>
+       <h1 className="text-2xl md:text-4xl font-black tracking-tight text-foreground leading-tight">
+        {greeting},&nbsp;<span className="text-primary">{user?.fullName?.split(' ')[0] ?? 'Technician'}</span>
+       </h1>
+       <p className="text-muted-foreground mt-2 text-sm">Here is your schedule for today.</p>
+     </div>
+     <button onClick={fetchMetrics} className="p-2 rounded-xl border border-border hover:bg-muted transition-all">
+       <RefreshCw size={16} className={loading ? 'animate-spin text-primary' : 'text-muted-foreground'} />
+     </button>
+   </div>
+
+   {loading ? (
+     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+       <div className="h-32 rounded-2xl bg-muted animate-pulse" />
+       <div className="h-32 rounded-2xl bg-muted animate-pulse" />
+       <div className="h-32 rounded-2xl bg-muted animate-pulse" />
+     </div>
+   ) : techMetrics ? (
+     <div className="space-y-8">
+       {/* Technician KPI Row */}
+       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+         <KPICard 
+           title="Jobs Assigned Today" 
+           value={techMetrics.jobsAssignedToday} 
+           icon={<Briefcase size={20} />} 
+           colorClass="bg-blue-500/10 text-blue-500" 
+         />
+         <KPICard 
+           title="In Progress" 
+           value={techMetrics.jobsInProgress} 
+           icon={<Clock size={20} />} 
+           colorClass="bg-orange-500/10 text-orange-500" 
+         />
+         <KPICard 
+           title="Completed Today" 
+           value={techMetrics.jobsCompletedToday} 
+           icon={<CheckCircle size={20} />} 
+           colorClass="bg-green-500/10 text-green-500" 
+         />
+       </div>
+
+       {/* Quick Access */}
+       <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+         <div className="flex items-center justify-between mb-4">
+           <h2 className="text-xl font-bold">Quick Actions</h2>
+         </div>
+         <div className="flex flex-col sm:flex-row gap-4">
+           <Link to="/work-orders" className="flex-1 flex items-center justify-between p-4 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all font-semibold">
+             <div className="flex items-center gap-3">
+               <Wrench size={24} />
+               <span>View My Work Orders</span>
+             </div>
+             <ArrowRight size={20} />
+           </Link>
+         </div>
+       </div>
+
+       {techMetrics.myJobsBreakdown && techMetrics.myJobsBreakdown.length > 0 && (
+         <PremiumChart
+           title="My Jobs Overview"
+           subtitle="Status of your currently assigned jobs"
+           data={techMetrics.myJobsBreakdown}
+           defaultType="pie"
+           color="#10b981"
+           allowedTypes={['pie', 'bar']}
+           height={280}
+         />
+       )}
+     </div>
+   ) : null}
+
    <div className="mt-6">
     <SystemSetupGuide />
    </div>
@@ -197,7 +310,7 @@ export const DashboardPage: React.FC = () => {
   </div>
  </div>
 
- {/* Custom date range — shown below header on mobile */}
+ {/* Custom date range shown below header on mobile */}
  {dateRange === 'custom' && (
   <div className="flex flex-wrap items-center gap-2 bg-card border border-border rounded-2xl p-3 animate-in fade-in slide-in-from-top-2">
    <input type="date" value={customStartDate} onChange={(e) => setCustomStartDate(e.target.value)}
@@ -209,120 +322,156 @@ export const DashboardPage: React.FC = () => {
   </div>
  )}
 
- {/* System Setup Guide */}
- <SystemSetupGuide />
-
  {loading ? (
- /* ── Skeleton ──────────────────────────────────── */
+ /* Skeleton */
  <div className="grid gap-6">
- <div className="h-80 rounded-2xl bg-white/5 animate-pulse border border-border" />
- <div className="grid gap-6 lg:grid-cols-2">
- <div className="h-72 rounded-2xl bg-white/5 animate-pulse border border-border" />
- <div className="h-72 rounded-2xl bg-white/5 animate-pulse border border-border" />
+ <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+   <div className="h-32 rounded-2xl bg-muted animate-pulse" />
+   <div className="h-32 rounded-2xl bg-muted animate-pulse" />
+   <div className="h-32 rounded-2xl bg-muted animate-pulse" />
+   <div className="h-32 rounded-2xl bg-muted animate-pulse" />
  </div>
- </div>
- ) : metrics ? (
- <div className="space-y-6">
- {/* ── Top Focus: Financial Trajectory ───────────────── */}
- <div className="w-full">
- <PremiumChart
- title="Revenue Growth & Financial Trajectory"
- subtitle={`Historical analysis of paid invoices for selected period`}
- data={metrics.revenueOverTime}
- defaultType="area"
- color="#10b981"
- allowedTypes={['area', 'bar', 'line']}
- valuePrefix="$"
- height={320}
- />
- </div>
-
- {/* ── Split Level: Pipeline & Customers ─────────────── */}
- <div className="grid gap-6 lg:grid-cols-2">
- <PremiumChart
- title="Customer Value Distribution"
- subtitle="Top 5 highest paying customers (cumulative revenue)"
- data={metrics.topCustomersByRevenue}
- defaultType="bar"
- color="#6366f1"
- allowedTypes={['bar', 'line', 'pie']}
- valuePrefix="$"
- height={300}
- />
- <div className="grid gap-6 grid-rows-[2fr_1fr]">
- <PremiumChart
- title="Sales Pipeline & Quotation Status"
- subtitle="Distribution of quotes by stage"
- data={metrics.quotationsByStatus}
- defaultType="bar"
- color="#a855f7"
- allowedTypes={['bar', 'pie', 'line']}
- height={200}
- />
- {/* Embedded Pipeline Summary within charts area */}
- <div className="bg-card border border-border rounded-xl p-4 md:p-6 flex items-center justify-between shadow-sm gap-4">
- <div className="min-w-0">
-  <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">Total Pipeline</p>
-  <p className="text-2xl md:text-4xl font-black text-primary truncate">{fmt(metrics.totalQuotationValue)}</p>
- </div>
- <div className="text-right shrink-0">
-  <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">Pending Quotes</p>
-  <p className="text-2xl md:text-3xl font-bold text-foreground">{metrics.pendingQuotations}</p>
- </div>
- </div>
- </div>
- </div>
-
- {/* ── Lower Split: Operational Status ───────────────── */}
- <div className="grid gap-6 lg:grid-cols-3">
- <PremiumChart
- title="Operational Throughput"
- subtitle="Jobs completed over the selected period"
- data={metrics.jobsCompletedOverTime}
- defaultType="area"
- color="#22d3ee"
- allowedTypes={['area', 'bar', 'line']}
- height={260}
- />
- <PremiumChart
- title="Work Order Bottlenecks"
- subtitle="Current job distribution by status"
- data={metrics.workOrdersByStatus}
- defaultType="pie"
- color="#f59e0b"
- allowedTypes={['pie', 'bar']}
- height={260}
- />
- <PremiumChart
- title="Accounts Receivable Health"
- subtitle="Paid vs Issued vs Overdue invoices"
- data={metrics.invoiceStatusBreakdown}
- defaultType="pie"
- color="#f43f5e"
- allowedTypes={['pie', 'bar']}
- height={260}
- />
- </div>
+ <div className="h-80 rounded-2xl bg-muted animate-pulse" />
  </div>
  ) : (
- <div className="flex flex-col items-center justify-center bg-card border border-border rounded-xl p-12 text-center h-96 relative overflow-hidden">
- <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500" />
- <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 shadow-inner pointer-events-none">
- <AlertTriangle size={32} className="text-primary" />
- </div>
- <h3 className="text-2xl font-bold tracking-tight mb-3">Advanced Analytics Locked</h3>
- <p className="text-muted-foreground max-w-md mx-auto mb-8">
- Get in-depth insights into your financial trajectory, customer value distribution, and operational bottlenecks by upgrading to the Pro plan.
- </p>
- <a href="/subscription/plans" className="bg-primary text-primary-foreground font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-all flex items-center gap-2">
- <Zap size={18} />
- Upgrade to Pro
- </a>
+ <div className="space-y-6">
+ 
+ {/* ADMIN METRICS ROW */}
+ {adminMetrics && (
+   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+     <KPICard 
+       title="Jobs Scheduled (This Week)" 
+       value={adminMetrics.jobsScheduledThisWeek} 
+       icon={<Briefcase size={20} />} 
+       colorClass="bg-blue-500/10 text-blue-500" 
+       subtext={`${adminMetrics.jobsCompletedThisWeek} completed`}
+     />
+     <KPICard 
+       title="Waiting For Parts / Quote" 
+       value={adminMetrics.jobsWaitingForParts + adminMetrics.jobsWaitingForQuote} 
+       icon={<Clock size={20} />} 
+       colorClass="bg-orange-500/10 text-orange-500"
+       subtext={`${adminMetrics.jobsWaitingForParts} parts, ${adminMetrics.jobsWaitingForQuote} quotes`}
+     />
+     <KPICard 
+       title="Unscheduled Queue" 
+       value={adminMetrics.unscheduledJobs} 
+       icon={<AlertCircle size={20} />} 
+       colorClass="bg-red-500/10 text-red-500" 
+       subtext="Needs assignment"
+     />
+     <KPICard 
+       title="Outstanding Invoices" 
+       value={fmt(adminMetrics.outstandingInvoicesAmountThisWeek)} 
+       icon={<FileText size={20} />} 
+       colorClass="bg-green-500/10 text-green-500" 
+       subtext={`${adminMetrics.outstandingInvoicesCountThisWeek} invoices pending`}
+     />
+   </div>
+ )}
+
+ <SystemSetupGuide />
+
+ {metrics ? (
+   <>
+    {/* Top Focus: Financial Trajectory */}
+    <div className="w-full">
+    <PremiumChart
+    title="Revenue Growth & Financial Trajectory"
+    subtitle={`Historical analysis of paid invoices for selected period`}
+    data={metrics.revenueOverTime}
+    defaultType="area"
+    color="#10b981"
+    allowedTypes={['area', 'bar', 'line']}
+    valuePrefix="$"
+    height={320}
+    />
+    </div>
+
+    {/* Split Level: Pipeline & Customers */}
+    <div className="grid gap-6 lg:grid-cols-2">
+    <PremiumChart
+    title="Customer Value Distribution"
+    subtitle="Top 5 highest paying customers (cumulative revenue)"
+    data={metrics.topCustomersByRevenue}
+    defaultType="bar"
+    color="#6366f1"
+    allowedTypes={['bar', 'line', 'pie']}
+    valuePrefix="$"
+    height={300}
+    />
+    <div className="grid gap-6 grid-rows-[2fr_1fr]">
+    <PremiumChart
+    title="Sales Pipeline & Quotation Status"
+    subtitle="Distribution of quotes by stage"
+    data={metrics.quotationsByStatus}
+    defaultType="bar"
+    color="#a855f7"
+    allowedTypes={['bar', 'pie', 'line']}
+    height={200}
+    />
+    <div className="bg-card border border-border rounded-xl p-4 md:p-6 flex items-center justify-between shadow-sm gap-4">
+    <div className="min-w-0">
+      <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">Total Pipeline</p>
+      <p className="text-2xl md:text-4xl font-black text-primary truncate">{fmt(metrics.totalQuotationValue)}</p>
+    </div>
+    <div className="text-right shrink-0">
+      <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">Pending Quotes</p>
+      <p className="text-2xl md:text-3xl font-bold text-foreground">{metrics.pendingQuotations}</p>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    {/* Lower Split: Operational Status */}
+    <div className="grid gap-6 lg:grid-cols-3">
+    <PremiumChart
+    title="Operational Throughput"
+    subtitle="Jobs completed over the selected period"
+    data={metrics.jobsCompletedOverTime}
+    defaultType="area"
+    color="#22d3ee"
+    allowedTypes={['area', 'bar', 'line']}
+    height={260}
+    />
+    <PremiumChart
+    title="Work Order Bottlenecks"
+    subtitle="Current job distribution by status"
+    data={metrics.workOrdersByStatus}
+    defaultType="pie"
+    color="#f59e0b"
+    allowedTypes={['pie', 'bar']}
+    height={260}
+    />
+    <PremiumChart
+    title="Accounts Receivable Health"
+    subtitle="Paid vs Issued vs Overdue invoices"
+    data={metrics.invoiceStatusBreakdown}
+    defaultType="pie"
+    color="#f43f5e"
+    allowedTypes={['pie', 'bar']}
+    height={260}
+    />
+    </div>
+   </>
+ ) : (
+  <div className="flex flex-col items-center justify-center bg-card border border-border rounded-xl p-12 text-center h-96 relative overflow-hidden mt-6">
+  <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500" />
+  <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 shadow-inner pointer-events-none">
+  <AlertTriangle size={32} className="text-primary" />
+  </div>
+  <h3 className="text-2xl font-bold tracking-tight mb-3">Advanced Analytics Locked</h3>
+  <p className="text-muted-foreground max-w-md mx-auto mb-8">
+  Get in-depth insights into your financial trajectory, customer value distribution, and operational bottlenecks by upgrading to the Pro plan.
+  </p>
+  <a href="/subscription/plans" className="bg-primary text-primary-foreground font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition-all flex items-center gap-2">
+  <Zap size={18} />
+  Upgrade to Pro
+  </a>
+  </div>
+ )}
  </div>
  )}
  </div>
  );
 };
-
-
-
