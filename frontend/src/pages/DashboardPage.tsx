@@ -224,21 +224,21 @@ export const DashboardPage: React.FC = () => {
            value={techMetrics.jobsAssignedToday} 
            icon={<Briefcase size={20} />} 
            colorClass="bg-blue-500/10 text-blue-500" 
-           to="/work-orders"
+           to="/my-jobs"
          />
          <KPICard 
            title="In Progress" 
            value={techMetrics.jobsInProgress} 
            icon={<Clock size={20} />} 
            colorClass="bg-orange-500/10 text-orange-500" 
-           to="/work-orders"
+           to="/my-jobs"
          />
          <KPICard 
            title="Completed Today" 
            value={techMetrics.jobsCompletedToday} 
            icon={<CheckCircle size={20} />} 
            colorClass="bg-green-500/10 text-green-500" 
-           to="/work-orders"
+           to="/my-jobs"
          />
        </div>
 
@@ -248,7 +248,7 @@ export const DashboardPage: React.FC = () => {
            <h2 className="text-xl font-bold">Quick Actions</h2>
          </div>
          <div className="flex flex-col sm:flex-row gap-4">
-           <Link to="/work-orders" className="flex-1 flex items-center justify-between p-4 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all font-semibold">
+           <Link to="/my-jobs" className="flex-1 flex items-center justify-between p-4 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all font-semibold">
              <div className="flex items-center gap-3">
                <Wrench size={24} />
                <span>View My Work Orders</span>
@@ -357,7 +357,7 @@ export const DashboardPage: React.FC = () => {
        icon={<Briefcase size={20} />} 
        colorClass="bg-blue-500/10 text-blue-500" 
        subtext={`${adminMetrics.jobsCompletedThisWeek} completed`}
-       to="/work-orders"
+       to="/my-jobs"
      />
      <KPICard 
        title="Waiting For Parts / Quote" 
@@ -365,7 +365,7 @@ export const DashboardPage: React.FC = () => {
        icon={<Clock size={20} />} 
        colorClass="bg-orange-500/10 text-orange-500"
        subtext={`${adminMetrics.jobsWaitingForParts} parts, ${adminMetrics.jobsWaitingForQuote} quotes`}
-       to="/work-orders"
+       to="/my-jobs"
      />
      <KPICard 
        title="Unscheduled Queue" 
@@ -373,7 +373,7 @@ export const DashboardPage: React.FC = () => {
        icon={<AlertCircle size={20} />} 
        colorClass="bg-red-500/10 text-red-500" 
        subtext="Needs assignment"
-       to="/work-orders"
+       to="/my-jobs"
      />
      <KPICard 
        title="Outstanding Invoices" 
