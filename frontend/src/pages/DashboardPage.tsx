@@ -82,20 +82,29 @@ const CustomizationModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 };
 
 // Sub-component for simple KPI Cards
-const KPICard = ({ title, value, icon, subtext, colorClass }: any) => (
-  <div className="bg-card border border-border rounded-2xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-    <div className="flex items-center justify-between mb-4">
-      <h3 className="text-sm font-semibold text-muted-foreground">{title}</h3>
-      <div className={`p-2 rounded-lg ${colorClass}`}>
-        {icon}
+const KPICard = ({ title, value, icon, subtext, colorClass, to }: any) => {
+  const content = (
+    <>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold text-muted-foreground">{title}</h3>
+        <div className={`p-2 rounded-lg ${colorClass}`}>
+          {icon}
+        </div>
       </div>
-    </div>
-    <div>
-      <p className="text-3xl font-black text-foreground">{value}</p>
-      {subtext && <p className="text-xs text-muted-foreground mt-1 font-medium">{subtext}</p>}
-    </div>
-  </div>
-);
+      <div>
+        <p className="text-3xl font-black text-foreground">{value}</p>
+        {subtext && <p className="text-xs text-muted-foreground mt-1 font-medium">{subtext}</p>}
+      </div>
+    </>
+  );
+
+  const wrapperClass = "bg-card border border-border rounded-2xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-all hover:-translate-y-1";
+
+  if (to) {
+    return <Link to={to} className={`${wrapperClass} block cursor-pointer`}>{content}</Link>;
+  }
+  return <div className={wrapperClass}>{content}</div>;
+};
 
 export const DashboardPage: React.FC = () => {
  const { user } = useAuth();
@@ -215,18 +224,21 @@ export const DashboardPage: React.FC = () => {
            value={techMetrics.jobsAssignedToday} 
            icon={<Briefcase size={20} />} 
            colorClass="bg-blue-500/10 text-blue-500" 
+           to="/work-orders"
          />
          <KPICard 
            title="In Progress" 
            value={techMetrics.jobsInProgress} 
            icon={<Clock size={20} />} 
            colorClass="bg-orange-500/10 text-orange-500" 
+           to="/work-orders"
          />
          <KPICard 
            title="Completed Today" 
            value={techMetrics.jobsCompletedToday} 
            icon={<CheckCircle size={20} />} 
            colorClass="bg-green-500/10 text-green-500" 
+           to="/work-orders"
          />
        </div>
 
@@ -345,6 +357,7 @@ export const DashboardPage: React.FC = () => {
        icon={<Briefcase size={20} />} 
        colorClass="bg-blue-500/10 text-blue-500" 
        subtext={`${adminMetrics.jobsCompletedThisWeek} completed`}
+       to="/work-orders"
      />
      <KPICard 
        title="Waiting For Parts / Quote" 
@@ -352,6 +365,7 @@ export const DashboardPage: React.FC = () => {
        icon={<Clock size={20} />} 
        colorClass="bg-orange-500/10 text-orange-500"
        subtext={`${adminMetrics.jobsWaitingForParts} parts, ${adminMetrics.jobsWaitingForQuote} quotes`}
+       to="/work-orders"
      />
      <KPICard 
        title="Unscheduled Queue" 
@@ -359,6 +373,7 @@ export const DashboardPage: React.FC = () => {
        icon={<AlertCircle size={20} />} 
        colorClass="bg-red-500/10 text-red-500" 
        subtext="Needs assignment"
+       to="/work-orders"
      />
      <KPICard 
        title="Outstanding Invoices" 
@@ -366,6 +381,7 @@ export const DashboardPage: React.FC = () => {
        icon={<FileText size={20} />} 
        colorClass="bg-green-500/10 text-green-500" 
        subtext={`${adminMetrics.outstandingInvoicesCountThisWeek} invoices pending`}
+       to="/invoices"
      />
    </div>
  )}
