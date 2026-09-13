@@ -357,7 +357,7 @@ export const DashboardPage: React.FC = () => {
        icon={<Briefcase size={20} />} 
        colorClass="bg-blue-500/10 text-blue-500" 
        subtext={`${adminMetrics.jobsCompletedThisWeek} completed`}
-       to="/my-jobs"
+       to="/work-orders"
      />
      <KPICard 
        title="Waiting For Parts / Quote" 
@@ -365,7 +365,7 @@ export const DashboardPage: React.FC = () => {
        icon={<Clock size={20} />} 
        colorClass="bg-orange-500/10 text-orange-500"
        subtext={`${adminMetrics.jobsWaitingForParts} parts, ${adminMetrics.jobsWaitingForQuote} quotes`}
-       to="/my-jobs"
+       to="/work-orders"
      />
      <KPICard 
        title="Unscheduled Queue" 
@@ -373,7 +373,7 @@ export const DashboardPage: React.FC = () => {
        icon={<AlertCircle size={20} />} 
        colorClass="bg-red-500/10 text-red-500" 
        subtext="Needs assignment"
-       to="/my-jobs"
+       to="/work-orders"
      />
      <KPICard 
        title="Outstanding Invoices" 
