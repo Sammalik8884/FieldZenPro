@@ -149,6 +149,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddMemoryCache();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
