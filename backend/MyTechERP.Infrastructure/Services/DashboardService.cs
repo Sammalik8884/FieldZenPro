@@ -209,11 +209,16 @@ namespace MyTechERP.Infrastructure.Services
             var outstandingInvoicesCount = await _context.Invoices
                 .CountAsync(i => i.Status == InvoiceStatus.Issued || i.Status == InvoiceStatus.Overdue);
 
-            var weeklyJobsRaw = await _context.WorkOrders
+            // Fetch the dates first, then group by DayOfWeek in memory to avoid EF Core translation errors
+            var recentJobs = await _context.WorkOrders
                 .Where(w => w.ScheduledDate >= startOfWeek && w.ScheduledDate < endOfWeek)
-                .GroupBy(w => w.ScheduledDate.Value.DayOfWeek)
-                .Select(g => new { Day = g.Key, Count = g.Count() })
+                .Select(w => new { w.ScheduledDate })
                 .ToListAsync();
+
+            var weeklyJobsRaw = recentJobs
+                .GroupBy(w => w.ScheduledDate!.Value.DayOfWeek)
+                .Select(g => new { Day = g.Key, Count = g.Count() })
+                .ToList();
 
             var weeklyJobsBreakdown = Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>()
                 .Select(d => new ChartDataPoint
