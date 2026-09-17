@@ -4,7 +4,7 @@ import { PremiumChart } from '../components/dashboard/PremiumChart';
 import { SystemSetupGuide } from '../components/SystemSetupGuide';
 import { apiClient } from '../services/apiClient';
 import {
- AlertTriangle, AlertCircle, RefreshCw, Calendar, Zap, Briefcase, CheckCircle, Clock, FileText, Wrench, ArrowRight, Package
+ Camera, AlertTriangle, AlertCircle, RefreshCw, Calendar, Zap, Briefcase, CheckCircle, Clock, FileText, Wrench, ArrowRight, Package
 } from 'lucide-react';
 import { format, subDays, subMonths, subYears } from 'date-fns';
 import { Link } from 'react-router-dom';
@@ -386,7 +386,7 @@ export const DashboardPage: React.FC = () => {
    </div>
  )}
  {/* Quick-Access Links Row — always visible for admin */}
- <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+ <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
    <Link to="/work-orders?status=WaitingForParts" className="flex items-center gap-4 bg-card border border-orange-500/30 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group">
      <div className="p-3 rounded-xl bg-orange-500/10 text-orange-500 shrink-0">
        <Package size={22} />
@@ -407,6 +407,16 @@ export const DashboardPage: React.FC = () => {
      </div>
      <ArrowRight size={18} className="ml-auto text-muted-foreground group-hover:text-purple-500 transition-colors" />
    </Link>
+    <Link to="/photo-upload" className="flex items-center gap-4 bg-card border border-primary/30 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group">
+      <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+        <Camera size={22} />
+      </div>
+      <div>
+        <p className="font-bold text-foreground text-base">Upload Photos</p>
+        <p className="text-xs text-muted-foreground mt-0.5">Take or attach photos to any job</p>
+      </div>
+      <ArrowRight size={18} className="ml-auto text-muted-foreground group-hover:text-primary transition-colors" />
+    </Link>
  </div>
 
  <SystemSetupGuide />
