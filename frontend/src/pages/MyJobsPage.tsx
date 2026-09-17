@@ -81,7 +81,15 @@ export const MyJobsPage = () => {
   return 'text-primary bg-primary/10 border-primary/20';
  };
 
- // Chromebook-optimized job card (large, high-contrast, big tap targets)
+ // Returns the dot color for a job based on its status
+ const dotColor = (job: WorkOrderDto, selected: boolean) => {
+  if (selected) return 'bg-primary-foreground';
+  if (job.status === 'Completed' || job.status === 'Approved') return 'bg-green-500';
+  if (job.status === 'WaitingForParts' || job.status === 'PendingQuote') return 'bg-orange-500';
+  return 'bg-primary';
+ };
+
+ // Chromebook-optimized job card
  const JobCard = ({ job }: { job: WorkOrderDto }) => (
   <div
    onClick={() => navigate(`/job/${job.id}`)}
@@ -152,7 +160,7 @@ export const MyJobsPage = () => {
 
  return (
   <div className="animate-in fade-in duration-500 max-w-6xl mx-auto pb-24">
-   {/* Header — Chromebook: full width, large text */}
+   {/* Header */}
    <div className="flex items-center justify-between mb-6">
     <div>
      <h1 className="text-3xl lg:text-4xl font-bold text-foreground flex items-center gap-3">
@@ -163,44 +171,36 @@ export const MyJobsPage = () => {
       Week of {format(currentWeekStart, "MMM d, yyyy")}
      </p>
     </div>
-
-    {/* View Toggle */}
     <div className="flex bg-muted/30 p-1.5 rounded-2xl border border-border gap-1">
-     <button
-      onClick={() => setViewMode("list")}
-      className={`flex items-center gap-2 px-5 py-3 rounded-xl text-base font-semibold transition-all ${viewMode === "list" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"}`}
-     >
-      <List className="h-5 w-5" />
-      List
+     <button onClick={() => setViewMode("list")} className={`flex items-center gap-2 px-5 py-3 rounded-xl text-base font-semibold transition-all ${viewMode === "list" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"}`}>
+      <List className="h-5 w-5" /> List
      </button>
-     <button
-      onClick={() => setViewMode("calendar")}
-      className={`flex items-center gap-2 px-5 py-3 rounded-xl text-base font-semibold transition-all ${viewMode === "calendar" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"}`}
-     >
-      <Calendar className="h-5 w-5" />
-      Calendar
+     <button onClick={() => setViewMode("calendar")} className={`flex items-center gap-2 px-5 py-3 rounded-xl text-base font-semibold transition-all ${viewMode === "calendar" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"}`}>
+      <Calendar className="h-5 w-5" /> Calendar
      </button>
     </div>
    </div>
 
-   {/* Status Tabs — large, easy to tap */}
+   {/* Status Tabs */}
    <div className="flex gap-2 mb-6 bg-muted/30 p-1.5 rounded-2xl border border-border w-fit">
     {([
      { key: 'active', label: 'Active', count: activeJobs.length, active: 'bg-primary text-primary-foreground' },
      { key: 'waiting', label: 'Waiting', count: waitingJobs.length, active: 'bg-orange-500 text-white' },
      { key: 'completed', label: 'Completed', count: completedJobs.length, active: 'bg-green-600 text-white' },
     ] as const).map(tab => (
-     <button
-      key={tab.key}
-      onClick={() => setActiveTab(tab.key)}
-      className={`flex items-center gap-3 px-6 py-3 rounded-xl text-base font-bold transition-all min-h-[52px] ${activeTab === tab.key ? tab.active + ' shadow' : 'text-muted-foreground hover:text-foreground'}`}
-     >
+     <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+      className={`flex items-center gap-3 px-6 py-3 rounded-xl text-base font-bold transition-all min-h-[52px] ${activeTab === tab.key ? tab.active + ' shadow' : 'text-muted-foreground hover:text-foreground'}`}>
       {tab.label}
-      <span className={`text-sm px-2 py-0.5 rounded-full font-bold ${activeTab === tab.key ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground'}`}>
-       {tab.count}
-      </span>
+      <span className={`text-sm px-2 py-0.5 rounded-full font-bold ${activeTab === tab.key ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground'}`}>{tab.count}</span>
      </button>
     ))}
+   </div>
+
+   {/* Dot legend */}
+   <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground px-1">
+    <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-primary inline-block" /> Active</span>
+    <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-orange-500 inline-block" /> Waiting</span>
+    <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-green-500 inline-block" /> Completed</span>
    </div>
 
    {loading ? (
@@ -212,33 +212,27 @@ export const MyJobsPage = () => {
       <button onClick={() => { const p = addDays(currentWeekStart, -7); setCurrentWeekStart(p); setSelectedDay(p); }} className="p-3 rounded-xl hover:bg-muted active:scale-90 transition-all text-muted-foreground min-w-[52px] min-h-[52px] flex items-center justify-center">
        <ChevronLeft className="h-6 w-6" />
       </button>
-      <span className="text-lg font-bold text-foreground">
-       {format(currentWeekStart, "MMM d")} – {format(addDays(currentWeekStart, 6), "MMM d, yyyy")}
-      </span>
+      <span className="text-lg font-bold text-foreground">{format(currentWeekStart, "MMM d")} – {format(addDays(currentWeekStart, 6), "MMM d, yyyy")}</span>
       <button onClick={() => { const n = addDays(currentWeekStart, 7); setCurrentWeekStart(n); setSelectedDay(n); }} className="p-3 rounded-xl hover:bg-muted active:scale-90 transition-all text-muted-foreground min-w-[52px] min-h-[52px] flex items-center justify-center">
        <ChevronRight className="h-6 w-6" />
       </button>
      </div>
 
-     {/* Day Strip — 7 columns on Chromebook, scroll on phone */}
+     {/* Day Strip — color-coded dots per job status */}
      <div ref={dayStripRef} className="grid grid-cols-7 gap-2">
       {weekDays.map((day, i) => {
        const dayJobs = getJobsForDay(day);
        const sel = isSameDay(day, selectedDay);
        const today = isToday(day);
        return (
-        <button
-         key={i}
-         data-selected={sel}
-         onClick={() => setSelectedDay(day)}
-         className={`flex flex-col items-center rounded-2xl py-4 px-2 transition-all active:scale-95 border-2 ${sel ? 'bg-primary text-primary-foreground border-primary shadow-lg' : today ? 'bg-primary/10 text-primary border-primary/40' : 'bg-card text-foreground border-border hover:bg-muted'}`}
-        >
+        <button key={i} data-selected={sel} onClick={() => setSelectedDay(day)}
+         className={`flex flex-col items-center rounded-2xl py-4 px-2 transition-all active:scale-95 border-2 ${sel ? 'bg-primary text-primary-foreground border-primary shadow-lg' : today ? 'bg-primary/10 text-primary border-primary/40' : 'bg-card text-foreground border-border hover:bg-muted'}`}>
          <span className={`text-xs font-bold uppercase tracking-wider ${sel ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{format(day, "EEE")}</span>
          <span className="text-2xl font-bold mt-1">{format(day, "d")}</span>
          {dayJobs.length > 0 && (
           <div className="mt-2 flex gap-1 flex-wrap justify-center">
-           {dayJobs.slice(0, 3).map((_, idx) => (
-            <div key={idx} className={`h-2 w-2 rounded-full ${sel ? 'bg-primary-foreground' : 'bg-primary'}`} />
+           {dayJobs.slice(0, 4).map((job, idx) => (
+            <div key={idx} className={`h-2.5 w-2.5 rounded-full ${dotColor(job, sel)}`} />
            ))}
           </div>
          )}
@@ -267,7 +261,7 @@ export const MyJobsPage = () => {
      </div>
     </div>
    ) : (
-    /* List View — 2 columns on Chromebook */
+    /* List View */
     <div className="space-y-5">
      <div className="flex items-center justify-between bg-card border border-border rounded-2xl px-5 py-4">
       <button onClick={() => setCurrentWeekStart(addDays(currentWeekStart, -7))} className="p-3 rounded-xl hover:bg-muted active:scale-90 transition-all text-muted-foreground min-w-[52px] min-h-[52px] flex items-center justify-center">
@@ -278,7 +272,6 @@ export const MyJobsPage = () => {
        <ChevronRight className="h-6 w-6" />
       </button>
      </div>
-
      <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider px-1">
       {activeTab === 'active' ? 'Active Jobs' : activeTab === 'waiting' ? 'Waiting for Parts / Quote' : 'Completed Jobs'}
      </h2>
