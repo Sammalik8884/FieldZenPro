@@ -4,6 +4,7 @@ import { workOrderService } from "../services/workOrderService";
 import { WorkOrderDto } from "../types/field";
 import { apiClient } from "../services/apiClient";
 import { toast } from "react-hot-toast";
+import { useAuth } from "../auth/AuthContext";
 
 export const PhotoUploadPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,19 +15,31 @@ export const PhotoUploadPage = () => {
   const [uploaded, setUploaded] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
+  const { hasRole } = useAuth();
+  const isAdmin = hasRole(["Admin", "Manager"]);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     setSearching(true);
     try {
-      const all = await workOrderService.getMyJobs();
-      const q = searchQuery.toLowerCase();
+      // Admins can see all jobs; technicians only see their assigned jobs
+      const all = isAdmin
+        ? await workOrderService.getAll()
+        : await workOrderService.getMyJobs();
+
+      const q = searchQuery.trim().toLowerCase();
+
+      // Strip "WO-" prefix and leading zeros so "WO-0094" matches id=94
+      const numericQ = q.replace(/^wo-?0*/i, "").replace(/^0+/, "") || q;
+
       const results = all.filter(w =>
         w.customerName?.toLowerCase().includes(q) ||
         w.description?.toLowerCase().includes(q) ||
-        w.id.toString().includes(q)
+        w.id.toString() === numericQ ||
+        w.id.toString().padStart(4, "0") === numericQ.padStart(4, "0")
       );
-      setSearchResults(results.slice(0, 10));
+      setSearchResults(results.slice(0, 15));
+      if (results.length === 0) toast("No jobs found. Try customer name or just the number e.g. 94", { icon: "🔍" });
     } catch {
       toast.error("Search failed. Please try again.");
     } finally {
