@@ -157,7 +157,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                         {item.unitPrice.toFixed(2)}
                                     </div>
                                 </div>
-                                <div className="col-span-2 md:w-12 flex flex-col items-center justify-center h-full pb-2 md:pb-3">
+                                <div className="col-span-3 md:w-14 flex flex-col items-center justify-center h-full pb-2 md:pb-3">
                                     <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Tax</label>
                                     <button
                                         type="button"
@@ -196,7 +196,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                     />
                                     <datalist id={`job-product-list-${index}`}>
                                         {products
-                                            .filter(p => !(item as any)._itemType || !p.itemType || p.itemType === (item as any)._itemType)
+                                            .filter(p => { const pType = p.itemType || "Product"; const iType = (item as any)._itemType; return !iType || pType === iType; })
                                             .map(p => <option key={p.id} value={p.name} />)}
                                     </datalist>
                                 </div>
@@ -220,7 +220,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                         className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                     />
                                 </div>
-                                <div className="col-span-2 md:w-12 flex flex-col items-center justify-center h-full pb-2 md:pb-3">
+                                <div className="col-span-3 md:w-14 flex flex-col items-center justify-center h-full pb-2 md:pb-3">
                                     <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Tax</label>
                                     <button
                                         type="button"

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { X, ChevronLeft, ChevronRight, Download, Loader2 } from 'lucide-react';
 
 interface PhotoLightboxProps {
   photos: { url: string; label?: string }[];
@@ -9,8 +9,28 @@ interface PhotoLightboxProps {
 
 export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({ photos, initialIndex = 0, onClose }) => {
   const [currentIndex, setCurrentIndex] = React.useState(initialIndex);
+  const [downloading, setDownloading] = useState(false);
 
   const current = photos[currentIndex];
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDownloading(true);
+    try {
+      const res = await fetch(current.url);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = current.label || `photo-${currentIndex + 1}.jpg`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      window.open(current.url, '_blank');
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -35,15 +55,14 @@ export const PhotoLightbox: React.FC<PhotoLightboxProps> = ({ photos, initialInd
           {current.label || `Photo ${currentIndex + 1}`} &nbsp;|&nbsp; {currentIndex + 1} / {photos.length}
         </span>
         <div className="flex items-center gap-3">
-          <a
-            href={current.url}
-            download
-            onClick={e => e.stopPropagation()}
-            className="text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
-            title="Download"
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10 disabled:opacity-50"
+            title="Download photo"
           >
-            <Download className="h-5 w-5" />
-          </a>
+            {downloading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Download className="h-5 w-5" />}
+          </button>
           <button
             onClick={onClose}
             className="text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10"
