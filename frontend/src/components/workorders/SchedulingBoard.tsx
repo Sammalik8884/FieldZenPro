@@ -375,6 +375,25 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                                 )}
                                             </div>
                                         )}
+                                        {technicians.length > 0 && (
+                                            <div className="mb-3">
+                                                <label className="text-xs text-muted-foreground mb-1.5 block font-medium">Assign Technician:</label>
+                                                <select
+                                                    disabled={loading}
+                                                    defaultValue={job.technicianId || ''}
+                                                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary disabled:opacity-50 min-h-[44px]"
+                                                    onChange={async (e) => {
+                                                        await onUpdateJob(job.id, { technicianId: e.target.value || null });
+                                                        toast.success('Technician assigned.');
+                                                    }}
+                                                >
+                                                    <option value="">— Unassigned —</option>
+                                                    {technicians.map(t => (
+                                                        <option key={t.id} value={t.id}>{t.fullName}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        )}
                                         <div>
                                             <label className="text-xs text-muted-foreground mb-1.5 block font-medium">Assign to date:</label>
                                             <input

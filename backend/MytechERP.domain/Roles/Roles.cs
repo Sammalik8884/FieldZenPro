@@ -15,5 +15,6 @@ namespace MytechERP.domain.Roles
 
         public const string Technician = "Technician";
         public const string Customers = "Customers";
+        public const string PhotoUpload = "PhotoUpload";
     }
 }

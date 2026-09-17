@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Phone, Mail, MapPin, FileText, Printer,
-  Wrench, CheckCircle2, AlertCircle, Loader2
+  Wrench, CheckCircle2, AlertCircle, Loader2, Image
 } from "lucide-react";
 import { customerService } from "../services/customerService";
 import { workOrderService } from "../services/workOrderService";
@@ -11,7 +11,7 @@ import { CustomerDto as Customer } from "../types/customer";
 import { WorkOrderDto } from "../types/field";
 import { InvoiceDto } from "../types/finance";
 
-type Tab = "jobs" | "invoices" | "payments" | "balance";
+type Tab = "jobs" | "invoices" | "payments" | "balance" | "photos";
 
 const statusBadge = (status: string) => {
   if (status === "Completed" || status === "Approved")
@@ -93,12 +93,14 @@ export const CustomerProfilePage = () => {
 
   const paidInvoices = invoices.filter(i => i.status === 2);
   const unpaidInvoices = invoices.filter(i => i.status !== 2 && i.status !== 4);
+  const allPhotos = workOrders.flatMap(wo => (wo.evidences || []).map(e => ({ ...e, woId: wo.id, woDesc: wo.description })));
 
   const tabs: { key: Tab; label: string; count?: number; icon: any }[] = [
     { key: "jobs", label: "Jobs", count: workOrders.length, icon: Wrench },
     { key: "invoices", label: "Invoices", count: invoices.length, icon: FileText },
     { key: "payments", label: "Payments", count: paidInvoices.length, icon: CheckCircle2 },
     { key: "balance", label: "Balance", icon: AlertCircle },
+    { key: "photos", label: "Photos", count: allPhotos.length, icon: Image },
   ];
 
   return (
@@ -328,6 +330,42 @@ export const CustomerProfilePage = () => {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === "photos" && (
+        <div>
+          {allPhotos.length === 0 ? (
+            <div className="bg-card border border-border rounded-2xl p-10 text-center text-muted-foreground">
+              <Image className="h-10 w-10 mx-auto mb-3 opacity-20" />
+              <p>No photos found for this customer.</p>
+              <p className="text-xs mt-1">Photos are added by technicians during job execution.</p>
+            </div>
+          ) : (
+            <div>
+              <p className="text-xs text-muted-foreground mb-4">
+                {allPhotos.length} photo{allPhotos.length !== 1 ? "s" : ""} across{" "}
+                {workOrders.filter(w => (w.evidences || []).length > 0).length} job
+                {workOrders.filter(w => (w.evidences || []).length > 0).length !== 1 ? "s" : ""}
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {allPhotos.map((photo, idx) => (
+                  <div key={`${photo.id}-${idx}`} className="group relative aspect-square bg-muted rounded-2xl overflow-hidden border border-border hover:border-primary/40 cursor-pointer transition-all">
+                    <img
+                      src={photo.fileUrl}
+                      alt={photo.fileName}
+                      className="w-full h-full object-cover"
+                      onClick={() => window.open(photo.fileUrl, "_blank")}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <p className="text-white text-[10px] font-medium truncate">WO-{photo.woId.toString().padStart(4, "0")}</p>
+                      <p className="text-white/70 text-[9px] truncate">{photo.woDesc}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

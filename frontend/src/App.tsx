@@ -23,6 +23,7 @@ import { UsersPage } from "./pages/UsersPage";
 import { AssetsPage } from "./pages/AssetsPage";
 import { WorkOrdersPage } from "./pages/WorkOrdersPage";
 import { MyJobsPage } from "./pages/MyJobsPage";
+import { PhotoUploadPage } from "./pages/PhotoUploadPage";
 import { JobExecutionPage } from "./pages/JobExecutionPage";
 import { InvoicesPage } from "./pages/InvoicesPage";
 import { InventoryPage } from "./pages/InventoryPage";
@@ -124,6 +125,7 @@ function App() {
                                 {/* Field Services - all staff */}
                                 <Route element={<RoleProtectedRoute allowedRoles={["Admin", "Manager", "Engineer", "Worker", "Technician"]} />}>
                                     <Route path="/my-jobs" element={<MyJobsPage />} />
+                                    <Route path="/photo-upload" element={<PhotoUploadPage />} />
                                     <Route path="/job/:id" element={<JobExecutionPage />} />
                                 </Route>
                             </Route>
