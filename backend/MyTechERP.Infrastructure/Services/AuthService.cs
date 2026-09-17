@@ -170,6 +170,12 @@ namespace MyTechERP.Infrastructure.Services
             string roleToAssign = (await _roleManager.RoleExistsAsync(request.Role)) ? request.Role : "Technician";
             await _userManager.AddToRoleAsync(newUser, roleToAssign);
 
+            // Technicians automatically get PhotoUpload access so they can upload photos from their phone
+            if (roleToAssign == "Technician")
+            {
+                await _userManager.AddToRoleAsync(newUser, "PhotoUpload");
+            }
+
             return $"User created successfully as {roleToAssign}";
         }
 
@@ -342,7 +348,7 @@ namespace MyTechERP.Infrastructure.Services
         
         private async Task EnsureRolesExist()
         {
-            string[] roleNames = { "Admin", "Manager", "Engineer", "Technician", "Customer" };
+            string[] roleNames = { "Admin", "Manager", "Engineer", "Technician", "Customer", "PhotoUpload" };
 
             foreach (var roleName in roleNames)
             {
