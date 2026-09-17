@@ -1,7 +1,7 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
     Home, Users, MapPin, Briefcase, LogOut, FileText, FolderTree, Package, Receipt,
-    ShieldAlert, X, Wrench, FileSignature, ClipboardList,
+    ShieldAlert, X, Wrench, FileSignature, ClipboardList, Camera,
     Activity, RefreshCw, CreditCard, Lock, HelpCircle
 } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
@@ -40,6 +40,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     { label: "Contracts & AMCs", href: "/contracts", icon: FileSignature, allowedRoles: ["Admin", "Manager", "Engineer"] },
     { label: "Dispatch (Jobs)", href: "/work-orders", icon: Briefcase, allowedRoles: ["Admin", "Manager"] },
     { label: "My Jobs", href: "/my-jobs", icon: Wrench, paths: ["/my-jobs", "/job/:id"], allowedRoles: ["Admin", "Manager", "Engineer", "Worker", "Technician"] },
+    { label: "Upload Photos", href: "/photo-upload", icon: Camera, allowedRoles: ["Admin", "Manager", "Engineer", "Worker", "Technician", "PhotoUpload"] },
     { label: "Checklist Form Builder", href: "/checklists", icon: ClipboardList, allowedRoles: ["Admin", "Manager"], requiredFeature: PlanFeature.ChecklistFormBuilder },
 
     { label: "Financials", isHeader: true, allowedRoles: ["Admin", "Manager"] },
