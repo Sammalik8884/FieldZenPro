@@ -330,14 +330,23 @@ namespace MyTechERP.Infrastructure.Services
         {
             var tId = int.Parse(tenantId);
             
+            var completedWoIds = await _context.WorkOrders
+                .Where(w => w.TenantId == tId && 
+                            w.Status == MytechERP.domain.Enums.WorkOrderStatus.Completed && 
+                            w.CompletedDate.HasValue && 
+                            w.CompletedDate.Value.Date >= weekStart.Date && 
+                            w.CompletedDate.Value.Date <= weekEnd.Date)
+                .Select(w => (int?)w.Id)
+                .ToListAsync();
+
             var paidInvoices = await _context.Invoices
                 .IgnoreQueryFilters()
                 .Include(i => i.Items)
                 .Include(i => i.Customer)
                 .Where(i => i.TenantId == tId && 
-                            i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Paid &&
-                            i.IssueDate.Date >= weekStart.Date && 
-                            i.IssueDate.Date <= weekEnd.Date)
+                            completedWoIds.Contains(i.WorkOrderId) &&
+                            (i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Paid || 
+                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Draft))
                 .ToListAsync();
 
             var report = new WeeklyAccountingReportDto
@@ -410,7 +419,11 @@ namespace MyTechERP.Infrastructure.Services
                 .ToListAsync();
 
             var invoices = await _context.Invoices
-                .Where(i => i.TenantId == int.Parse(tenantId) && i.WorkOrderId != null && completedWorkOrderIds.Contains(i.WorkOrderId.Value))
+                .Where(i => i.TenantId == int.Parse(tenantId) && 
+                            i.WorkOrderId != null && 
+                            completedWorkOrderIds.Contains(i.WorkOrderId.Value) &&
+                            (i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Paid || 
+                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Draft))
                 .ToListAsync();
 
             using var memoryStream = new System.IO.MemoryStream();
