@@ -62,7 +62,7 @@ export const MyJobsPage = () => {
  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
  const getJobsForDay = (day: Date) => jobs.filter(wo => wo.scheduledDate && isSameDay(new Date(wo.scheduledDate), day));
 
- const activeJobs = jobs.filter(j => !['Completed', 'Approved', 'WaitingForParts', 'PendingQuote'].includes(j.status));
+ const activeJobs = jobs.filter(j => ['Initialized', 'InProgress'].includes(j.status));
  const waitingJobs = jobs.filter(j => j.status === 'WaitingForParts' || j.status === 'PendingQuote');
  const completedJobs = jobs.filter(j => j.status === 'Completed' || j.status === 'Approved');
  const tabJobs = activeTab === 'active' ? activeJobs : activeTab === 'waiting' ? waitingJobs : completedJobs;
