@@ -336,7 +336,7 @@ namespace MyTechERP.Infrastructure.Services
                             w.CompletedDate.HasValue && 
                             w.CompletedDate.Value.Date >= weekStart.Date && 
                             w.CompletedDate.Value.Date <= weekEnd.Date)
-                .Select(w => (int?)w.Id)
+                .Select(w => w.Id)
                 .ToListAsync();
 
             var paidInvoices = await _context.Invoices
@@ -344,9 +344,11 @@ namespace MyTechERP.Infrastructure.Services
                 .Include(i => i.Items)
                 .Include(i => i.Customer)
                 .Where(i => i.TenantId == tId && 
-                            completedWoIds.Contains(i.WorkOrderId) &&
+                            i.WorkOrderId != null &&
+                            completedWoIds.Contains(i.WorkOrderId.Value) &&
                             (i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Paid || 
-                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Draft))
+                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Draft ||
+                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Issued))
                 .ToListAsync();
 
             var report = new WeeklyAccountingReportDto
@@ -423,7 +425,8 @@ namespace MyTechERP.Infrastructure.Services
                             i.WorkOrderId != null && 
                             completedWorkOrderIds.Contains(i.WorkOrderId.Value) &&
                             (i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Paid || 
-                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Draft))
+                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Draft ||
+                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Issued))
                 .ToListAsync();
 
             using var memoryStream = new System.IO.MemoryStream();
