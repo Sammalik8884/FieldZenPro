@@ -15,13 +15,14 @@ namespace MytechERP.Application.DTOs
 
         public int CategoryId { get; set; }
 
-        
-
         public decimal? PriceAED { get; set; }
         public string? Description { get; set; }
         public string? ItemCode { get; set; }
         public decimal CostPrice { get; set; }
         public int ReorderLevel { get; set; }
         public bool IsTaxable { get; set; }
+
+        /// <summary>"Product" or "Service". Defaults to "Product".</summary>
+        public string ItemType { get; set; } = "Product";
     }
 }

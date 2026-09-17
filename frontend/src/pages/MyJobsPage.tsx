@@ -74,27 +74,27 @@ export const MyJobsPage = () => {
   );
  };
 
- const weekEnd = addDays(currentWeekStart, 7);
  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
 
  const getJobsForDay = (day: Date) => jobs.filter(wo =>
   wo.scheduledDate && isSameDay(new Date(wo.scheduledDate), day)
  );
 
- const selectedDayJobs = getJobsForDay(selectedDay);
- const activeJobs = jobs.filter(j =>
-  j.status !== 'Completed' &&
-  j.status !== 'Approved' &&
-  j.scheduledDate &&
-  new Date(j.scheduledDate) >= currentWeekStart &&
-  new Date(j.scheduledDate) < weekEnd
- );
- const pastJobs = jobs.filter(j =>
-  (j.status === 'Completed' || j.status === 'Approved') &&
-  j.scheduledDate &&
-  new Date(j.scheduledDate) >= currentWeekStart &&
-  new Date(j.scheduledDate) < weekEnd
- );
+ const [activeTab, setActiveTab] = useState<'active' | 'waiting' | 'completed'>('active');
+
+ // All categorizations - nothing is hidden from technician
+ const activeJobs = jobs.filter(j => !['Completed', 'Approved', 'WaitingForParts', 'PendingQuote'].includes(j.status));
+ const waitingJobs = jobs.filter(j => j.status === 'WaitingForParts' || j.status === 'PendingQuote');
+ const completedJobs = jobs.filter(j => j.status === 'Completed' || j.status === 'Approved');
+
+ const selectedDayJobs = getJobsForDay(selectedDay).filter(j => {
+  if (activeTab === 'active') return !['Completed', 'Approved', 'WaitingForParts', 'PendingQuote'].includes(j.status);
+  if (activeTab === 'waiting') return j.status === 'WaitingForParts' || j.status === 'PendingQuote';
+  if (activeTab === 'completed') return j.status === 'Completed' || j.status === 'Approved';
+  return true;
+ });
+
+ const tabJobs = activeTab === 'active' ? activeJobs : activeTab === 'waiting' ? waitingJobs : completedJobs;
 
  const statusColor = (status: string) => {
   if (status === 'Completed' || status === 'Approved') return 'text-green-500 bg-green-500/10 border-green-500/20';
@@ -104,7 +104,7 @@ export const MyJobsPage = () => {
   return 'text-primary bg-primary/10 border-primary/20';
  };
 
- return (
+  return (
   <div className="animate-in fade-in duration-500 max-w-4xl mx-auto">
    {/* Header */}
    <div className="flex items-center justify-between mb-4">
@@ -135,6 +135,31 @@ export const MyJobsPage = () => {
       <span className="hidden sm:inline">Calendar</span>
      </button>
     </div>
+   </div>
+
+   {/* Status Tabs — technician can always see all jobs */}
+   <div className="flex gap-2 mb-4 bg-muted/30 p-1 rounded-xl border border-border w-fit">
+    <button
+     onClick={() => setActiveTab('active')}
+     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all min-h-[40px] ${activeTab === 'active' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'}`}
+    >
+     Active
+     <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${activeTab === 'active' ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground'}`}>{activeJobs.length}</span>
+    </button>
+    <button
+     onClick={() => setActiveTab('waiting')}
+     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all min-h-[40px] ${activeTab === 'waiting' ? 'bg-orange-500 text-white shadow' : 'text-muted-foreground hover:text-foreground'}`}
+    >
+     Waiting
+     <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${activeTab === 'waiting' ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground'}`}>{waitingJobs.length}</span>
+    </button>
+    <button
+     onClick={() => setActiveTab('completed')}
+     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all min-h-[40px] ${activeTab === 'completed' ? 'bg-green-600 text-white shadow' : 'text-muted-foreground hover:text-foreground'}`}
+    >
+     Completed
+     <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${activeTab === 'completed' ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground'}`}>{completedJobs.length}</span>
+    </button>
    </div>
 
    {loading ? (
@@ -298,16 +323,18 @@ export const MyJobsPage = () => {
       </button>
      </div>
 
-     {/* Active Jobs */}
+     {/* Tab Jobs */}
      <div>
-      <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 px-1">Action Required</h2>
-      {activeJobs.length === 0 ? (
+      <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 px-1">
+       {activeTab === 'active' ? 'Active Jobs' : activeTab === 'waiting' ? 'Waiting for Parts / Quote' : 'Completed Jobs'}
+      </h2>
+      {tabJobs.length === 0 ? (
        <div className="bg-card border border-border rounded-2xl p-10 text-center text-muted-foreground">
-        No active jobs this week. Enjoy your time!
+        {activeTab === 'active' ? 'No active jobs.' : activeTab === 'waiting' ? 'No jobs waiting.' : 'No completed jobs yet.'}
        </div>
       ) : (
        <div className="space-y-3">
-        {activeJobs.map(job => (
+        {tabJobs.map(job => (
          <div
           key={job.id}
           onClick={() => navigate(`/job/${job.id}`)}
@@ -359,32 +386,6 @@ export const MyJobsPage = () => {
        </div>
       )}
      </div>
-
-     {/* Past Jobs */}
-     {pastJobs.length > 0 && (
-      <div>
-       <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 px-1">Completed This Week</h2>
-       <div className="space-y-2">
-        {pastJobs.map(job => (
-         <div
-          key={job.id}
-          onClick={() => navigate(`/job/${job.id}`)}
-          className="bg-card border border-border rounded-xl p-4 shadow-sm cursor-pointer hover:border-border active:scale-[0.99] transition-all"
-         >
-          <div className="flex justify-between items-center">
-           <div>
-            <h3 className="font-medium text-foreground text-sm line-clamp-1">{job.description}</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">{job.customerName}</p>
-           </div>
-           <span className="text-xs font-medium text-green-500 bg-green-500/10 px-2 py-0.5 rounded-full border border-green-500/20">
-            {job.status}
-           </span>
-          </div>
-         </div>
-        ))}
-       </div>
-      </div>
-     )}
     </div>
    )}
   </div>

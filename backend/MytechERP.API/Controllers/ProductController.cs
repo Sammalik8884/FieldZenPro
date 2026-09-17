@@ -92,6 +92,7 @@ namespace MytechERP.API.Controllers
                 Description = request.Description ?? request.Name,
                 ItemCode = request.ItemCode,
                 IsTaxable = request.IsTaxable,
+                ItemType = string.IsNullOrEmpty(request.ItemType) ? "Product" : request.ItemType,
                 TechnicalSpecs = "{}"
             };
 

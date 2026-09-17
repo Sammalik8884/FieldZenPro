@@ -7,7 +7,9 @@ import { getNYDate } from '../../utils/dateUtils';
 
 interface SchedulingBoardProps {
     workOrders: WorkOrderDto[];
-    onUpdateJob: (id: number, updates: { scheduledDate?: string | null; clearScheduledDate?: boolean; status?: string; sequenceOrder?: number }) => Promise<void>;
+    technicians?: { id: string; fullName: string }[];
+    onUpdateJob: (id: number, updates: { scheduledDate?: string | null; clearScheduledDate?: boolean; status?: string; sequenceOrder?: number; technicianId?: string | null }) => Promise<void>;
+    onEditJob?: (job: WorkOrderDto) => void;
 }
 
 const woStatusIcon = (status: string) => {
@@ -22,7 +24,7 @@ const woStatusIcon = (status: string) => {
     }
 };
 
-export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, onUpdateJob }) => {
+export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, technicians = [], onUpdateJob, onEditJob }) => {
     const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(getNYDate(), { weekStartsOn: 1 }));
     const [loading, setLoading] = useState(false);
     const [expandedAddresses, setExpandedAddresses] = useState<Record<number, boolean>>({});
@@ -43,17 +45,10 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, on
     }, [selectedDay]);
 
         const unscheduledJobs = workOrders
-        .filter(wo => !wo.scheduledDate || wo.status === 'Unscheduled' || wo.status === 'WaitingForParts')
+        .filter(wo => !wo.scheduledDate || wo.status === 'Unscheduled' || wo.status === 'WaitingForParts' || wo.status === 'PendingQuote')
         .sort((a, b) => {
-            const getPriority = (status: string) => {
-                if (status === 'WaitingForParts') return 2;
-                if (status !== 'Unscheduled' && status !== 'Created') return 1;
-                return 0;
-            };
-            const pA = getPriority(a.status);
-            const pB = getPriority(b.status);
-            if (pA !== pB) return pB - pA; // Higher priority first
-            return b.id - a.id; // Newest first for same priority
+            // Oldest jobs (lowest ID = created first) go to TOP; newest go to BOTTOM
+            return a.id - b.id;
         });
 
     const nextWeek = () => { const n = addDays(currentWeekStart, 7); setCurrentWeekStart(n); setSelectedDay(n); };
@@ -438,6 +433,26 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                         )}
                                     </div>
                                 )}
+                                {/* Technician Assignment */}
+                                {technicians.length > 0 && (
+                                    <div className="mb-2">
+                                        <label className="text-xs text-muted-foreground mb-1 block">Assign Technician:</label>
+                                        <select
+                                            disabled={loading}
+                                            defaultValue={job.technicianId || ''}
+                                            className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary disabled:opacity-50"
+                                            onChange={async (e) => {
+                                                await onUpdateJob(job.id, { technicianId: e.target.value || null });
+                                                toast.success('Technician assigned.');
+                                            }}
+                                        >
+                                            <option value="">— Unassigned —</option>
+                                            {technicians.map(t => (
+                                                <option key={t.id} value={t.id}>{t.fullName}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
                                 <div className="mt-2 pt-2 border-t border-border">
                                     <label className="text-xs text-muted-foreground mb-1 block">Assign to Date:</label>
                                     <input
@@ -492,16 +507,20 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                     </div>
                                     <div className="p-2 flex-1 overflow-y-auto space-y-2">
                                         {dayJobs.map((job, idx) => (
-                                            <div key={job.id} className="bg-background border border-border p-2 rounded shadow-sm text-sm relative group">
+                                            <div
+                                                key={job.id}
+                                                className="bg-background border border-border p-2 rounded shadow-sm text-sm relative group cursor-pointer hover:border-primary/50 hover:shadow-md transition-all"
+                                                onClick={() => onEditJob?.(job)}
+                                            >
                                                 <div className="flex justify-between items-start mb-1">
                                                     <span className="text-[10px] font-bold bg-primary/10 text-primary px-1.5 rounded">#{idx + 1}</span>
-                                                    <button onClick={() => handleUnschedule(job.id)} title="Return to Queue" disabled={loading} className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button onClick={(e) => { e.stopPropagation(); handleUnschedule(job.id); }} title="Return to Queue" disabled={loading} className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <span className="text-[10px] uppercase">Remove</span>
                                                     </button>
                                                 </div>
                                                 <p className="font-bold text-sm text-foreground truncate mt-1">{job.customerName || 'No Customer Name'}</p>
                                                 <p className="text-[10px] text-muted-foreground line-clamp-2 mt-0.5">{job.description}</p>
-                                                <p className={`text-[10px] text-muted-foreground cursor-pointer mt-0.5 ${expandedAddresses[job.id] ? '' : 'truncate'}`} onClick={() => toggleAddress(job.id)}>
+                                                <p className={`text-[10px] text-muted-foreground cursor-pointer mt-0.5 ${expandedAddresses[job.id] ? '' : 'truncate'}`} onClick={(e) => { e.stopPropagation(); toggleAddress(job.id); }}>
                                                     {job.customerAddress || job.siteName}
                                                 </p>
                                                 {job.customerPhone && <p className="text-[10px] text-primary truncate">📞 {job.customerPhone}</p>}
@@ -509,14 +528,16 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                                 {job.status === 'WaitingForParts' && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-500 border border-orange-500/20 mt-1 inline-block">Parts</span>}
                                                 {job.status === 'PendingQuote' && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20 mt-1 inline-block">Quote</span>}
                                                 <p className="text-[10px] text-muted-foreground truncate mt-1">{woStatusIcon(job.status)} {job.status}</p>
+                                                {job.technicianName && <p className="text-[10px] text-primary/80 truncate mt-0.5">👤 {job.technicianName}</p>}
+                                                <p className="text-[10px] text-primary opacity-0 group-hover:opacity-100 transition-opacity mt-1 font-semibold">✏️ Click to edit</p>
                                                 <div className="absolute top-1/2 -translate-y-1/2 -right-2 flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     {idx > 0 && (
-                                                        <button onClick={() => handleMoveOrder(job.id, dateStr, job.sequenceOrder, 'up')} className="bg-background border border-border rounded-full p-0.5 hover:bg-muted shadow-sm">
+                                                        <button onClick={(e) => { e.stopPropagation(); handleMoveOrder(job.id, dateStr, job.sequenceOrder, 'up'); }} className="bg-background border border-border rounded-full p-0.5 hover:bg-muted shadow-sm">
                                                             <ArrowUp className="h-3 w-3 text-muted-foreground" />
                                                         </button>
                                                     )}
                                                     {idx < dayJobs.length - 1 && (
-                                                        <button onClick={() => handleMoveOrder(job.id, dateStr, job.sequenceOrder, 'down')} className="bg-background border border-border rounded-full p-0.5 hover:bg-muted shadow-sm">
+                                                        <button onClick={(e) => { e.stopPropagation(); handleMoveOrder(job.id, dateStr, job.sequenceOrder, 'down'); }} className="bg-background border border-border rounded-full p-0.5 hover:bg-muted shadow-sm">
                                                             <ArrowDown className="h-3 w-3 text-muted-foreground" />
                                                         </button>
                                                     )}

@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { ModalPortal } from "./common/ModalPortal";
+import { PhotoLightbox } from "./common/PhotoLightbox";
 import { X } from "lucide-react";
 import { WorkOrderDto } from "../types/field";
 
@@ -9,7 +11,11 @@ interface ReviewJobModalProps {
 }
 
 export const ReviewJobModal = ({ isOpen, onClose, workOrder }: ReviewJobModalProps) => {
+    const [lightbox, setLightbox] = useState<{ photos: { url: string; label?: string }[]; index: number } | null>(null);
+
     if (!isOpen || !workOrder) return null;
+
+    const imageEvidences = workOrder.evidences?.filter(ev => ev.fileType?.startsWith('image/')) || [];
 
     return (
         <ModalPortal>
@@ -42,22 +48,26 @@ export const ReviewJobModal = ({ isOpen, onClose, workOrder }: ReviewJobModalPro
                     </div>
 
                     <div>
-                        <p className="text-sm font-medium text-foreground mb-2">Evidences / Photos ({workOrder.evidences?.length || 0})</p>
-                        {workOrder.evidences && workOrder.evidences.length > 0 ? (
+                        <p className="text-sm font-medium text-foreground mb-2">
+                            Photos ({imageEvidences.length})
+                            {imageEvidences.length > 0 && <span className="text-xs text-primary ml-2 font-normal">— Click to enlarge</span>}
+                        </p>
+                        {imageEvidences.length > 0 ? (
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                {workOrder.evidences.map(ev => (
-                                    <a key={ev.id} href={ev.fileUrl} target="_blank" rel="noopener noreferrer" className="block border border-border rounded-lg overflow-hidden group">
-                                        <div className="aspect-square bg-black/40 flex items-center justify-center p-2 relative">
-                                            {ev.fileType.startsWith('image/') ? (
-                                                <img src={ev.fileUrl} alt={ev.fileName} className="object-cover w-full h-full" />
-                                            ) : (
-                                                <div className="text-xs text-center text-muted-foreground break-all">{ev.fileName}</div>
-                                            )}
-                                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                <span className="text-xs font-medium text-white">Click to view</span>
-                                            </div>
+                                {imageEvidences.map((ev, idx) => (
+                                    <div
+                                        key={ev.id}
+                                        className="aspect-square bg-black/40 rounded-lg overflow-hidden border border-border cursor-pointer hover:ring-2 hover:ring-primary group transition-all active:scale-95 relative"
+                                        onClick={() => setLightbox({
+                                            photos: imageEvidences.map(e => ({ url: e.fileUrl, label: e.fileName })),
+                                            index: idx
+                                        })}
+                                    >
+                                        <img src={ev.fileUrl} alt={ev.fileName} className="object-cover w-full h-full" />
+                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <span className="text-sm font-bold text-white">🔍 View</span>
                                         </div>
-                                    </a>
+                                    </div>
                                 ))}
                             </div>
                         ) : (
@@ -73,7 +83,13 @@ export const ReviewJobModal = ({ isOpen, onClose, workOrder }: ReviewJobModalPro
                 </div>
             </div>
         </div>
+        {lightbox && (
+            <PhotoLightbox
+                photos={lightbox.photos}
+                initialIndex={lightbox.index}
+                onClose={() => setLightbox(null)}
+            />
+        )}
         </ModalPortal>
     );
 };
-

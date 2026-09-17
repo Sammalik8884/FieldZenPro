@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, MapPin, Navigation, CalendarClock, Clock, CheckCircle2, Loader2, UploadCloud, ClipboardCheck, Unlock, Receipt, Phone, ChevronDown, Camera, X, AlertCircle } from "lucide-react";
 import { ConfirmModal } from "../components/common/ConfirmModal";
+import { PhotoLightbox } from "../components/common/PhotoLightbox";
 import { workOrderService, WorkOrderItemDto } from "../services/workOrderService";
 import { JobLineItems } from "../components/workorders/JobLineItems";
 import imageCompression from 'browser-image-compression';
@@ -107,6 +108,8 @@ export const JobExecutionPage = () => {
    }
   });
  };
+
+ const [lightbox, setLightbox] = useState<{ photos: { url: string; label?: string }[]; index: number } | null>(null);
 
  const handleSaveProgress = async (newStatus: string) => {
   try {
@@ -368,16 +371,26 @@ export const JobExecutionPage = () => {
      <div className="space-y-4">
       {/* Saved photos */}
       {job.evidences && job.evidences.length > 0 && (
-       <div>
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Saved Photos</p>
-        <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
-         {job.evidences.map(ev => (
-          <div key={ev.id} className="relative rounded-xl overflow-hidden border border-border aspect-square bg-muted">
-           <img src={ev.fileUrl} alt={ev.fileName} className="w-full h-full object-cover" />
-          </div>
-         ))}
+        <div>
+         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Saved Photos — click to view</p>
+         <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+          {job.evidences.map((ev, idx) => (
+           <div
+            key={ev.id}
+            className="relative rounded-xl overflow-hidden border border-border aspect-square bg-muted cursor-pointer hover:ring-2 hover:ring-primary transition-all active:scale-95"
+            onClick={() => setLightbox({
+             photos: job.evidences!.map(e => ({ url: e.fileUrl, label: e.fileName })),
+             index: idx
+            })}
+           >
+            <img src={ev.fileUrl} alt={ev.fileName} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors flex items-center justify-center">
+             <span className="text-white text-xs font-bold opacity-0 hover:opacity-100 transition-opacity">View</span>
+            </div>
+           </div>
+          ))}
+         </div>
         </div>
-       </div>
       )}
 
       {/* Upload new */}
@@ -506,6 +519,13 @@ export const JobExecutionPage = () => {
      initialLaborCost={invoiceModalProps.laborCost}
      workOrderId={invoiceModalProps.workOrderId}
      preloadedItems={jobItems}
+    />
+   )}
+   {lightbox && (
+    <PhotoLightbox
+     photos={lightbox.photos}
+     initialIndex={lightbox.index}
+     onClose={() => setLightbox(null)}
     />
    )}
   </>

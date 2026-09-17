@@ -4,7 +4,7 @@ import { PremiumChart } from '../components/dashboard/PremiumChart';
 import { SystemSetupGuide } from '../components/SystemSetupGuide';
 import { apiClient } from '../services/apiClient';
 import {
- AlertTriangle, AlertCircle, RefreshCw, Calendar, Zap, Briefcase, CheckCircle, Clock, FileText, Wrench, ArrowRight
+ AlertTriangle, AlertCircle, RefreshCw, Calendar, Zap, Briefcase, CheckCircle, Clock, FileText, Wrench, ArrowRight, Package
 } from 'lucide-react';
 import { format, subDays, subMonths, subYears } from 'date-fns';
 import { Link } from 'react-router-dom';
@@ -385,6 +385,29 @@ export const DashboardPage: React.FC = () => {
      />
    </div>
  )}
+ {/* Quick-Access Links Row — always visible for admin */}
+ <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   <Link to="/work-orders?status=WaitingForParts" className="flex items-center gap-4 bg-card border border-orange-500/30 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group">
+     <div className="p-3 rounded-xl bg-orange-500/10 text-orange-500 shrink-0">
+       <Package size={22} />
+     </div>
+     <div>
+       <p className="font-bold text-foreground text-base">Waiting for Parts</p>
+       <p className="text-xs text-muted-foreground mt-0.5">View all jobs on hold for parts delivery</p>
+     </div>
+     <ArrowRight size={18} className="ml-auto text-muted-foreground group-hover:text-orange-500 transition-colors" />
+   </Link>
+   <Link to="/work-orders?status=PendingQuote" className="flex items-center gap-4 bg-card border border-purple-500/30 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group">
+     <div className="p-3 rounded-xl bg-purple-500/10 text-purple-500 shrink-0">
+       <FileText size={22} />
+     </div>
+     <div>
+       <p className="font-bold text-foreground text-base">Waiting for Quote</p>
+       <p className="text-xs text-muted-foreground mt-0.5">View all jobs pending a quotation</p>
+     </div>
+     <ArrowRight size={18} className="ml-auto text-muted-foreground group-hover:text-purple-500 transition-colors" />
+   </Link>
+ </div>
 
  <SystemSetupGuide />
 

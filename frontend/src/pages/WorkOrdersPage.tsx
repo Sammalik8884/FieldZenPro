@@ -1,5 +1,6 @@
 import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Loader2, Search, BriefcaseBusiness, CheckCircle, XCircle, Receipt, Trash2, Edit, Briefcase, PlusCircle, X } from "lucide-react";
 import { StatCard } from "../components/dashboard/StatCard";
 import { ConfirmModal } from "../components/common/ConfirmModal";
@@ -34,11 +35,16 @@ const statusStyle = (status: string) => {
 };
 
 export const WorkOrdersPage = () => {
+ const location = useLocation();
+ const params = new URLSearchParams(location.search);
+ const urlStatus = params.get('status') || '';
+
  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
  const [invoiceModalProps, setInvoiceModalProps] = useState<{workOrderId?: number, customerId?: number, laborCost?: number}>({});
  const [reviewModalOpen, setReviewModalOpen] = useState(false);
  const [reviewWorkOrder, setReviewWorkOrder] = useState<WorkOrderDto | null>(null);
- const [viewMode, setViewMode] = useState<'list' | 'board'>('board');
+ const [viewMode, setViewMode] = useState<'list' | 'board'>(urlStatus ? 'list' : 'board');
+ const [statusFilter, setStatusFilter] = useState(urlStatus);
  const [confirmModal, setConfirmModal] = useState<{isOpen: boolean, title: string, message: string, type: 'info' | 'warning' | 'danger', onConfirm: () => void}>({
   isOpen: false, title: '', message: '', type: 'info', onConfirm: () => {}
  });
@@ -102,11 +108,13 @@ export const WorkOrdersPage = () => {
 
  useEffect(() => { fetchData(); }, []);
 
- const filteredWorkOrders = workOrders.filter(wo =>
-  wo.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  wo.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  wo.status.toLowerCase().includes(searchQuery.toLowerCase())
- );
+ const filteredWorkOrders = workOrders.filter(wo => {
+  const matchesSearch = wo.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+   wo.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+   wo.status.toLowerCase().includes(searchQuery.toLowerCase());
+  const matchesStatus = !statusFilter || wo.status === statusFilter;
+  return matchesSearch && matchesStatus;
+ });
 
  const handleDeleteWO = async (id: number) => {
   const wo = workOrders.find(w => w.id === id);
@@ -188,7 +196,6 @@ export const WorkOrdersPage = () => {
 
  const handleSaveEdit = async (e: React.FormEvent) => {
   e.preventDefault();
-  if (!formData.technicianId) { toast.error("Please select a Technician before assigning."); return; }
   try {
    if (formData.technicianId !== undefined && formData.technicianId !== editingJob?.technicianId) {
     if (formData.technicianId === "") { formData.technicianId = null; }
@@ -261,6 +268,16 @@ export const WorkOrdersPage = () => {
        <input type="text" placeholder="Search jobs or customers..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="bg-background/50 border border-border text-sm rounded-xl pl-9 pr-4 py-2.5 w-full focus:outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]" />
       </div>
      )}
+     {statusFilter && (
+      <div className="flex items-center gap-2 shrink-0">
+       <span className={`text-xs font-bold px-3 py-1.5 rounded-full border ${statusFilter === 'WaitingForParts' ? 'bg-orange-500/10 text-orange-500 border-orange-500/30' : 'bg-purple-500/10 text-purple-500 border-purple-500/30'}`}>
+        {statusFilter === 'WaitingForParts' ? '📦 Waiting for Parts' : '📝 Waiting for Quote'}
+       </span>
+       <button onClick={() => setStatusFilter('')} className="text-xs text-muted-foreground hover:text-foreground underline font-medium">
+        Clear filter
+       </button>
+      </div>
+     )}
     </div>
 
     {/* Content */}
@@ -268,7 +285,9 @@ export const WorkOrdersPage = () => {
      <div className="p-4 bg-background">
       <SchedulingBoard
        workOrders={workOrders}
+       technicians={technicians.map((t: any) => ({ id: t.id, fullName: t.fullName }))}
        onUpdateJob={async (id, updates) => { await workOrderService.update(id, updates as any); fetchData(); }}
+       onEditJob={(job) => { handleOpenEdit(job); }}
       />
      </div>
     ) : loading ? (

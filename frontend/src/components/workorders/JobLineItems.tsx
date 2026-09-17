@@ -110,7 +110,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                 <div className="flex items-center space-x-2">
                     <button
                         type="button"
-                        onClick={() => setNewItems([...newItems, { description: "", quantity: 1, unitPrice: 0, isTaxable: false } as unknown as Omit<WorkOrderItemDto, 'id'>])}
+                        onClick={() => setNewItems([...newItems, { description: "", quantity: 1, unitPrice: 0, isTaxable: false, _itemType: "Product" } as any])}
                         className="flex items-center space-x-1 text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30 transition-colors font-medium border border-blue-500/20"
                     >
                         <Plus className="h-3 w-3" />
@@ -118,7 +118,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                     </button>
                     <button
                         type="button"
-                        onClick={() => setNewItems([...newItems, { description: "Service/Labor", quantity: 1, unitPrice: 0, isTaxable: false } as unknown as Omit<WorkOrderItemDto, 'id'>])}
+                        onClick={() => setNewItems([...newItems, { description: "", quantity: 1, unitPrice: 0, isTaxable: false, _itemType: "Service" } as any])}
                         className="flex items-center space-x-1 text-xs px-3 py-1.5 rounded-lg bg-white/10 text-muted-foreground hover:bg-white/20 transition-colors font-medium border border-border"
                     >
                         <Plus className="h-3 w-3" />
@@ -191,11 +191,13 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                         list={`job-product-list-${index}`}
                                         value={item.description}
                                         onChange={e => handleProductSelect(index, e.target.value)}
-                                        placeholder="Type or select a product..."
+                                        placeholder={(item as any)._itemType === 'Service' ? "Type or select a service..." : "Type or select a product..."}
                                         className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                     />
                                     <datalist id={`job-product-list-${index}`}>
-                                        {products.map(p => <option key={p.id} value={p.name} />)}
+                                        {products
+                                            .filter(p => !(item as any)._itemType || !p.itemType || p.itemType === (item as any)._itemType)
+                                            .map(p => <option key={p.id} value={p.name} />)}
                                     </datalist>
                                 </div>
                                 <div className="col-span-3 md:w-20">

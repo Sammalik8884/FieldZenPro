@@ -35,5 +35,8 @@ namespace MytechERP.domain.Entities
 
         /// <summary>Materials are taxable (5.5% sales tax), Labor/Services are not.</summary>
         public bool IsTaxable { get; set; } = false;
+
+        /// <summary>"Product" for physical parts/materials, "Service" for labor/services.</summary>
+        public string ItemType { get; set; } = "Product";
     }
 }

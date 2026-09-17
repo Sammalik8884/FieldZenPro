@@ -13,6 +13,7 @@ export interface ProductDto {
     imageUrl?: string;
     itemCode?: string;
     isTaxable: boolean;
+    itemType?: string; // "Product" | "Service"
 }
 
 export interface CreateProductDto {
