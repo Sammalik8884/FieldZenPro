@@ -62,7 +62,7 @@ export const MyJobsPage = () => {
  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
  const getJobsForDay = (day: Date) => jobs.filter(wo => wo.scheduledDate && isSameDay(new Date(wo.scheduledDate), day));
 
- const activeJobs = jobs.filter(j => ['Initialized', 'InProgress'].includes(j.status));
+ const activeJobs = jobs.filter(j => !['Completed', 'Approved', 'Unscheduled'].includes(j.status));
  const waitingJobs = jobs.filter(j => j.status === 'WaitingForParts' || j.status === 'PendingQuote');
  const completedJobs = jobs.filter(j => j.status === 'Completed' || j.status === 'Approved');
  const tabJobs = activeTab === 'active' ? activeJobs : activeTab === 'waiting' ? waitingJobs : completedJobs;
@@ -184,7 +184,7 @@ export const MyJobsPage = () => {
    {/* Status Tabs */}
    <div className="flex gap-2 mb-6 bg-muted/30 p-1.5 rounded-2xl border border-border w-fit">
     {([
-     { key: 'active', label: 'Active', count: activeJobs.length, active: 'bg-primary text-primary-foreground' },
+     { key: 'active', label: 'Active/Assigned', count: activeJobs.length, active: 'bg-primary text-primary-foreground' },
      { key: 'waiting', label: 'Waiting', count: waitingJobs.length, active: 'bg-orange-500 text-white' },
      { key: 'completed', label: 'Completed', count: completedJobs.length, active: 'bg-green-600 text-white' },
     ] as const).map(tab => (
