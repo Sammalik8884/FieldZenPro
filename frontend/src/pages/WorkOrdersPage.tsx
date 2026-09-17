@@ -450,10 +450,7 @@ export const WorkOrdersPage = () => {
           <option value="Assigned">Assigned</option>
           <option value="Initialized">Initialized</option>
           <option value="InProgress">InProgress</option>
-          <option value="PendingApproval">Pending Approval</option>
-          <option value="Approved">Approved</option>
           <option value="Completed">Completed</option>
-          <option value="Rejected">Rejected</option>
           <option value="Cancelled">Cancelled</option>
           <option value="WaitingForParts">Waiting for Parts</option>
           <option value="Unscheduled">Unscheduled</option>

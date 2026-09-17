@@ -338,7 +338,7 @@ export function WeeklyReportPage() {
                                 {fmt(report.grandTotal)}
                             </div>
                             <div className="text-xs text-muted-foreground">
-                                from {report.paidInvoiceCount} paid invoice{report.paidInvoiceCount !== 1 ? "s" : ""}
+                                from {report.paidInvoiceCount} invoice{report.paidInvoiceCount !== 1 ? "s" : ""}
                             </div>
                         </div>
                     </div>

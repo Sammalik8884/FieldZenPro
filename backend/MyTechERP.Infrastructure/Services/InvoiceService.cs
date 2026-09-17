@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MytechERP.Application.Interfaces;
 using MytechERP.domain.Entities.Finance;
 using MytechERP.domain.Enums;
