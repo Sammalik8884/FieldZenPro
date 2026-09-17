@@ -177,6 +177,7 @@ namespace MyTechERP.Infrastructure.Services
                 SequenceOrder = w.SequenceOrder,
                 CompletedDate = w.CompletedDate,
                 ContractId = w.ContractId ?? 0,
+                CustomerId = w.CustomerId,
                 CustomerName = GetValidCustomerName(w),
                 SiteName = w.Site?.Name
                            ?? w.Customer?.SiteName

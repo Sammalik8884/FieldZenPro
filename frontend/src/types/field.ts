@@ -59,6 +59,7 @@ export interface WorkOrderDto {
     checkInTime?: string;
     checkOutTime?: string;
     evidences?: JobEvidenceDto[];
+    customerId?: number;
 }
 
 export interface CreateWorkOrderDto {

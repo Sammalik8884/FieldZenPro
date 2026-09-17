@@ -43,6 +43,11 @@ export const workOrderService = {
         return response.data;
     },
 
+    getByCustomer: async (customerId: number): Promise<WorkOrderDto[]> => {
+        const response = await apiClient.get<WorkOrderDto[]>(`/WorkOrders/by-customer/${customerId}`);
+        return response.data;
+    },
+
     assignTechnician: async (id: number, technicianId: string): Promise<any> => {
         const response = await apiClient.put<any>(`/WorkOrders/${id}/assign`, { technicianId });
         return response.data;

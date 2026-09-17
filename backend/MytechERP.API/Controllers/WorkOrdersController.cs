@@ -378,6 +378,15 @@ namespace MytechERP.API.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [HttpGet("by-customer/{customerId}")]
+        public async Task<IActionResult> GetByCustomer(int customerId)
+        {
+            var orders = await _service.GetAllWorkOrdersAsync(new MytechERP.Application.Filters.PaginationFilter { PageNumber = 1, PageSize = 500 });
+            var filtered = orders.Where(w => w.CustomerId == customerId).ToList();
+            return Ok(filtered);
+        }
     }
 
 }

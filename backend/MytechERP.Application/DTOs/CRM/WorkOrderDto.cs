@@ -17,6 +17,7 @@ namespace MytechERP.Application.DTOs.CRM
 
        
         public int ContractId { get; set; }
+        public int CustomerId { get; set; }
         public string CustomerName { get; set; } = string.Empty; 
         public string CustomerPhone { get; set; } = string.Empty;
         public string? CustomerAltPhone { get; set; }
