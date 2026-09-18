@@ -555,7 +555,7 @@ export const CreateInvoiceModal = ({ isOpen, onClose, onSuccess, initialCustomer
                                                     onClick={() => handleItemChange(index, "isTaxable", !item.isTaxable)}
                                                     className={`w-11 h-6 md:w-10 md:h-6 rounded-full transition-colors relative flex-shrink-0 border-2 ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
                                                 >
-                                                    <span className={`absolute top-[1px] md:top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-5 md:translate-x-4' : 'translate-x-0.5'}`} />
+                                                    <span className={`absolute left-0 top-[1px] md:top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-[22px] md:translate-x-4' : 'translate-x-0.5'}`} />
                                                 </button>
                                             </div>
                                             {/* Mobile Total & Trash */}
