@@ -138,36 +138,50 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                         )}
 
                         {items.map(item => (
-                            <div key={`saved-${item.id}`} className="grid grid-cols-12 gap-x-2 gap-y-3 md:flex md:flex-nowrap md:gap-4 items-end animate-in slide-in-from-left-4 duration-300 bg-muted/5 p-2 rounded-lg border border-border">
+                            <div key={`saved-${item.id}`} className="grid grid-cols-12 md:flex gap-4 md:items-end p-4 md:p-2 bg-muted/5 rounded-xl md:rounded-lg border border-border/50 md:border-border animate-in slide-in-from-left-4 duration-300">
                                 <div className="col-span-12 md:flex-1 md:min-w-[200px]">
-                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Description</label>
-                                    <div className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground">
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Description</label>
+                                    <div className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground">
                                         {item.description}
                                     </div>
                                 </div>
-                                <div className="col-span-3 md:w-20">
-                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Qty</label>
-                                    <div className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground text-right">
+                                <div className="col-span-5 md:w-20">
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Qty</label>
+                                    <div className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground text-left md:text-right">
                                         {item.quantity}
                                     </div>
                                 </div>
-                                <div className="col-span-4 md:w-24">
-                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Price</label>
-                                    <div className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground text-right">
+                                <div className="col-span-7 md:w-24">
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Price</label>
+                                    <div className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground text-left md:text-right">
                                         {item.unitPrice.toFixed(2)}
                                     </div>
                                 </div>
-                                <div className="col-span-3 md:w-14 flex flex-col items-center justify-center h-full pb-2 md:pb-3">
-                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Tax</label>
-                                    <button
-                                        type="button"
-                                        disabled
-                                        className={`w-9 h-5 rounded-full transition-colors relative flex-shrink-0 border-2 opacity-60 cursor-not-allowed ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
-                                    >
-                                        <span className={`absolute top-[1px] h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-4' : 'translate-x-0.5'}`} />
-                                    </button>
+                                <div className="col-span-12 flex items-center justify-between pt-3 border-t border-border/50 md:pt-0 md:justify-start md:w-16 md:border-none md:flex-col md:items-center mt-1 md:mt-0">
+                                    <div className="flex items-center gap-3 md:flex-col md:gap-1.5 md:pb-2">
+                                        <label className="block text-sm md:text-[10px] md:uppercase md:tracking-wider font-medium md:font-normal text-muted-foreground md:mb-1">Tax</label>
+                                        <button
+                                            type="button"
+                                            disabled
+                                            className={`w-11 h-6 md:w-9 md:h-5 rounded-full transition-colors relative flex-shrink-0 border-2 opacity-60 cursor-not-allowed ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
+                                        >
+                                            <span className={`absolute top-[1px] md:top-[1px] h-4 w-4 md:h-3.5 md:w-3.5 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-5 md:translate-x-4' : 'translate-x-0.5'}`} />
+                                        </button>
+                                    </div>
+                                    <div className="flex md:hidden items-center gap-4">
+                                        <div className="text-base font-bold text-foreground">
+                                            ${(item.quantity * item.unitPrice).toFixed(2)}
+                                        </div>
+                                        <button
+                                            onClick={() => handleDelete(item.id)}
+                                            className="text-muted-foreground hover:text-destructive transition-colors p-2 bg-background border border-border rounded-lg"
+                                            title="Remove item"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="col-span-3 flex justify-end md:w-32 items-center h-full pb-1 md:pb-0 gap-2">
+                                <div className="hidden md:flex justify-end md:w-32 items-center h-full pb-1 md:pb-0 gap-2">
                                     <div className="w-full text-right text-sm font-medium text-muted-foreground pr-1 mt-auto">
                                         ${(item.quantity * item.unitPrice).toFixed(2)}
                                     </div>
@@ -183,16 +197,16 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                         ))}
 
                         {newItems.map((item, index) => (
-                            <div key={`new-${index}`} className="grid grid-cols-12 gap-x-2 gap-y-3 md:flex md:flex-nowrap md:gap-4 items-end animate-in slide-in-from-left-4 duration-300 bg-muted/20 p-2 rounded-lg border border-border">
+                            <div key={`new-${index}`} className="grid grid-cols-12 md:flex gap-4 md:items-end p-4 md:p-2 bg-muted/10 md:bg-muted/20 rounded-xl md:rounded-lg border border-border/50 md:border-border animate-in slide-in-from-left-4 duration-300">
                                 <div className="col-span-12 md:flex-1 md:min-w-[200px]">
-                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Description</label>
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Description</label>
                                     <input
                                         type="text"
                                         list={`job-product-list-${index}`}
                                         value={item.description}
                                         onChange={e => handleProductSelect(index, e.target.value)}
                                         placeholder={(item as any)._itemType === 'Service' ? "Type or select a service..." : "Type or select a product..."}
-                                        className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                        className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                     />
                                     <datalist id={`job-product-list-${index}`}>
                                         {products
@@ -200,44 +214,60 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                             .map(p => <option key={p.id} value={p.name} />)}
                                     </datalist>
                                 </div>
-                                <div className="col-span-3 md:w-20">
-                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Qty</label>
+                                <div className="col-span-5 md:w-20">
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Qty</label>
                                     <input
                                         type="number"
                                         min="0.01" step="0.01"
                                         value={item.quantity}
                                         onChange={e => handleNewItemChange(index, 'quantity', parseFloat(e.target.value) || 0)}
-                                        className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                        className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50 text-left md:text-right"
                                     />
                                 </div>
-                                <div className="col-span-4 md:w-24">
-                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Price</label>
+                                <div className="col-span-7 md:w-24">
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Price</label>
                                     <input
                                         type="number"
                                         min="0" step="0.01"
                                         value={item.unitPrice}
                                         onChange={e => handleNewItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-                                        className="w-full bg-white/5 border border-border rounded px-2 py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                        className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50 text-left md:text-right"
                                     />
                                 </div>
-                                <div className="col-span-3 md:w-14 flex flex-col items-center justify-center h-full pb-2 md:pb-3">
-                                    <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Tax</label>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleNewItemChange(index, 'isTaxable', !item.isTaxable)}
-                                        className={`w-9 h-5 rounded-full transition-colors relative flex-shrink-0 border-2 ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
-                                    >
-                                        <span className={`absolute top-[1px] h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-4' : 'translate-x-0.5'}`} />
-                                    </button>
+                                <div className="col-span-12 flex items-center justify-between pt-3 border-t border-border/50 md:pt-0 md:justify-start md:w-16 md:border-none md:flex-col md:items-center mt-1 md:mt-0">
+                                    <div className="flex items-center gap-3 md:flex-col md:gap-1.5 md:pb-2">
+                                        <label className="block text-sm md:text-[10px] md:uppercase md:tracking-wider font-medium md:font-normal text-muted-foreground md:mb-1">Tax</label>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleNewItemChange(index, 'isTaxable', !item.isTaxable)}
+                                            className={`w-11 h-6 md:w-9 md:h-5 rounded-full transition-colors relative flex-shrink-0 border-2 ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
+                                        >
+                                            <span className={`absolute top-[1px] md:top-[1px] h-4 w-4 md:h-3.5 md:w-3.5 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-5 md:translate-x-4' : 'translate-x-0.5'}`} />
+                                        </button>
+                                    </div>
+                                    <div className="flex md:hidden items-center gap-4">
+                                        <div className="text-base font-bold text-foreground">
+                                            ${(item.quantity * item.unitPrice).toFixed(2)}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveNewItem(index)}
+                                            className="text-muted-foreground hover:text-destructive transition-colors p-2 bg-background border border-border rounded-lg"
+                                            title="Remove item"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="col-span-3 flex justify-end md:w-32 items-center h-full pb-1 md:pb-0 gap-2">
+                                <div className="hidden md:flex justify-end md:w-32 items-center h-full pb-1 md:pb-0 gap-2">
                                     <div className="w-full text-right text-sm font-medium text-muted-foreground pr-1 mt-auto">
                                         ${(item.quantity * item.unitPrice).toFixed(2)}
                                     </div>
                                     <button
                                         type="button"
                                         onClick={() => handleRemoveNewItem(index)}
-                                        className="text-destructive hover:bg-destructive/10 p-1 rounded transition-colors mt-auto"
+                                        className="text-muted-foreground hover:text-destructive transition-colors mt-auto p-1"
+                                        title="Remove item"
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </button>
