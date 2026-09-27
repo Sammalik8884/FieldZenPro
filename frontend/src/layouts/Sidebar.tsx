@@ -36,7 +36,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     { label: "Catalog (Items)", href: "/products", icon: Package, paths: ["/products"], allowedRoles: ["Admin", "Manager", "Engineer"] },
 
     { label: "Operations & Jobs", isHeader: true, allowedRoles: ["Admin", "Manager", "Engineer", "Worker", "Technician"] },
-
+    { label: "Dispatch (Jobs)", href: "/work-orders", icon: Briefcase, allowedRoles: ["Admin", "Manager"] },
     { label: "My Jobs", href: "/my-jobs", icon: Wrench, paths: ["/my-jobs", "/job/:id"], allowedRoles: ["Admin", "Manager", "Engineer", "Worker", "Technician"] },
     { label: "Upload Photos", href: "/photo-upload", icon: Camera, allowedRoles: ["Admin", "Manager", "Engineer", "Worker", "Technician", "PhotoUpload"] },
     
