@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MytechERP.Application.DTOs;
@@ -433,6 +433,21 @@ namespace MyTechERP.Infrastructure.Services
                 {
                     throw new Exception("Cannot delete the only admin in the organization.");
                 }
+            }
+
+            // Unassign this technician from any work orders before deleting
+            // (prevents FK constraint violation due to WorkOrder.TechnicianId -> AppUser)
+            var assignedWorkOrders = await _context.WorkOrders
+                .IgnoreQueryFilters()
+                .Where(wo => wo.TechnicianId == userId)
+                .ToListAsync();
+            foreach (var wo in assignedWorkOrders)
+            {
+                wo.TechnicianId = null;
+            }
+            if (assignedWorkOrders.Any())
+            {
+                await _context.SaveChangesAsync();
             }
 
             var deleteResult = await _userManager.DeleteAsync(user);

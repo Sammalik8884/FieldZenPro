@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization; // 👈 Required for [Authorize]
+﻿using Microsoft.AspNetCore.Authorization; // 👈 Required for [Authorize]
 using Microsoft.AspNetCore.Mvc;
 using MytechERP.Application.DTOs;
 using MytechERP.Application.DTOs.CRM;
@@ -192,7 +192,15 @@ namespace MytechERP.API.Controllers
                     <p>If you didn't request this, please ignore this email.</p>
                 ";
 
-                await _emailService.SendEmailAsync(dto.Email, "Password Reset Request", emailBody, true);
+                try
+                {
+                    await _emailService.SendEmailAsync(dto.Email, "Password Reset Request", emailBody, true);
+                }
+                catch (Exception emailEx)
+                {
+                    Console.WriteLine($"[FORGOT-PASSWORD] Email send failed for {dto.Email}: {emailEx.Message}");
+                    // Do NOT surface this error to the user — keep the response generic for security
+                }
             }
 
             return Ok(new { message = "If that email exists, a reset link has been sent to your inbox." });

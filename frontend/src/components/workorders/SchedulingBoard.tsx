@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+ï»¿import React, { useState, useRef, useEffect } from 'react';
 import { WorkOrderDto } from '../../types/field';
 import { format, addDays, startOfWeek, isSameDay, isToday } from 'date-fns';
 import { ChevronLeft, ChevronRight, Calendar, ArrowUp, ArrowDown, ChevronDown, Printer } from 'lucide-react';
@@ -44,10 +44,15 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, te
         }
     }, [selectedDay]);
 
+        const WAITING_STATUSES = ['WaitingForParts', 'PendingQuote'];
         const unscheduledJobs = workOrders
-        .filter(wo => !wo.scheduledDate || wo.status === 'Unscheduled' || wo.status === 'WaitingForParts' || wo.status === 'PendingQuote')
+        .filter(wo => !wo.scheduledDate || wo.status === 'Unscheduled' || WAITING_STATUSES.includes(wo.status))
         .sort((a, b) => {
-            // Oldest jobs (lowest ID = created first) go to TOP; newest go to BOTTOM
+            // Waiting jobs (Parts/Quote) go to TOP (highest priority)
+            const aWaiting = WAITING_STATUSES.includes(a.status) ? 0 : 1;
+            const bWaiting = WAITING_STATUSES.includes(b.status) ? 0 : 1;
+            if (aWaiting !== bWaiting) return aWaiting - bWaiting;
+            // Within same priority group, oldest (lowest ID) first
             return a.id - b.id;
         });
 
@@ -66,7 +71,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, te
         const dayBlocks = weekDays.map(day => {
             const dateStr = format(day, 'yyyy-MM-dd');
             const dayJobs = workOrders
-                .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr)
+                .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr && w.status !== 'WaitingForParts' && w.status !== 'PendingQuote')
                 .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
             if (dayJobs.length === 0) return '';
 
@@ -139,7 +144,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
     const handleAssignToDate = async (jobId: number, dateStr: string) => {
         setLoading(true);
         try {
-            const targetDateJobs = workOrders.filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr);
+            const targetDateJobs = workOrders.filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr && w.status !== 'WaitingForParts' && w.status !== 'PendingQuote');
             const maxOrder = targetDateJobs.length > 0 ? Math.max(...targetDateJobs.map(j => j.sequenceOrder || 0)) : 0;
             const job = workOrders.find(w => w.id === jobId);
             let newStatus = job?.status;
@@ -170,7 +175,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
 
     const handleMoveOrder = async (jobId: number, dateStr: string, currentOrder: number, direction: 'up' | 'down') => {
         const dayJobs = workOrders
-            .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr)
+            .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr && w.status !== 'WaitingForParts' && w.status !== 'PendingQuote')
             .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
         const currentIndex = dayJobs.findIndex(j => j.id === jobId);
         if (currentIndex === -1) return;
@@ -194,7 +199,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
     // Job card used in both mobile and desktop
     const JobCard = ({ job, idx, dateStr, showMoveButtons = true }: { job: WorkOrderDto; idx: number; dateStr: string; showMoveButtons?: boolean }) => {
         const dayJobs = workOrders
-            .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr)
+            .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr && w.status !== 'WaitingForParts' && w.status !== 'PendingQuote')
             .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
         return (
             <div className="bg-background border border-border rounded-xl p-3 shadow-sm relative group">
@@ -250,7 +255,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
 
     const selectedDateStr = format(selectedDay, 'yyyy-MM-dd');
     const selectedDayJobs = workOrders
-        .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === selectedDateStr)
+        .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === selectedDateStr && w.status !== 'WaitingForParts' && w.status !== 'PendingQuote')
         .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
 
     return (
@@ -279,7 +284,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                 <div ref={dayStripRef} className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-hide -mx-1 px-1">
                     {weekDays.map((day, i) => {
                         const dStr = format(day, 'yyyy-MM-dd');
-                        const count = workOrders.filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dStr).length;
+                        const count = workOrders.filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dStr && w.status !== 'WaitingForParts' && w.status !== 'PendingQuote').length;
                         const sel = isSameDay(day, selectedDay);
                         const tod = isToday(day);
                         return (
@@ -387,7 +392,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                                         toast.success('Technician assigned.');
                                                     }}
                                                 >
-                                                    <option value="">— Unassigned —</option>
+                                                    <option value="">ï¿½ Unassigned ï¿½</option>
                                                     {technicians.map(t => (
                                                         <option key={t.id} value={t.id}>{t.fullName}</option>
                                                     ))}
@@ -515,7 +520,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                         {weekDays.map(day => {
                             const dateStr = format(day, 'yyyy-MM-dd');
                             const dayJobs = workOrders
-                                .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr)
+                                .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr && w.status !== 'WaitingForParts' && w.status !== 'PendingQuote')
                                 .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
                             const todayDay = isSameDay(day, getNYDate());
                             return (

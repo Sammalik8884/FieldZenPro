@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Plus, Trash2, Loader2, Package } from "lucide-react";
+﻿import { useState, useEffect } from "react";
+import { Plus, Trash2, Loader2, Package, Search, X } from "lucide-react";
 import { workOrderService, WorkOrderItemDto } from "../../services/workOrderService";
 import { productService } from "../../services/productService";
 import { ProductDto } from "../../types/product";
@@ -17,6 +17,8 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
     const [loading, setLoading] = useState(true);
     const [adding, setAdding] = useState(false);
     const [taxRate, setTaxRate] = useState(5.5); // Default tax rate
+    const [picker, setPicker] = useState<{ open: boolean; type: "Product" | "Service"; newItemIndex: number }>({ open: false, type: "Product", newItemIndex: 0 });
+    const [pickerSearch, setPickerSearch] = useState("");
 
     const fetchItems = async () => {
         try {
@@ -101,7 +103,8 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
     const totalAmount = subtotal + taxAmount;
 
     return (
-        <div className="border border-border rounded-xl overflow-hidden mt-6 bg-card">
+        <>
+                <div className="border border-border rounded-xl overflow-hidden mt-6 bg-card">
             <div className="bg-white/5 p-4 border-b border-border flex flex-col md:flex-row gap-4 justify-between items-center">
                 <h3 className="font-medium text-foreground flex items-center gap-2">
                     <Package className="h-5 w-5 text-primary" />
@@ -110,7 +113,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                 <div className="flex items-center space-x-2">
                     <button
                         type="button"
-                        onClick={() => setNewItems([...newItems, { description: "", quantity: 1, unitPrice: 0, isTaxable: false, _itemType: "Product" } as any])}
+                        onClick={() => { const idx = newItems.length; setNewItems([...newItems, { description: "", quantity: 1, unitPrice: 0, isTaxable: false, _itemType: "Product" } as any]); setPickerSearch(""); setPicker({ open: true, type: "Product", newItemIndex: idx }); }}
                         className="flex items-center space-x-1 text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30 transition-colors font-medium border border-blue-500/20"
                     >
                         <Plus className="h-3 w-3" />
@@ -118,7 +121,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                     </button>
                     <button
                         type="button"
-                        onClick={() => setNewItems([...newItems, { description: "", quantity: 1, unitPrice: 0, isTaxable: false, _itemType: "Service" } as any])}
+                        onClick={() => { const idx = newItems.length; setNewItems([...newItems, { description: "", quantity: 1, unitPrice: 0, isTaxable: false, _itemType: "Service" } as any]); setPickerSearch(""); setPicker({ open: true, type: "Service", newItemIndex: idx }); }}
                         className="flex items-center space-x-1 text-xs px-3 py-1.5 rounded-lg bg-white/10 text-muted-foreground hover:bg-white/20 transition-colors font-medium border border-border"
                     >
                         <Plus className="h-3 w-3" />
@@ -315,5 +318,70 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                 )}
             </div>
         </div>
+        {/* Scrollable Product/Service Picker Modal */}
+            {picker.open && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4">
+                    <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[85vh]">
+                        <div className="flex items-center justify-between p-4 border-b border-border">
+                            <h3 className="font-bold text-foreground text-base">
+                                {picker.type === 'Product' ? 'Select a Product' : 'Select a Service'}
+                            </h3>
+                            <button type="button" onClick={() => setPicker(p => ({ ...p, open: false }))} className="p-2 text-muted-foreground hover:text-foreground">
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+                        <div className="p-3 border-b border-border">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    placeholder={picker.type === 'Product' ? 'Search products...' : 'Search services...'}
+                                    value={pickerSearch}
+                                    onChange={e => setPickerSearch(e.target.value)}
+                                    className="w-full bg-background border border-border rounded-xl pl-9 pr-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+                            {(() => {
+                                const filtered = products.filter(p => {
+                                    const itype = (p.itemType || '').toLowerCase();
+                                    const typeMatch = picker.type === 'Service' ? itype === 'service' : (itype === 'product' || itype === '');
+                                    const searchMatch = !pickerSearch || p.name.toLowerCase().includes(pickerSearch.toLowerCase());
+                                    return typeMatch && searchMatch;
+                                });
+                                if (filtered.length === 0) return (
+                                    <div className="text-center text-sm text-muted-foreground py-10">
+                                        No {picker.type === 'Product' ? 'products' : 'services'} found.{pickerSearch ? ' Try a different search.' : ''}
+                                    </div>
+                                );
+                                return filtered.map(p => (
+                                    <button
+                                        key={p.id}
+                                        type="button"
+                                        onClick={() => {
+                                            const updated = [...newItems];
+                                            updated[picker.newItemIndex] = {
+                                                ...updated[picker.newItemIndex],
+                                                description: p.name,
+                                                unitPrice: p.price ?? 0,
+                                                isTaxable: p.isTaxable ?? false,
+                                            };
+                                            setNewItems(updated);
+                                            setPicker(prev => ({ ...prev, open: false }));
+                                        }}
+                                        className="w-full text-left px-4 py-3 rounded-xl hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all"
+                                    >
+                                        <div className="font-semibold text-foreground text-sm">{p.name}</div>
+                                        <div className="text-xs text-muted-foreground mt-0.5">{p.description || ''}{p.description ? ' — ' : ''}<span className="text-primary font-bold">{'$'}{(p.price ?? 0).toFixed(2)}</span></div>
+                                    </button>
+                                ));
+                            })()}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
     );
 };
