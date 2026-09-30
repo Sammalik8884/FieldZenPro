@@ -60,7 +60,9 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, te
             const aWaiting = WAITING_STATUSES.includes(a.status) ? 0 : 1;
             const bWaiting = WAITING_STATUSES.includes(b.status) ? 0 : 1;
             if (aWaiting !== bWaiting) return aWaiting - bWaiting;
-            // Within same priority group, oldest (lowest ID) first
+            // Within WAITING group: NEWEST (highest ID) first — most recently set to waiting goes to absolute top
+            if (aWaiting === 0) return b.id - a.id;
+            // Within regular unscheduled: OLDEST (lowest ID) first — new orders sink to the bottom
             return a.id - b.id;
         });
 
