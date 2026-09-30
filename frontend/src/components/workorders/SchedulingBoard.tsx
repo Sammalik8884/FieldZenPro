@@ -46,15 +46,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, te
 
         const WAITING_STATUSES = ['WaitingForParts', 'PendingQuote'];
         const unscheduledJobs = workOrders
-        .filter(wo => {
-            // A job belongs in the unscheduled queue if:
-            // 1. It has no scheduled date at all, OR
-            // 2. Its status is a waiting status (regardless of whether it has a scheduledDate — those are excluded from the calendar)
-            const hasDate = !!(wo.scheduledDate && wo.scheduledDate.trim());
-            if (WAITING_STATUSES.includes(wo.status)) return true;  // always show waiting jobs in queue
-            if (!hasDate) return true;                               // no date = unscheduled
-            return false;                                            // has date + normal status = in calendar only
-        })
+        .filter(wo => !wo.scheduledDate || wo.status === 'Unscheduled' || WAITING_STATUSES.includes(wo.status))
         .sort((a, b) => {
             // Waiting jobs (Parts/Quote) go to TOP (highest priority)
             const aWaiting = WAITING_STATUSES.includes(a.status) ? 0 : 1;
@@ -171,7 +163,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
         try {
             const job = workOrders.find(w => w.id === jobId);
             let newStatus = job?.status;
-            if (!WAITING_STATUSES.includes(newStatus || '')) newStatus = 'Unscheduled';
+            if (newStatus !== 'WaitingForParts') newStatus = 'Unscheduled';
             await onUpdateJob(jobId, {
                 clearScheduledDate: true,
                 ...(newStatus && newStatus !== job?.status ? { status: newStatus } : {}),
