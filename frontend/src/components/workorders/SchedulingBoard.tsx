@@ -31,6 +31,8 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, te
     const [expandedNotes, setExpandedNotes] = useState<number[]>([]);
     const [selectedDay, setSelectedDay] = useState<Date>(getNYDate());
     const [queueOpen, setQueueOpen] = useState(true);
+    // Tracks the job ID most recently returned to the queue — always sorts to absolute top
+    const [priorityJobId, setPriorityJobId] = useState<number | null>(null);
     const dayStripRef = useRef<HTMLDivElement>(null);
 
     const toggleAddress = (id: number) => setExpandedAddresses(prev => ({ ...prev, [id]: !prev[id] }));
@@ -56,13 +58,18 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, te
             return false;                                            // has date + normal status = in calendar only
         })
         .sort((a, b) => {
-            // Waiting jobs (Parts/Quote) go to TOP (highest priority)
+            // The most recently returned/changed job always goes to absolute top
+            if (priorityJobId !== null) {
+                if (a.id === priorityJobId) return -1;
+                if (b.id === priorityJobId) return 1;
+            }
+            // Waiting jobs (Parts/Quote) go above regular unscheduled
             const aWaiting = WAITING_STATUSES.includes(a.status) ? 0 : 1;
             const bWaiting = WAITING_STATUSES.includes(b.status) ? 0 : 1;
             if (aWaiting !== bWaiting) return aWaiting - bWaiting;
-            // Within WAITING group: NEWEST (highest ID) first — most recently set to waiting goes to absolute top
+            // Within WAITING group: newest (highest ID) first
             if (aWaiting === 0) return b.id - a.id;
-            // Within regular unscheduled: OLDEST (lowest ID) first — new orders sink to the bottom
+            // Within regular unscheduled: oldest (lowest ID) first — new orders sink to bottom
             return a.id - b.id;
         });
 
@@ -167,6 +174,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                 ...(newStatus && newStatus !== job?.status ? { status: newStatus } : {}),
                 sequenceOrder: maxOrder + 1
             });
+            setPriorityJobId(null);
             toast.success("Job scheduled.");
         } finally { setLoading(false); }
     };
@@ -182,6 +190,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                 ...(newStatus && newStatus !== job?.status ? { status: newStatus } : {}),
                 sequenceOrder: 0
             });
+            setPriorityJobId(jobId);
             toast.success("Job unscheduled.");
         } finally { setLoading(false); }
     };
