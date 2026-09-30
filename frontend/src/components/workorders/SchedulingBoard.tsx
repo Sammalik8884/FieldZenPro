@@ -158,7 +158,10 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
             const maxOrder = targetDateJobs.length > 0 ? Math.max(...targetDateJobs.map(j => j.sequenceOrder || 0)) : 0;
             const job = workOrders.find(w => w.id === jobId);
             let newStatus = job?.status;
-            if (newStatus === 'Unscheduled') newStatus = job?.technicianId ? 'Assigned' : 'Created';
+            // Convert both 'Unscheduled' AND waiting statuses back to a schedulable status when assigning to a date
+            if (newStatus === 'Unscheduled' || WAITING_STATUSES.includes(newStatus || '')) {
+                newStatus = job?.technicianId ? 'Assigned' : 'Created';
+            }
             await onUpdateJob(jobId, {
                 scheduledDate: dateStr + "T00:00:00",
                 ...(newStatus && newStatus !== job?.status ? { status: newStatus } : {}),
