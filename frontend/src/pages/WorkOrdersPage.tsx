@@ -1,4 +1,4 @@
-import { ModalPortal } from "../components/common/ModalPortal";
+﻿import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Loader2, Search, BriefcaseBusiness, CheckCircle, XCircle, Receipt, Trash2, Edit, Briefcase, PlusCircle, X } from "lucide-react";
@@ -190,7 +190,7 @@ export const WorkOrdersPage = () => {
 
  const handleOpenEdit = (wo: WorkOrderDto) => {
   setEditingJob(wo);
-  setFormData({ id: wo.id, description: wo.description, status: wo.status, scheduledDate: wo.scheduledDate ? wo.scheduledDate.split('T')[0] : "", technicianId: "", assetId: (wo as any).assetId || null });
+  setFormData({ id: wo.id, description: wo.description, status: wo.status, scheduledDate: wo.scheduledDate ? wo.scheduledDate.split('T')[0] : "", technicianId: wo.technicianId || "", assetId: (wo as any).assetId || null });
   setIsEditModalOpen(true);
  };
 
