@@ -407,7 +407,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                                 <label className="text-xs text-muted-foreground mb-1.5 block font-medium">Assign Technician:</label>
                                                 <select
                                                     disabled={loading}
-                                                    defaultValue={job.technicianId || ''}
+                                                    value={job.technicianId || ''}
                                                     className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary disabled:opacity-50 min-h-[44px]"
                                                     onChange={async (e) => {
                                                         await onUpdateJob(job.id, { technicianId: e.target.value || null });
@@ -485,7 +485,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                         <label className="text-xs text-muted-foreground mb-1 block">Assign Technician:</label>
                                         <select
                                             disabled={loading}
-                                            defaultValue={job.technicianId || ''}
+                                            value={job.technicianId || ''}
                                             className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary disabled:opacity-50"
                                             onChange={async (e) => {
                                                 await onUpdateJob(job.id, { technicianId: e.target.value || null });
