@@ -52,7 +52,9 @@ const RootRoute = () => {
         return null;
     }
     if (hasRole(["PhotoUpload"])) return <Navigate to="/photo-upload" replace />;
-    return hasRole(["Customer"]) ? <Navigate to="/portal" replace /> : <Navigate to="/dashboard" replace />;
+    if (hasRole(["Customer"])) return <Navigate to="/portal" replace />;
+    if (hasRole(["Technician"])) return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/dashboard" replace />;
 };
 
 function App() {
