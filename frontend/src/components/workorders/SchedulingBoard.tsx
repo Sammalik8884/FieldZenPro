@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { WorkOrderDto } from '../../types/field';
 import { format, addDays, startOfWeek, isSameDay, isToday } from 'date-fns';
 import { ChevronLeft, ChevronRight, Calendar, ArrowUp, ArrowDown, ChevronDown, Printer } from 'lucide-react';
@@ -450,7 +450,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
             {/* ── DESKTOP LAYOUT (hidden on mobile, shown lg+) ── */}
             <div className="hidden lg:flex gap-6 h-[75vh]">
                 {/* Unscheduled Queue */}
-                <div className="w-1/4 bg-muted/30 border border-border rounded-xl flex flex-col h-full overflow-hidden">
+                <div className={`w-1/4 bg-muted/30 border border-border rounded-xl flex flex-col h-full overflow-hidden ${dragJobId !== null ? "ring-2 ring-destructive/50 ring-inset" : ""}`} onDragOver={(e) => e.preventDefault()} onDrop={async () => { if (dragJobId !== null) { await handleUnschedule(dragJobId); setDragJobId(null); } }}>
                     <div className="p-4 border-b border-border bg-card">
                         <h3 className="font-semibold text-foreground flex items-center gap-2">
                             Unscheduled Queue

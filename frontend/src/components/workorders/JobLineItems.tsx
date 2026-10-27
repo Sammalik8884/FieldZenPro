@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Trash2, Loader2, Package, Search, X } from "lucide-react";
 import { workOrderService, WorkOrderItemDto } from "../../services/workOrderService";
 import { productService } from "../../services/productService";
@@ -213,7 +213,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                     />
                                     <datalist id={`job-product-list-${index}`}>
                                         {products
-                                            .filter(p => { const pType = (p.itemType || 'Product').toLowerCase(); const iType = ((item as any)._itemType || '').toLowerCase(); return !iType || pType === iType; })
+                                            .filter(p => { const catType = (p.category?.categoryType || p.itemType || 'Material').toLowerCase(); const iType = ((item as any)._itemType || '').toLowerCase(); const isService = catType === 'service'; return !iType || (iType === 'service' ? isService : !isService); })
                                             .map(p => <option key={p.id} value={p.name} />)}
                                     </datalist>
                                 </div>
@@ -346,8 +346,9 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                         <div className="flex-1 overflow-y-auto p-2 space-y-1">
                             {(() => {
                                 const filtered = products.filter(p => {
-                                    const itype = (p.itemType || '').toLowerCase();
-                                    const isService = itype === 'service';
+                                    // Primary: use category.categoryType if available; fallback: itemType
+                                    const catType = (p.category?.categoryType || p.itemType || 'Material').toLowerCase();
+                                    const isService = catType === 'service';
                                     const typeMatch = picker.type === 'Service' ? isService : !isService;
                                     const searchMatch = !pickerSearch || p.name.toLowerCase().includes(pickerSearch.toLowerCase());
                                     return typeMatch && searchMatch;

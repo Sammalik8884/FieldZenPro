@@ -1,4 +1,4 @@
-﻿import { ModalPortal } from "../components/common/ModalPortal";
+import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Loader2, Search, BriefcaseBusiness, CheckCircle, XCircle, Receipt, Trash2, Edit, Briefcase, PlusCircle, X } from "lucide-react";
@@ -468,12 +468,6 @@ export const WorkOrdersPage = () => {
           {technicians.map(t => (<option key={t.id} value={t.id}>{t.fullName}</option>))}
           {technicians.length === 0 && <option value="" disabled>No technicians found.</option>}
          </select>
-        </div>
-        
-        {/* Desktop Save/Cancel (hidden on mobile) */}
-        <div className="hidden md:flex gap-3 pt-4 border-t border-border mt-6">
-         <button type="button" onClick={() => setIsEditModalOpen(false)} className="flex-1 px-4 py-3 text-sm font-medium border border-border hover:bg-muted rounded-xl transition-colors min-h-[48px]">Cancel</button>
-         <button type="submit" className="flex-1 px-4 py-3 text-sm font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all min-h-[48px]">Save Changes</button>
         </div>
        </form>
       </div>

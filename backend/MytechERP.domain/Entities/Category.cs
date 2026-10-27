@@ -18,6 +18,8 @@ namespace MytechERP.domain.Entities
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; } = false;
         public string? Description { get; set; }
+        /// <summary>Category type: "Material" for parts/materials, "Service" for labor/services. Unlimited categories per type.</summary>
+        public string CategoryType { get; set; } = "Material";
         [JsonIgnore]
         public ICollection<Product> Products { get; set;} = new List<Product>();
 

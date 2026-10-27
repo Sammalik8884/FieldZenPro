@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUser(prev => {
                 if (!prev) return prev;
                 const updated = { ...prev, planFeatures };
-                sessionStorage.setItem("user", JSON.stringify(updated));
+                localStorage.setItem("user", JSON.stringify(updated));
                 return updated;
             });
         } catch {
@@ -57,8 +57,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 return data; // Return to the UI so it can pop up the tenant selection
             }
             if (data.token) {
-                sessionStorage.setItem("token", data.token);
-                sessionStorage.setItem("erp_creds", btoa(JSON.stringify(credentials)));
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("erp_creds", btoa(JSON.stringify(credentials)));
 
                 const userObj = {
                     email: data.email,
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     roles: data.roles,
                     planFeatures: data.planFeatures
                 };
-                sessionStorage.setItem("user", JSON.stringify(userObj));
+                localStorage.setItem("user", JSON.stringify(userObj));
                 setUser(userObj as any);
                 setIsAuthenticated(true);
             } else {
@@ -84,8 +84,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await authService.loginStepTwo(tempToken, tenantId);
             if (data.token) {
-                sessionStorage.setItem("token", data.token);
-                sessionStorage.setItem("erp_creds", btoa(JSON.stringify(credentials)));
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("erp_creds", btoa(JSON.stringify(credentials)));
 
                 const userObj = {
                     email: data.email,
@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     roles: data.roles,
                     planFeatures: data.planFeatures
                 };
-                sessionStorage.setItem("user", JSON.stringify(userObj));
+                localStorage.setItem("user", JSON.stringify(userObj));
                 setUser(userObj as any);
                 setIsAuthenticated(true);
             } else {
@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = () => {
         authService.logout();
-        sessionStorage.removeItem("erp_creds");
+        localStorage.removeItem("erp_creds");
         clearTrialCache();
         setUser(null);
         setIsAuthenticated(false);

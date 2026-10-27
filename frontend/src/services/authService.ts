@@ -55,12 +55,12 @@ export const authService = {
     },
 
     logout: () => {
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
     },
 
     getCurrentUser: () => {
-        const userStr = sessionStorage.getItem("user");
+        const userStr = localStorage.getItem("user");
         if (!userStr) return null;
         try {
             return JSON.parse(userStr);
@@ -70,6 +70,6 @@ export const authService = {
     },
 
     isAuthenticated: (): boolean => {
-        return !!sessionStorage.getItem("token");
+        return !!localStorage.getItem("token");
     }
 };

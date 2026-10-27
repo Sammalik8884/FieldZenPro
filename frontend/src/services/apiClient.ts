@@ -11,7 +11,7 @@ export const apiClient = axios.create({
 // Request Interceptor: Attach JWT Token
 apiClient.interceptors.request.use(
     (config) => {
-        const token = sessionStorage.getItem("token");
+        const token = localStorage.getItem("token");
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -37,7 +37,7 @@ apiClient.interceptors.response.use(
             originalRequest._retry = true;
 
             // Attempt silent auto-refresh only if we have stored credentials
-            const savedCredsStr = sessionStorage.getItem("erp_creds");
+            const savedCredsStr = localStorage.getItem("erp_creds");
             if (savedCredsStr) {
                 try {
                     const creds = JSON.parse(atob(savedCredsStr));
@@ -46,7 +46,7 @@ apiClient.interceptors.response.use(
                     const res = await axios.post(`${apiUrl}/Auth/login`, creds, { timeout: 5000 });
 
                     if (res.data?.token) {
-                        sessionStorage.setItem("token", res.data.token);
+                        localStorage.setItem("token", res.data.token);
                         originalRequest.headers.Authorization = `Bearer ${res.data.token}`;
                         return apiClient(originalRequest);
                     }
@@ -56,9 +56,9 @@ apiClient.interceptors.response.use(
             }
 
             // Clear everything and redirect immediately
-            sessionStorage.removeItem("token");
-            sessionStorage.removeItem("user");
-            sessionStorage.removeItem("erp_creds");
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            localStorage.removeItem("erp_creds");
 
             if (window.location.pathname !== "/login") {
                 window.location.href = "/login";
