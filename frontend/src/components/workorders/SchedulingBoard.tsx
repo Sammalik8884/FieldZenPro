@@ -33,6 +33,9 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, te
     const [queueOpen, setQueueOpen] = useState(true);
     // Tracks the job ID most recently returned to the queue — always sorts to absolute top
     const [priorityJobId, setPriorityJobId] = useState<number | null>(null);
+    // Drag-and-drop state
+    const [dragJobId, setDragJobId] = useState<number | null>(null);
+    const [dragOverDate, setDragOverDate] = useState<string | null>(null);
     const dayStripRef = useRef<HTMLDivElement>(null);
 
     const toggleAddress = (id: number) => setExpandedAddresses(prev => ({ ...prev, [id]: !prev[id] }));
@@ -459,7 +462,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                             <div className="text-sm text-muted-foreground text-center mt-10">No unscheduled jobs.</div>
                         )}
                         {unscheduledJobs.map(job => (
-                            <div key={job.id} className="bg-card border border-border p-3 rounded-lg shadow-sm">
+                            <div key={job.id} draggable onDragStart={() => setDragJobId(job.id)} onDragEnd={() => setDragJobId(null)} className="bg-card border border-border p-3 rounded-lg shadow-sm cursor-grab active:cursor-grabbing active:opacity-60 transition-opacity">
                                 <div className="flex justify-between items-start mb-2">
                                     <span className="text-xs font-bold text-primary">WO-{job.id.toString().padStart(4, '0')}</span>
                                     <div className="flex gap-1">
@@ -546,7 +549,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                 .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
                             const todayDay = isSameDay(day, getNYDate());
                             return (
-                                <div key={day.toISOString()} className={`flex-1 min-w-[200px] flex flex-col ${todayDay ? 'bg-primary/5' : ''}`}>
+                                <div key={day.toISOString()} className={`flex-1 min-w-[200px] flex flex-col ${todayDay ? 'bg-primary/5' : ''} ${dragOverDate === dateStr ? 'ring-2 ring-primary ring-inset bg-primary/10' : ''}`} onDragOver={(e) => { e.preventDefault(); setDragOverDate(dateStr); }} onDragLeave={() => setDragOverDate(null)} onDrop={async () => { setDragOverDate(null); if (dragJobId !== null) { await handleAssignToDate(dragJobId, dateStr); setDragJobId(null); } }}>
                                     <div className={`p-2 text-center border-b border-border ${todayDay ? 'bg-primary/10 text-primary font-bold' : 'bg-muted text-muted-foreground font-medium'}`}>
                                         <div className="text-xs uppercase">{format(day, 'EEE')}</div>
                                         <div className="text-lg">{format(day, 'd')}</div>
@@ -555,7 +558,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                         {dayJobs.map((job, idx) => (
                                             <div
                                                 key={job.id}
-                                                className="bg-background border border-border p-2 rounded shadow-sm text-sm relative group cursor-pointer hover:border-primary/50 hover:shadow-md transition-all"
+                                                draggable onDragStart={(e) => { e.stopPropagation(); setDragJobId(job.id); }} onDragEnd={() => setDragJobId(null)} className="bg-background border border-border p-2 rounded shadow-sm text-sm relative group cursor-grab hover:border-primary/50 hover:shadow-md transition-all"
                                                 onClick={() => onEditJob?.(job)}
                                             >
                                                 <div className="flex justify-between items-start mb-1">

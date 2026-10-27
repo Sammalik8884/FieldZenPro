@@ -419,7 +419,7 @@ export const WorkOrdersPage = () => {
    {isEditModalOpen && editingJob && (
     <ModalPortal>
     <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in">
-     <div className="flex flex-col flex-1 w-full md:max-w-md md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[90vh] md:flex-none overflow-hidden relative">
+     <div className="flex flex-col flex-1 w-full md:max-w-lg md:bg-card md:border md:border-border md:rounded-2xl md:shadow-2xl md:max-h-[90vh] md:flex-none overflow-hidden relative">
       <div className="hidden md:block absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
       
       {/* Header */}
@@ -438,13 +438,13 @@ export const WorkOrdersPage = () => {
       
       {/* Form */}
       <div className="flex-1 overflow-y-auto p-5 md:p-6">
-       <form onSubmit={handleSaveEdit} className="space-y-4 md:space-y-5 pb-20 md:pb-0">
+       <form onSubmit={handleSaveEdit} className="space-y-3 pb-20 md:pb-0">
         <div>
-         <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Description / Notes</label>
-         <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[80px]" rows={3} />
+         <label className="text-xs font-semibold text-muted-foreground mb-1 block">Description / Notes</label>
+         <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary text-base min-h-[64px]" rows={2} />
         </div>
         <div>
-         <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Status</label>
+         <label className="text-xs font-semibold text-muted-foreground mb-1 block">Status</label>
          <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px] text-base">
           <option value="Created">Created</option>
           <option value="Assigned">Assigned</option>
@@ -458,11 +458,11 @@ export const WorkOrdersPage = () => {
          </select>
         </div>
         <div>
-         <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Scheduled Date</label>
-         <input type="date" value={formData.scheduledDate || ""} onChange={e => setFormData({ ...formData, scheduledDate: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px] text-base" />
+         <label className="text-xs font-semibold text-muted-foreground mb-1 block">Scheduled Date</label>
+         <input type="date" value={formData.scheduledDate || ""} onChange={e => setFormData({ ...formData, scheduledDate: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[44px] py-2 text-base" />
         </div>
         <div>
-         <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Assign Technician</label>
+         <label className="text-xs font-semibold text-muted-foreground mb-1 block">Assign Technician</label>
          <select value={formData.technicianId || ""} onChange={e => setFormData({ ...formData, technicianId: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px] text-base">
           <option value="">-- Unassigned --</option>
           {technicians.map(t => (<option key={t.id} value={t.id}>{t.fullName}</option>))}
@@ -476,6 +476,11 @@ export const WorkOrdersPage = () => {
          <button type="submit" className="flex-1 px-4 py-3 text-sm font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all min-h-[48px]">Save Changes</button>
         </div>
        </form>
+      </div>
+      {/* Sticky Save/Cancel footer - always visible, no scroll needed */}
+      <div className="hidden md:flex gap-3 px-6 py-4 border-t border-border bg-card shrink-0">
+       <button type="button" onClick={() => setIsEditModalOpen(false)} className="flex-1 px-4 py-2.5 text-sm font-medium border border-border hover:bg-muted rounded-xl transition-colors">Cancel</button>
+       <button type="button" onClick={handleSaveEdit as any} className="flex-1 px-4 py-2.5 text-sm font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all">Save Changes</button>
       </div>
      </div>
     </div>
@@ -537,18 +542,18 @@ export const WorkOrdersPage = () => {
        {/* Description */}
        <div>
         <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Description *</label>
-        <textarea required value={createForm.description} onChange={e => setCreateForm({ ...createForm, description: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[80px]" rows={3} placeholder="Describe the work to be done..." />
+        <textarea required value={createForm.description} onChange={e => setCreateForm({ ...createForm, description: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary text-base min-h-[64px]" rows={2} placeholder="Describe the work to be done..." />
        </div>
 
        {/* Scheduled Date */}
        <div>
-        <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Scheduled Date</label>
+        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Scheduled Date</label>
         <input type="date" value={createForm.scheduledDate || ""} onChange={e => setCreateForm({ ...createForm, scheduledDate: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
        </div>
 
        {/* Technician search */}
        <div>
-        <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Assign Technician</label>
+        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Assign Technician</label>
         <div className="relative">
          <input type="text" placeholder="Search technician..." value={createTechSearch}
           onChange={e => { setCreateTechSearch(e.target.value); setShowTechDropdown(true); if (!e.target.value) setCreateForm({ ...createForm, technicianId: null }); }}

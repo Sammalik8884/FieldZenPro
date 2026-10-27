@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+﻿import { useState, useRef } from "react";
 import { Camera, Search, Upload, CheckCircle2, Loader2, X } from "lucide-react";
 import { workOrderService } from "../services/workOrderService";
 import { WorkOrderDto } from "../types/field";
@@ -147,7 +147,7 @@ export const PhotoUploadPage = () => {
 
           {/* Upload Buttons */}
           <div className="grid grid-cols-1 gap-4">
-            <input ref={cameraRef} type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={e => handleUpload(e.target.files)} />
+            <input ref={cameraRef} type="file" accept="image/*" multiple className="hidden" onChange={e => handleUpload(e.target.files)} />
             <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={e => handleUpload(e.target.files)} />
 
             <button

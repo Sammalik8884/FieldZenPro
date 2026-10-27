@@ -213,7 +213,7 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                                     />
                                     <datalist id={`job-product-list-${index}`}>
                                         {products
-                                            .filter(p => { const pType = p.itemType || "Product"; const iType = (item as any)._itemType; return !iType || pType === iType; })
+                                            .filter(p => { const pType = (p.itemType || 'Product').toLowerCase(); const iType = ((item as any)._itemType || '').toLowerCase(); return !iType || pType === iType; })
                                             .map(p => <option key={p.id} value={p.name} />)}
                                     </datalist>
                                 </div>
@@ -347,7 +347,8 @@ export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
                             {(() => {
                                 const filtered = products.filter(p => {
                                     const itype = (p.itemType || '').toLowerCase();
-                                    const typeMatch = picker.type === 'Service' ? itype === 'service' : (itype === 'product' || itype === '');
+                                    const isService = itype === 'service';
+                                    const typeMatch = picker.type === 'Service' ? isService : !isService;
                                     const searchMatch = !pickerSearch || p.name.toLowerCase().includes(pickerSearch.toLowerCase());
                                     return typeMatch && searchMatch;
                                 });
