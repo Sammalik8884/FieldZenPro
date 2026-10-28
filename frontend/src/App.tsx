@@ -51,9 +51,9 @@ const RootRoute = () => {
         window.location.href = "/landing";
         return null;
     }
-    if (hasRole(["PhotoUpload"])) return <Navigate to="/photo-upload" replace />;
     if (hasRole(["Customer"])) return <Navigate to="/portal" replace />;
     if (hasRole(["Technician"])) return <Navigate to="/dashboard" replace />;
+    if (hasRole(["PhotoUpload"])) return <Navigate to="/photo-upload" replace />;
     return <Navigate to="/dashboard" replace />;
 };
 
