@@ -21,7 +21,6 @@ namespace MytechERP.domain.Entities
         public Category? Category { get; set; }
 
         public string? Description { get; set; }
-        public string? Brand { get; set; }
         public string? ItemCode { get; set; }
         public string? SupplierItemCode { get; set; }
         [Column(TypeName = "decimal(18,2)")]
@@ -33,5 +32,11 @@ namespace MytechERP.domain.Entities
 
         [Column(TypeName = "nvarchar(max)")]
         public string? TechnicalSpecs { get; set; }
+
+        /// <summary>Materials are taxable (5.5% sales tax), Labor/Services are not.</summary>
+        public bool IsTaxable { get; set; } = false;
+
+        /// <summary>"Product" for physical parts/materials, "Service" for labor/services.</summary>
+        public string ItemType { get; set; } = "Product";
     }
 }

@@ -16,10 +16,12 @@ namespace MyTechERP.Infrastructure.Services
     public class PdfService  : IPdfService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ICurrentUserService _currentUserService;
 
-        public PdfService(ApplicationDbContext context)
+        public PdfService(ApplicationDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
+            _currentUserService = currentUserService;
 
             QuestPDF.Settings.License = LicenseType.Community;
         }
@@ -135,7 +137,15 @@ namespace MyTechERP.Infrastructure.Services
 
             if (invoice == null) throw new Exception("Invoice not found.");
 
-            var document = new MyTechERP.Infrastructure.PDF.InvoiceDocument(invoice);
+            // Manually fetch the related WorkOrder to get technician notes
+            MytechERP.domain.Entities.WorkOrder? workOrder = null;
+            if (invoice.WorkOrderId.HasValue)
+            {
+                workOrder = await _context.WorkOrders.FirstOrDefaultAsync(w => w.Id == invoice.WorkOrderId.Value);
+            }
+
+            // Always use the branded Acuman (Mark) invoice template for all tenants
+            var document = new MyTechERP.Infrastructure.PDF.MarkInvoiceDocument(invoice, workOrder);
 
             return document.GeneratePdf();
         }

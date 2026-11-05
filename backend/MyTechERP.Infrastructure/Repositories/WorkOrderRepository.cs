@@ -30,9 +30,14 @@ namespace MyTechERP.Infrastructure.Repositories
         {
             return await _context.WorkOrders
                 .Include(w => w.Contract)              
-                .ThenInclude(c => c.Customer)          
+                .ThenInclude(c => c.Customer)
+                .Include(w => w.Customer)
+                .Include(w => w.ReferenceQuotation)
+                    .ThenInclude(q => q.Customer)
+                .Include(w => w.Site)
                 .Include(w => w.Technician)            
                 .Include(w => w.TimeLogs)
+                .Include(w => w.Evidences)
                 .FirstOrDefaultAsync(w => w.Id == id);
         }
 
@@ -41,12 +46,15 @@ namespace MyTechERP.Infrastructure.Repositories
             return await _context.WorkOrders
                 .Include(w => w.Contract)
                     .ThenInclude(c => c.Customer)
+                .Include(w => w.Customer)
+                .Include(w => w.Site)
                 .Include(w => w.ReferenceQuotation)
                     .ThenInclude(q => q.Customer)
                 .Include(w => w.Asset)
                     .ThenInclude(a => a.Site)
                 .Include(w => w.Technician)
                 .Include(w => w.TimeLogs)
+                .Include(w => w.Evidences)
                 .OrderByDescending(w => w.Id)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize)
@@ -76,8 +84,13 @@ namespace MyTechERP.Infrastructure.Repositories
             return await _context.WorkOrders
                 .Where(w => w.TechnicianId == technicianId)
                 .Include(w => w.Contract)
-                .ThenInclude(c => c.Customer) 
+                .ThenInclude(c => c.Customer)
+                .Include(w => w.Customer)
+                .Include(w => w.ReferenceQuotation)
+                    .ThenInclude(q => q.Customer)
+                .Include(w => w.Site)
                 .Include(w => w.TimeLogs)
+                .Include(w => w.Evidences)
                 .OrderBy(w => w.ScheduledDate)
                 .ToListAsync();
         }

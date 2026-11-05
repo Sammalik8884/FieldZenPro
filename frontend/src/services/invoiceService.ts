@@ -17,13 +17,24 @@ export const invoiceService = {
         return response.data;
     },
 
+    getPreviewFromJob: async (workOrderId: number): Promise<{ customerId: number; laborCost: number }> => {
+        const response = await apiClient.get<{ customerId: number; laborCost: number }>(`/Invoice/preview-from-job/${workOrderId}`);
+        return response.data;
+    },
+
     generateFromJob: async (workOrderId: number): Promise<{ message: string; invoiceId: number }> => {
         const response = await apiClient.post<{ message: string; invoiceId: number }>(`/Invoice/generate-from-job/${workOrderId}`);
         return response.data;
     },
 
+    sendEmail: async (id: number, email: string): Promise<any> => {
+        const response = await apiClient.post<any>(`/Invoice/${id}/send`, `"${email}"`, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.data;
+    },
+
     markAsIssued: async (id: number): Promise<any> => {
-        // Assuming hitting an endpoint to update status, or similar
         const response = await apiClient.put<any>(`/Invoice/${id}/status`, 1, {
             headers: { 'Content-Type': 'application/json' }
         });
@@ -37,8 +48,22 @@ export const invoiceService = {
         return response.data;
     },
 
+    markAsPaidWithRef: async (id: number, paymentReference?: string, paymentMethod?: string): Promise<any> => {
+        const response = await apiClient.put<any>(`/Invoice/${id}/mark-paid`, { paymentReference, paymentMethod }, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.data;
+    },
+
     createCustom: async (dto: any): Promise<{ message: string, invoiceId: number, invoiceNumber: string }> => {
         const response = await apiClient.post('/Invoice/custom', dto);
+        return response.data;
+    },
+
+    downloadWeeklyCompleted: async (): Promise<Blob> => {
+        const response = await apiClient.get('/Invoice/export-weekly-completed', {
+            responseType: 'blob'
+        });
         return response.data;
     },
 

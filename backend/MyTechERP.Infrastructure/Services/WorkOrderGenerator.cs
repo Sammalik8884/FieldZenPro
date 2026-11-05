@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MytechERP.Application.Interfaces;
 using MytechERP.domain.Entities;
 using MytechERP.domain.Entities.CRM;
@@ -49,7 +49,7 @@ namespace MyTechERP.Infrastructure.Services
                     else
                     {
                         
-                        nextDueDate = lastJob.ScheduledDate.AddMonths(contract.VisitFrequencyMonths);
+                        nextDueDate = (lastJob.ScheduledDate ?? DateTime.UtcNow).AddMonths(contract.VisitFrequencyMonths);
                     }
 
                     if (nextDueDate <= DateTime.UtcNow)

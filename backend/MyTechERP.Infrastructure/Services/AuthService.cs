@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MytechERP.Application.DTOs;
@@ -169,6 +169,12 @@ namespace MyTechERP.Infrastructure.Services
             await EnsureRolesExist();
             string roleToAssign = (await _roleManager.RoleExistsAsync(request.Role)) ? request.Role : "Technician";
             await _userManager.AddToRoleAsync(newUser, roleToAssign);
+
+            // Technicians automatically get PhotoUpload access so they can upload photos from their phone
+            if (roleToAssign == "Technician")
+            {
+                await _userManager.AddToRoleAsync(newUser, "PhotoUpload");
+            }
 
             return $"User created successfully as {roleToAssign}";
         }
@@ -342,7 +348,7 @@ namespace MyTechERP.Infrastructure.Services
         
         private async Task EnsureRolesExist()
         {
-            string[] roleNames = { "Admin", "Manager", "Engineer", "Technician", "Customer" };
+            string[] roleNames = { "Admin", "Manager", "Engineer", "Technician", "Customer", "PhotoUpload" };
 
             foreach (var roleName in roleNames)
             {
@@ -427,6 +433,21 @@ namespace MyTechERP.Infrastructure.Services
                 {
                     throw new Exception("Cannot delete the only admin in the organization.");
                 }
+            }
+
+            // Unassign this technician from any work orders before deleting
+            // (prevents FK constraint violation due to WorkOrder.TechnicianId -> AppUser)
+            var assignedWorkOrders = await _context.WorkOrders
+                .IgnoreQueryFilters()
+                .Where(wo => wo.TechnicianId == userId)
+                .ToListAsync();
+            foreach (var wo in assignedWorkOrders)
+            {
+                wo.TechnicianId = null;
+            }
+            if (assignedWorkOrders.Any())
+            {
+                await _context.SaveChangesAsync();
             }
 
             var deleteResult = await _userManager.DeleteAsync(user);

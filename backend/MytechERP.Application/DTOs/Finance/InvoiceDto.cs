@@ -19,6 +19,8 @@ namespace MytechERP.Application.DTOs.Finance
         public decimal AmountPaid { get; set; }
         public int Status { get; set; }
         public string? StatusString { get; set; }
+        public string? PaymentReference { get; set; }
+        public string? PaymentMethod { get; set; }
 
         public List<InvoiceItemDto> Items { get; set; } = new List<InvoiceItemDto>();
     }

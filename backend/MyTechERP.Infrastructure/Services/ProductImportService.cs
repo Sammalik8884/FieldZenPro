@@ -1,4 +1,4 @@
-﻿using OfficeOpenXml;
+using OfficeOpenXml;
 using MytechERP.domain.Entities;
 using MytechERP.Infrastructure.Persistance;
 using MytechERP.Application.Interfaces;
@@ -18,7 +18,7 @@ namespace MyTechERP.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<string> ImportExcelAsync(IFormFile file, string brandName, int tenantId)
+        public async Task<string> ImportExcelAsync(IFormFile file, int tenantId)
         {
             ExcelPackage.License.SetNonCommercialPersonal("MyTechERP");
 
@@ -74,7 +74,6 @@ namespace MyTechERP.Infrastructure.Services
                             existing.Price = price; 
                             existing.PriceAED = priceAED;
                             existing.TechnicalSpecs = JsonConvert.SerializeObject(specs);
-                            existing.Brand = brandName;
                             updatedCount++;
                         }
                         else
@@ -86,7 +85,6 @@ namespace MyTechERP.Infrastructure.Services
                                 ItemCode = uniqueKey,
                                 Price = price,
                                 PriceAED = priceAED,
-                                Brand = brandName,
                                 CategoryId = category.Id,
                                 TenantId = tenantId,
                                 TechnicalSpecs = JsonConvert.SerializeObject(specs)

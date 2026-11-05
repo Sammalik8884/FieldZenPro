@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MytechERP.Application.DTOs.Finance;
 using MytechERP.Application.Interfaces;
 using MytechERP.domain.Entities.Finance;
@@ -77,6 +77,8 @@ namespace MyTechERP.Infrastructure.Services
             {
                 invoice.Status = InvoiceStatus.Paid;
                 invoice.AmountPaid = transaction.Amount;
+                invoice.PaymentMethod = "PaymentLink";
+                invoice.PaymentReference = gatewayTransactionId; // Save the Stripe Session ID automatically
             }
 
             await _context.SaveChangesAsync();

@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle, Info, X } from 'lucide-react';
+import { ModalPortal } from './ModalPortal';
 
 interface ConfirmModalProps {
     isOpen: boolean;
@@ -37,7 +38,8 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
     };
 
     return (
-        <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <ModalPortal>
+        <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-card w-full max-w-md rounded-2xl shadow-xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
                 <div className="p-6">
                     <div className="flex items-start justify-between">
@@ -71,5 +73,6 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 </div>
             </div>
         </div>
+        </ModalPortal>
     );
 };

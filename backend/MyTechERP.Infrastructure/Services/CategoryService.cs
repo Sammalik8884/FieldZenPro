@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MytechERP.Application.DTOs.CRM;
 using MytechERP.Application.Interfaces;
 using MytechERP.domain.Entities;
@@ -30,6 +30,7 @@ namespace MyTechERP.Infrastructure.Services
             {
                 Name = dto.Name,
                 Description = dto.Description,
+                CategoryType = dto.CategoryType,
                 TenantId = tenantId
             };
 
@@ -48,7 +49,8 @@ namespace MyTechERP.Infrastructure.Services
                 {
                     Id = c.Id,
                     Name = c.Name,
-                    Description = c.Description
+                    Description = c.Description,
+                    CategoryType = c.CategoryType
                 })
                 .ToListAsync();
         }
@@ -62,6 +64,7 @@ namespace MyTechERP.Infrastructure.Services
 
             category.Name = dto.Name;
             category.Description = dto.Description;
+            category.CategoryType = dto.CategoryType;
             await _context.SaveChangesAsync();
             return true;
         }

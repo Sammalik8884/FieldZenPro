@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,12 +11,17 @@ namespace MytechERP.Application.DTOs.CRM
         public int Id { get; set; }
         public string Description { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
-        public DateTime ScheduledDate { get; set; }
+        public DateTime? ScheduledDate { get; set; }
+ public int SequenceOrder { get; set; }
         public DateTime? CompletedDate { get; set; }
 
        
         public int ContractId { get; set; }
+        public int CustomerId { get; set; }
         public string CustomerName { get; set; } = string.Empty; 
+        public string CustomerPhone { get; set; } = string.Empty;
+        public string? CustomerAltPhone { get; set; }
+        public string CustomerAddress { get; set; } = string.Empty;
         public string SiteName { get; set; } = string.Empty;    
         public string? TechnicianId { get; set; }
         public string? TechnicianName { get; set; }
@@ -24,5 +29,15 @@ namespace MytechERP.Application.DTOs.CRM
         public string Result { get; set; }
         public DateTime? CheckInTime { get; set; }
         public DateTime? CheckOutTime { get; set; }
+        public List<JobEvidenceDto> Evidences { get; set; } = new();
+    }
+    
+    public class JobEvidenceDto
+    {
+        public int Id { get; set; }
+        public string FileName { get; set; } = string.Empty;
+        public string FileUrl { get; set; } = string.Empty;
+        public string FileType { get; set; } = string.Empty;
+        public DateTime Timestamp { get; set; }
     }
 }

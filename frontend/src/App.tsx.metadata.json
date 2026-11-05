@@ -1,0 +1,4 @@
+{
+  "summary": "App.tsx cleaned up: removed duplicate routes, Toaster moved to bottom-center with mobile-friendly positioning above BottomNav.",
+  "updatedAt": "2026-09-08T11:25:16.891945200Z"
+}

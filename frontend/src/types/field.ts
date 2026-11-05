@@ -31,14 +31,26 @@ export interface UpdateAssetDto extends CreateAssetDto {
     id: number;
 }
 
+export interface JobEvidenceDto {
+    id: number;
+    fileName: string;
+    fileUrl: string;
+    fileType: string;
+    timestamp: string;
+}
+
 export interface WorkOrderDto {
     id: number;
     description: string;
     status: string;
-    scheduledDate: string;
+    scheduledDate?: string | null;
+    sequenceOrder: number;
     completedDate?: string | null;
     contractId: number;
     customerName: string;
+    customerPhone: string;
+    customerAltPhone?: string;
+    customerAddress: string;
     siteName: string;
     technicianId?: string | null;
     technicianName?: string;
@@ -46,22 +58,28 @@ export interface WorkOrderDto {
     result: string;
     checkInTime?: string;
     checkOutTime?: string;
+    evidences?: JobEvidenceDto[];
+    customerId?: number;
 }
 
 export interface CreateWorkOrderDto {
     description: string;
-    scheduledDate: string;
-    contractId: number;
+    scheduledDate?: string | null;
+    customerId: number;
+    siteId?: number;
+    contractId?: number;
     technicianId?: string | null;
     assetId?: number;
 }
 
 export interface UpdateWorkOrderDto {
     id: number;
-    description: string;
-    status: string;
-    scheduledDate: string;
+    description?: string;
+    status?: string;
+    scheduledDate?: string | null;
+    clearScheduledDate?: boolean;
     technicianId?: string | null;
+    technicianNotes?: string;
     assetId?: number | null;
 }
 

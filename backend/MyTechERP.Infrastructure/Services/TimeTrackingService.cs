@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MytechERP.Application.DTOs.CRM;
 using MytechERP.Application.Interfaces;
 using MytechERP.domain.Entities.System;
@@ -39,9 +39,9 @@ namespace MyTechERP.Infrastructure.Services
             var workOrder = await _context.WorkOrders.FindAsync(dto.WorkOrderId);
             if (workOrder != null)
             {
-                if (workOrder.Status != MytechERP.domain.Enums.WorkOrderStatus.Initialized && workOrder.Status != MytechERP.domain.Enums.WorkOrderStatus.InProgress)
+                if (workOrder.Status == MytechERP.domain.Enums.WorkOrderStatus.Completed || workOrder.Status == MytechERP.domain.Enums.WorkOrderStatus.Rejected)
                 {
-                    throw new InvalidOperationException($"Cannot Check-In: Work Order must be Initialized. Current status is {workOrder.Status}.");
+                    throw new InvalidOperationException($"Cannot Check-In: Work Order is already Completed or Rejected.");
                 }
                 workOrder.Status = MytechERP.domain.Enums.WorkOrderStatus.InProgress;
             }

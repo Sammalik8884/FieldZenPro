@@ -63,12 +63,13 @@ namespace MytechERP.API.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateWorkOrderDto request)
         {
             if (request == null) return BadRequest("Request body is null.");
-            if (id != request.Id) return BadRequest($"URL ID ({id}) does not match body ID ({request?.Id}).");
+            // Always use the URL id as the authoritative source — body Id is optional
+            request.Id = id;
 
             var success = await _service.UpdateWorkOrderAsync(id, request);
             if (!success) return NotFound($"Service failed to update Work Order #{id}. Maybe it wasn't found.");
@@ -174,6 +175,28 @@ namespace MytechERP.API.Controllers
         }
        
 
+         [HttpPost("{id}/waiting-for-parts")]
+         [Authorize(Roles = Roles.Technician + "," + Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+         public async Task<IActionResult> MarkWaitingForParts(int id, [FromBody] CompleteJobRequest request)
+         {
+             try
+             {
+                 var success = await _service.MarkWaitingForPartsAsync(id, request.Notes);
+
+                 if (!success) return NotFound("Work Order not found.");
+
+                 return Ok(new { Message = "Job marked as Waiting for Parts and unscheduled." });
+             }
+             catch (InvalidOperationException ex)
+             {
+                 return BadRequest(new { Error = "Workflow Error", Message = ex.Message });
+             }
+             catch (System.Exception ex)
+             {
+                 return StatusCode(500, new { Error = "Server Error", Message = ex.Message });
+             }
+         }
+
         [HttpPost("{id}/complete")]
         [Authorize(Roles = Roles.Technician + "," + Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Engineer)]
         public async Task<IActionResult> CompleteJob(int id, [FromBody] CompleteJobRequest request)
@@ -190,9 +213,35 @@ namespace MytechERP.API.Controllers
             {
                 return BadRequest(new { Error = "Compliance Failure", Message = ex.Message });
             }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { Error = "Server Error", Message = ex.Message });
+            }
+        }
+
+        [HttpPost("{id}/reopen")]
+        [Authorize(Roles = Roles.Technician + "," + Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        public async Task<IActionResult> ReopenJob(int id)
+        {
+            try
+            {
+                var success = await _service.ReopenJobAsync(id);
+
+                if (!success) return NotFound("Work Order not found.");
+
+                return Ok(new { Message = "Job reopened successfully." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Error = "Action not allowed", Message = ex.Message });
+            }
             catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized(new { Error = "Auth Failure", Message = ex.Message });
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new { Error = "Server Error", Message = ex.Message });
             }
         }
 
@@ -263,6 +312,80 @@ namespace MytechERP.API.Controllers
             {
                 return StatusCode(500, new { Message = "An unexpected error occurred: " + ex.Message });
             }
+        }
+
+        // ─── Job Line Items (Parts & Services) ─────────────────────────────────
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
+        [HttpGet("{id}/items")]
+        public async Task<IActionResult> GetJobItems(int id)
+        {
+            var items = _context.WorkOrderItems
+                .Where(i => i.WorkOrderId == id)
+                .OrderBy(i => i.CreatedAt)
+                .Select(i => new {
+                    i.Id,
+                    i.WorkOrderId,
+                    i.Description,
+                    i.Quantity,
+                    i.UnitPrice,
+                    i.IsTaxable,
+                    Total = i.Quantity * i.UnitPrice,
+                    i.CreatedAt
+                })
+                .ToList();
+            return Ok(items);
+        }
+
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
+        [HttpPost("{id}/items")]
+        public async Task<IActionResult> AddJobItem(int id, [FromBody] AddJobItemDto dto)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Description))
+                return BadRequest("Description is required.");
+
+            var tenantId = _currentUserService.TenantId;
+            var item = new MytechERP.domain.Entities.Finance.WorkOrderItem
+            {
+                WorkOrderId = id,
+                Description = dto.Description,
+                Quantity = dto.Quantity,
+                UnitPrice = dto.UnitPrice,
+                IsTaxable = dto.IsTaxable,
+                TenantId = tenantId ?? 0,
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.WorkOrderItems.Add(item);
+            await _context.SaveChangesAsync();
+            return Ok(new {
+                item.Id,
+                item.WorkOrderId,
+                item.Description,
+                item.Quantity,
+                item.UnitPrice,
+                item.IsTaxable,
+                Total = item.Quantity * item.UnitPrice,
+                item.CreatedAt
+            });
+        }
+
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
+        [HttpDelete("{id}/items/{itemId}")]
+        public async Task<IActionResult> DeleteJobItem(int id, int itemId)
+        {
+            var item = _context.WorkOrderItems.FirstOrDefault(i => i.Id == itemId && i.WorkOrderId == id);
+            if (item == null) return NotFound();
+            _context.WorkOrderItems.Remove(item);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [HttpGet("by-customer/{customerId}")]
+        public async Task<IActionResult> GetByCustomer(int customerId)
+        {
+            var orders = await _service.GetAllWorkOrdersAsync(new MytechERP.Application.Filters.PaginationFilter { PageNumber = 1, PageSize = 500 });
+            var filtered = orders.Where(w => w.CustomerId == customerId).ToList();
+            return Ok(filtered);
         }
     }
 

@@ -14,6 +14,7 @@ namespace MytechERP.Application.DTOs.Finance
         public decimal TaxAmount { get; set; }
         public decimal TotalAmount { get; set; }
         public int Status { get; set; }
+        public string? TechnicianNotes { get; set; }
 
         public List<CreateInvoiceItemDto> Items { get; set; } = new List<CreateInvoiceItemDto>();
     }
@@ -23,5 +24,7 @@ namespace MytechERP.Application.DTOs.Finance
         public string Description { get; set; } = string.Empty;
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }
+        public bool IsTaxable { get; set; }
+        public MytechERP.domain.Enums.ItemCategory ItemCategory { get; set; }
     }
 }

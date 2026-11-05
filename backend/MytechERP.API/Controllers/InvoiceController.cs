@@ -6,6 +6,12 @@ using System.Security.Claims;
 
 namespace MytechERP.API.Controllers
 {
+    public class MarkAsPaidDto
+    {
+        public string? PaymentReference { get; set; }
+        public string? PaymentMethod { get; set; }
+    }
+
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -37,7 +43,8 @@ namespace MytechERP.API.Controllers
                 return BadRequest(new { Error = ex.Message });
             }
         }
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
         [HttpPost("generate-from-job/{workOrderId}")]
         public async Task<IActionResult> GenerateInvoice(int workOrderId)
         {
@@ -52,7 +59,22 @@ namespace MytechERP.API.Controllers
             }
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
+        [HttpGet("preview-from-job/{workOrderId}")]
+        public async Task<IActionResult> GetInvoicePreview(int workOrderId)
+        {
+            try
+            {
+                var (customerId, laborCost) = await _service.GetJobInvoicePreviewAsync(workOrderId);
+                return Ok(new { customerId, laborCost });
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
         [HttpPost("custom")]
         public async Task<IActionResult> CreateCustom([FromBody] MytechERP.Application.DTOs.Finance.CreateInvoiceDto dto)
         {
@@ -82,7 +104,7 @@ namespace MytechERP.API.Controllers
             return Ok(invoices);
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Customers)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Customers + "," + Roles.Technician)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -98,7 +120,7 @@ namespace MytechERP.API.Controllers
             }
         }
 
-        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] int status)
         {
@@ -108,11 +130,21 @@ namespace MytechERP.API.Controllers
             return Ok(new { Message = "Invoice status updated successfully." });
         }
 
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
+        [HttpPut("{id}/mark-paid")]
+        public async Task<IActionResult> MarkAsPaid(int id, [FromBody] MarkAsPaidDto dto)
+        {
+            var tenantId = User.FindFirst("TenantId")?.Value ?? "1";
+            var result = await _service.UpdateStatusAsync(id, 2, tenantId, dto?.PaymentReference, dto?.PaymentMethod);
+            if (!result) return NotFound();
+            return Ok(new { Message = "Invoice marked as paid successfully." });
+        }
+
         [Authorize(Roles = Roles.Customers)]
         [HttpGet("my")]
         public async Task<IActionResult> GetMyInvoices()
         {
-            var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+            var email = User.FindFirst(ClaimTypes.Email)?.Value
                      ?? User.FindFirst("email")?.Value;
             if (string.IsNullOrEmpty(email))
                 return Unauthorized(new { Error = "Cannot determine identity from token." });
@@ -135,6 +167,51 @@ namespace MytechERP.API.Controllers
                 return BadRequest(new { Error = ex.Message });
             }
         }
+
+        [Authorize(Roles = Roles.Admin + "," + Roles.Manager)]
+        [HttpGet("export-weekly-completed")]
+        public async Task<IActionResult> ExportWeeklyCompleted()
+        {
+            var userTenantId = User.Claims.FirstOrDefault(c => c.Type == "TenantId")?.Value;
+            if (string.IsNullOrEmpty(userTenantId)) return Unauthorized();
+
+            var zipBytes = await _service.ExportWeeklyCompletedZippedPdfsAsync(userTenantId);
+            return File(zipBytes, "application/zip", $"Completed_Invoices_WeekOf_{DateTime.UtcNow:yyyyMMdd}.zip");
+        }
+
+        [Authorize]
+        [HttpGet("weekly-report")]
+        public async Task<IActionResult> GetWeeklyReport([FromQuery] DateTime start, [FromQuery] DateTime end)
+        {
+            var tenantId = User.FindFirst("TenantId")?.Value ?? "1";
+            if (string.IsNullOrEmpty(tenantId)) return Unauthorized();
+
+            var report = await _service.GetWeeklyAccountingReportAsync(tenantId, start, end);
+            return Ok(report);
+        }
+
+        [HttpPost("{id}/send")]
+        [Authorize(Roles = "Admin,Manager,Engineer,Technician")]
+        public async Task<IActionResult> SendInvoiceEmail(int id, [FromBody] string recipientEmail)
+        {
+            var tenantId = User.FindFirst("TenantId")?.Value ?? "1";
+            if (string.IsNullOrEmpty(tenantId)) return Unauthorized();
+
+            await _service.SendInvoiceEmailAsync(id, tenantId, recipientEmail);
+            return Ok(new { message = "Invoice sent successfully" });
+        }
+
+        [HttpPost("weekly-report/send")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> SendWeeklyReportEmail([FromQuery] DateTime start, [FromQuery] DateTime end, [FromBody] string recipientEmail)
+        {
+            var tenantId = User.FindFirst("TenantId")?.Value ?? "1";
+            if (string.IsNullOrEmpty(tenantId)) return Unauthorized();
+
+            await _service.SendWeeklyReportEmailAsync(tenantId, start, end, recipientEmail);
+            return Ok(new { message = "Weekly report sent successfully" });
+        }
     }
 }
+
 

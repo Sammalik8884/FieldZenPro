@@ -1,6 +1,17 @@
 import { apiClient } from "./apiClient";
 import { WorkOrderDto, CreateWorkOrderDto, UpdateWorkOrderDto, CompleteJobRequest, ChecklistResultDto, UpdateChecklistDto } from "../types/field";
 
+export interface WorkOrderItemDto {
+    id: number;
+    workOrderId: number;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    isTaxable: boolean;
+    total: number;
+    createdAt: string;
+}
+
 export const workOrderService = {
     getAll: async (): Promise<WorkOrderDto[]> => {
         const response = await apiClient.get<WorkOrderDto[]>("/WorkOrders?pageNumber=1&pageSize=1000");
@@ -32,6 +43,11 @@ export const workOrderService = {
         return response.data;
     },
 
+    getByCustomer: async (customerId: number): Promise<WorkOrderDto[]> => {
+        const response = await apiClient.get<WorkOrderDto[]>(`/WorkOrders/by-customer/${customerId}`);
+        return response.data;
+    },
+
     assignTechnician: async (id: number, technicianId: string): Promise<any> => {
         const response = await apiClient.put<any>(`/WorkOrders/${id}/assign`, { technicianId });
         return response.data;
@@ -44,6 +60,16 @@ export const workOrderService = {
 
     completeJob: async (id: number, request: CompleteJobRequest): Promise<any> => {
         const response = await apiClient.post<any>(`/WorkOrders/${id}/complete`, request);
+        return response.data;
+    },
+
+    markWaitingForParts: async (id: number, notes: string): Promise<any> => {
+        const response = await apiClient.post<any>(`/WorkOrders/${id}/waiting-for-parts`, { notes, result: 1 });
+        return response.data;
+    },
+
+    reopen: async (id: number): Promise<any> => {
+        const response = await apiClient.post<any>(`/WorkOrders/${id}/reopen`);
         return response.data;
     },
 
@@ -74,5 +100,21 @@ export const workOrderService = {
             }
         });
         return response.data;
+    },
+
+    // Job Line Items (Parts & Services)
+    getItems: async (id: number): Promise<WorkOrderItemDto[]> => {
+        const response = await apiClient.get<WorkOrderItemDto[]>(`/WorkOrders/${id}/items`);
+        return response.data;
+    },
+
+    addItem: async (id: number, item: { description: string; quantity: number; unitPrice: number; isTaxable?: boolean }): Promise<WorkOrderItemDto> => {
+        const response = await apiClient.post<WorkOrderItemDto>(`/WorkOrders/${id}/items`, item);
+        return response.data;
+    },
+
+    deleteItem: async (id: number, itemId: number): Promise<void> => {
+        await apiClient.delete(`/WorkOrders/${id}/items/${itemId}`);
     }
 };
+

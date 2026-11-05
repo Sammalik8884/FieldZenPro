@@ -1,0 +1,389 @@
+import { useState, useEffect } from "react";
+import { Plus, Trash2, Loader2, Package, Search, X } from "lucide-react";
+import { workOrderService, WorkOrderItemDto } from "../../services/workOrderService";
+import { productService } from "../../services/productService";
+import { ProductDto } from "../../types/product";
+import { toast } from "react-hot-toast";
+
+interface JobLineItemsProps {
+    jobId: number;
+    onItemsChange?: (items: WorkOrderItemDto[]) => void;
+}
+
+export const JobLineItems = ({ jobId, onItemsChange }: JobLineItemsProps) => {
+    const [items, setItems] = useState<WorkOrderItemDto[]>([]);
+    const [newItems, setNewItems] = useState<Omit<WorkOrderItemDto, 'id'>[]>([]);
+    const [products, setProducts] = useState<ProductDto[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [adding, setAdding] = useState(false);
+    const [taxRate, setTaxRate] = useState(5.5); // Default tax rate
+    const [picker, setPicker] = useState<{ open: boolean; type: "Product" | "Service"; newItemIndex: number }>({ open: false, type: "Product", newItemIndex: 0 });
+    const [pickerSearch, setPickerSearch] = useState("");
+
+    const fetchItems = async () => {
+        try {
+            const data = await workOrderService.getItems(jobId);
+            setItems(data);
+        } catch {
+            // silently ignore
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        onItemsChange?.([...items, ...newItems] as WorkOrderItemDto[]);
+    }, [items, newItems, onItemsChange]);
+
+    useEffect(() => {
+        fetchItems();
+        productService.getAll(1, 200).then(setProducts).catch(() => {});
+    }, [jobId]);
+
+    const handleNewItemChange = (index: number, field: keyof Omit<WorkOrderItemDto, 'id'>, value: any) => {
+        const updated = [...newItems];
+        // @ts-ignore
+        updated[index] = { ...updated[index], [field]: value };
+        setNewItems(updated);
+    };
+
+    const handleProductSelect = (index: number, name: string) => {
+        const matched = products.find(p => p.name === name);
+        const updated = [...newItems];
+        if (matched) {
+            updated[index] = {
+                ...updated[index],
+                description: matched.name,
+                unitPrice: matched.price ?? 0,
+                isTaxable: matched.isTaxable ?? false
+            };
+        } else {
+            updated[index] = { ...updated[index], description: name };
+        }
+        setNewItems(updated);
+    };
+
+    const handleRemoveNewItem = (index: number) => {
+        setNewItems(newItems.filter((_, i) => i !== index));
+    };
+
+    const handleSaveAll = async () => {
+        if (newItems.some(i => !i.description.trim())) return toast.error("All items must have a description");
+        if (newItems.some(i => i.quantity <= 0)) return toast.error("Quantities must be greater than 0");
+        
+        setAdding(true);
+        try {
+            for (const item of newItems) {
+                await workOrderService.addItem(jobId, item);
+            }
+            toast.success("Items added successfully");
+            setNewItems([]);
+            await fetchItems();
+        } catch {
+            toast.error("Failed to add some items");
+        } finally {
+            setAdding(false);
+        }
+    };
+
+    const handleDelete = async (itemId: number) => {
+        try {
+            await workOrderService.deleteItem(jobId, itemId);
+            toast.success("Item removed");
+            await fetchItems();
+        } catch {
+            toast.error("Failed to remove item");
+        }
+    };
+
+    const allItems = [...items, ...newItems];
+    const subtotal = allItems.reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
+    const taxableAmount = allItems.filter(i => i.isTaxable).reduce((sum, i) => sum + (i.quantity * i.unitPrice), 0);
+    const taxAmount = taxableAmount * (taxRate / 100);
+    const totalAmount = subtotal + taxAmount;
+
+    return (
+        <>
+                <div className="border border-border rounded-xl overflow-hidden mt-6 bg-card">
+            <div className="bg-white/5 p-4 border-b border-border flex flex-col md:flex-row gap-4 justify-between items-center">
+                <h3 className="font-medium text-foreground flex items-center gap-2">
+                    <Package className="h-5 w-5 text-primary" />
+                    Parts &amp; Services Used
+                </h3>
+                <div className="flex items-center space-x-2">
+                    <button
+                        type="button"
+                        onClick={() => { const idx = newItems.length; setNewItems([...newItems, { description: "", quantity: 1, unitPrice: 0, isTaxable: false, _itemType: "Product" } as any]); setPickerSearch(""); setPicker({ open: true, type: "Product", newItemIndex: idx }); }}
+                        className="flex items-center space-x-1 text-xs px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 hover:bg-blue-500/30 transition-colors font-medium border border-blue-500/20"
+                    >
+                        <Plus className="h-3 w-3" />
+                        <span>Add Product</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => { const idx = newItems.length; setNewItems([...newItems, { description: "", quantity: 1, unitPrice: 0, isTaxable: false, _itemType: "Service" } as any]); setPickerSearch(""); setPicker({ open: true, type: "Service", newItemIndex: idx }); }}
+                        className="flex items-center space-x-1 text-xs px-3 py-1.5 rounded-lg bg-white/10 text-muted-foreground hover:bg-white/20 transition-colors font-medium border border-border"
+                    >
+                        <Plus className="h-3 w-3" />
+                        <span>Add Service</span>
+                    </button>
+                </div>
+            </div>
+            <div className="p-4 space-y-4">
+                {loading ? (
+                    <div className="flex items-center justify-center py-6">
+                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                    </div>
+                ) : (
+                    <>
+                        {items.length === 0 && newItems.length === 0 && (
+                            <p className="text-sm text-muted-foreground text-center py-4">No items added yet.</p>
+                        )}
+
+                        {items.map(item => (
+                            <div key={`saved-${item.id}`} className="grid grid-cols-12 md:flex gap-4 md:items-end p-4 md:p-2 bg-muted/5 rounded-xl md:rounded-lg border border-border/50 md:border-border animate-in slide-in-from-left-4 duration-300">
+                                <div className="col-span-12 md:flex-1 md:min-w-[200px]">
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Description</label>
+                                    <div className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground">
+                                        {item.description}
+                                    </div>
+                                </div>
+                                <div className="col-span-5 md:w-20">
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Qty</label>
+                                    <div className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground text-left md:text-right">
+                                        {item.quantity}
+                                    </div>
+                                </div>
+                                <div className="col-span-7 md:w-24">
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Price</label>
+                                    <div className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground text-left md:text-right">
+                                        {item.unitPrice.toFixed(2)}
+                                    </div>
+                                </div>
+                                <div className="col-span-12 flex items-center justify-between pt-3 border-t border-border/50 md:pt-0 md:justify-start md:w-16 md:border-none md:flex-col md:items-center mt-1 md:mt-0">
+                                    <div className="flex items-center gap-3 md:flex-col md:gap-1.5 md:pb-2">
+                                        <label className="block text-sm md:text-[10px] md:uppercase md:tracking-wider font-medium md:font-normal text-muted-foreground md:mb-1">Tax</label>
+                                        <button
+                                            type="button"
+                                            disabled
+                                            className={`w-11 h-6 md:w-9 md:h-5 rounded-full transition-colors relative flex-shrink-0 border-2 opacity-60 cursor-not-allowed ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
+                                        >
+                                            <span className={`absolute left-0 top-[1px] md:top-[1px] h-4 w-4 md:h-3.5 md:w-3.5 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-[22px] md:translate-x-4' : 'translate-x-0.5'}`} />
+                                        </button>
+                                    </div>
+                                    <div className="flex md:hidden items-center gap-4">
+                                        <div className="text-base font-bold text-foreground">
+                                            ${(item.quantity * item.unitPrice).toFixed(2)}
+                                        </div>
+                                        <button
+                                            onClick={() => handleDelete(item.id)}
+                                            className="text-muted-foreground hover:text-destructive transition-colors p-2 bg-background border border-border rounded-lg"
+                                            title="Remove item"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="hidden md:flex justify-end md:w-32 items-center h-full pb-1 md:pb-0 gap-2">
+                                    <div className="w-full text-right text-sm font-medium text-muted-foreground pr-1 mt-auto">
+                                        ${(item.quantity * item.unitPrice).toFixed(2)}
+                                    </div>
+                                    <button
+                                        onClick={() => handleDelete(item.id)}
+                                        className="text-muted-foreground hover:text-destructive transition-colors mt-auto p-1"
+                                        title="Remove item"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+
+                        {newItems.map((item, index) => (
+                            <div key={`new-${index}`} className="grid grid-cols-12 md:flex gap-4 md:items-end p-4 md:p-2 bg-muted/10 md:bg-muted/20 rounded-xl md:rounded-lg border border-border/50 md:border-border animate-in slide-in-from-left-4 duration-300">
+                                <div className="col-span-12 md:flex-1 md:min-w-[200px]">
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Description</label>
+                                    <input
+                                        type="text"
+                                        list={`job-product-list-${index}`}
+                                        value={item.description}
+                                        onChange={e => handleProductSelect(index, e.target.value)}
+                                        placeholder={(item as any)._itemType === 'Service' ? "Type or select a service..." : "Type or select a product..."}
+                                        className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                    />
+                                    <datalist id={`job-product-list-${index}`}>
+                                        {products
+                                            .filter(p => { const catType = (p.category?.categoryType || p.itemType || 'Material').toLowerCase(); const iType = ((item as any)._itemType || '').toLowerCase(); const isService = catType === 'service'; return !iType || (iType === 'service' ? isService : !isService); })
+                                            .map(p => <option key={p.id} value={p.name} />)}
+                                    </datalist>
+                                </div>
+                                <div className="col-span-5 md:w-20">
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Qty</label>
+                                    <input
+                                        type="number"
+                                        min="0.01" step="0.01"
+                                        value={item.quantity}
+                                        onChange={e => handleNewItemChange(index, 'quantity', parseFloat(e.target.value) || 0)}
+                                        className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50 text-left md:text-right"
+                                    />
+                                </div>
+                                <div className="col-span-7 md:w-24">
+                                    <label className="block text-xs md:text-[10px] md:uppercase md:tracking-wider text-muted-foreground mb-1.5 md:mb-1">Price</label>
+                                    <input
+                                        type="number"
+                                        min="0" step="0.01"
+                                        value={item.unitPrice}
+                                        onChange={e => handleNewItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
+                                        className="w-full bg-white/5 border border-border rounded-lg md:rounded px-3 md:px-2 py-2 md:py-1.5 text-sm text-foreground focus:outline-none focus:border-primary/50 text-left md:text-right"
+                                    />
+                                </div>
+                                <div className="col-span-12 flex items-center justify-between pt-3 border-t border-border/50 md:pt-0 md:justify-start md:w-16 md:border-none md:flex-col md:items-center mt-1 md:mt-0">
+                                    <div className="flex items-center gap-3 md:flex-col md:gap-1.5 md:pb-2">
+                                        <label className="block text-sm md:text-[10px] md:uppercase md:tracking-wider font-medium md:font-normal text-muted-foreground md:mb-1">Tax</label>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleNewItemChange(index, 'isTaxable', !item.isTaxable)}
+                                            className={`w-11 h-6 md:w-9 md:h-5 rounded-full transition-colors relative flex-shrink-0 border-2 ${item.isTaxable ? 'bg-primary border-primary' : 'bg-muted border-border'}`}
+                                        >
+                                            <span className={`absolute left-0 top-[1px] md:top-[1px] h-4 w-4 md:h-3.5 md:w-3.5 rounded-full bg-white shadow transition-transform ${item.isTaxable ? 'translate-x-[22px] md:translate-x-4' : 'translate-x-0.5'}`} />
+                                        </button>
+                                    </div>
+                                    <div className="flex md:hidden items-center gap-4">
+                                        <div className="text-base font-bold text-foreground">
+                                            ${(item.quantity * item.unitPrice).toFixed(2)}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveNewItem(index)}
+                                            className="text-muted-foreground hover:text-destructive transition-colors p-2 bg-background border border-border rounded-lg"
+                                            title="Remove item"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="hidden md:flex justify-end md:w-32 items-center h-full pb-1 md:pb-0 gap-2">
+                                    <div className="w-full text-right text-sm font-medium text-muted-foreground pr-1 mt-auto">
+                                        ${(item.quantity * item.unitPrice).toFixed(2)}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveNewItem(index)}
+                                        className="text-muted-foreground hover:text-destructive transition-colors mt-auto p-1"
+                                        title="Remove item"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                        
+                        {newItems.length > 0 && (
+                            <div className="flex justify-end pt-4">
+                                <button
+                                    onClick={handleSaveAll}
+                                    disabled={adding}
+                                    className="bg-primary text-white px-6 py-2 rounded-lg text-sm font-medium flex items-center justify-center hover:bg-primary/90 transition-colors disabled:opacity-50"
+                                >
+                                    {adding ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                                    Save Added Items
+                                </button>
+                            </div>
+                        )}
+                        
+                        {(items.length > 0 || newItems.length > 0) && (
+                            <div className="pt-4 mt-6 border-t border-border flex justify-end gap-12 text-sm">
+                                <div className="space-y-2 text-right">
+                                    <div className="text-muted-foreground">Subtotal:</div>
+                                    <div className="text-muted-foreground flex items-center gap-2 justify-end">
+                                        Tax Rate (%):
+                                        <input
+                                            type="number"
+                                            min="0" step="0.1"
+                                            value={taxRate}
+                                            onChange={e => setTaxRate(parseFloat(e.target.value) || 0)}
+                                            className="w-16 bg-white/5 border border-border rounded text-right px-1 py-0.5 text-xs text-foreground focus:outline-none focus:border-primary/50"
+                                        />
+                                    </div>
+                                    <div className="text-foreground font-semibold pt-2">Total:</div>
+                                </div>
+                                <div className="space-y-2 text-right font-medium text-foreground w-32 pr-2">
+                                    <div>${subtotal.toFixed(2)}</div>
+                                    <div>${taxAmount.toFixed(2)}</div>
+                                    <div className="pt-2 text-lg font-bold text-primary">${totalAmount.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+        </div>
+        {/* Scrollable Product/Service Picker Modal */}
+            {picker.open && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4">
+                    <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[85vh]">
+                        <div className="flex items-center justify-between p-4 border-b border-border">
+                            <h3 className="font-bold text-foreground text-base">
+                                {picker.type === 'Product' ? 'Select a Product' : 'Select a Service'}
+                            </h3>
+                            <button type="button" onClick={() => setPicker(p => ({ ...p, open: false }))} className="p-2 text-muted-foreground hover:text-foreground">
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+                        <div className="p-3 border-b border-border">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    placeholder={picker.type === 'Product' ? 'Search products...' : 'Search services...'}
+                                    value={pickerSearch}
+                                    onChange={e => setPickerSearch(e.target.value)}
+                                    className="w-full bg-background border border-border rounded-xl pl-9 pr-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+                            {(() => {
+                                const filtered = products.filter(p => {
+                                    // Primary: use category.categoryType if available; fallback: itemType
+                                    const catType = (p.category?.categoryType || p.itemType || 'Material').toLowerCase();
+                                    const isService = catType === 'service';
+                                    const typeMatch = picker.type === 'Service' ? isService : !isService;
+                                    const searchMatch = !pickerSearch || p.name.toLowerCase().includes(pickerSearch.toLowerCase());
+                                    return typeMatch && searchMatch;
+                                });
+                                if (filtered.length === 0) return (
+                                    <div className="text-center text-sm text-muted-foreground py-10">
+                                        No {picker.type === 'Product' ? 'products' : 'services'} found.{pickerSearch ? ' Try a different search.' : ''}
+                                    </div>
+                                );
+                                return filtered.map(p => (
+                                    <button
+                                        key={p.id}
+                                        type="button"
+                                        onClick={() => {
+                                            const updated = [...newItems];
+                                            updated[picker.newItemIndex] = {
+                                                ...updated[picker.newItemIndex],
+                                                description: p.name,
+                                                unitPrice: p.price ?? 0,
+                                                isTaxable: p.isTaxable ?? false,
+                                            };
+                                            setNewItems(updated);
+                                            setPicker(prev => ({ ...prev, open: false }));
+                                        }}
+                                        className="w-full text-left px-4 py-3 rounded-xl hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all"
+                                    >
+                                        <div className="font-semibold text-foreground text-sm">{p.name}</div>
+                                        <div className="text-xs text-muted-foreground mt-0.5">{p.description || ''}{p.description ? ' — ' : ''}<span className="text-primary font-bold">{'$'}{(p.price ?? 0).toFixed(2)}</span></div>
+                                    </button>
+                                ));
+                            })()}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+};

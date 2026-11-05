@@ -1,4 +1,4 @@
-﻿using MytechERP.domain.Entities.Finance;
+using MytechERP.domain.Entities.Finance;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +11,17 @@ namespace MytechERP.Application.Interfaces
     public interface IInvoiceService
     {
         Task<Invoice> CreateFromQuotationAsync(int quotationId);
-        Task<InvoiceDto> CreateCustomInvoiceAsync(CreateInvoiceDto dto, string tenantId);
         Task<int> GenerateInvoiceFromJobAsync(int workOrderId);
+        Task<(int customerId, decimal laborCost)> GetJobInvoicePreviewAsync(int workOrderId);
+        Task<InvoiceDto> CreateCustomInvoiceAsync(CreateInvoiceDto dto, string tenantId);
         Task<IEnumerable<InvoiceDto>> GetAllAsync(string tenantId);
         Task<InvoiceDto> GetByIdAsync(int id, string tenantId);
-        Task<bool> UpdateStatusAsync(int id, int status, string tenantId);
+        Task<bool> UpdateStatusAsync(int id, int status, string tenantId, string? paymentReference = null, string? paymentMethod = null);
         Task<IEnumerable<InvoiceDto>> GetByCustomerEmailAsync(string email);
+        Task<WeeklyAccountingReportDto> GetWeeklyAccountingReportAsync(string tenantId, DateTime weekStart, DateTime weekEnd);
+        Task SendInvoiceEmailAsync(int id, string tenantId, string recipientEmail);
+        Task<byte[]> ExportWeeklyCompletedZippedPdfsAsync(string tenantId);
+        Task SendWeeklyReportEmailAsync(string tenantId, DateTime weekStart, DateTime weekEnd, string recipientEmail);
     }
 }
+

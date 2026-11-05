@@ -16,11 +16,15 @@ namespace MyTechERP.Infrastructure.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly ITimeTrackingService _timeService; 
+        private readonly IEmailService _emailService;
+        private readonly IPdfService _pdfService;
 
-        public InvoiceService(ApplicationDbContext context , ITimeTrackingService timeTrackingService)
+        public InvoiceService(ApplicationDbContext context, ITimeTrackingService timeTrackingService, IEmailService emailService, IPdfService pdfService)
         {
             _timeService = timeTrackingService;
             _context = context;
+            _emailService = emailService;
+            _pdfService = pdfService;
         }
 
         public async Task<Invoice> CreateFromQuotationAsync(int quotationId)
@@ -58,6 +62,7 @@ namespace MyTechERP.Infrastructure.Services
                     Quantity = item.Quantity,
                     UnitPrice = item.UnitPrice,
                     TotalPrice = item.Quantity * item.UnitPrice,
+
                     TenantId = quote.TenantId
                 });
             }
@@ -81,6 +86,7 @@ namespace MyTechERP.Infrastructure.Services
                 TaxAmount = dto.TaxAmount,
                 TotalAmount = dto.TotalAmount,
                 Status = (InvoiceStatus)dto.Status,
+                TechnicianNotes = dto.TechnicianNotes,
                 TenantId = tId
             };
 
@@ -92,14 +98,56 @@ namespace MyTechERP.Infrastructure.Services
                     Quantity = item.Quantity,
                     UnitPrice = item.UnitPrice,
                     TotalPrice = item.Quantity * item.UnitPrice,
+                    ItemCategory = item.ItemCategory,
                     TenantId = tId
                 });
             }
 
             _context.Invoices.Add(invoice);
+            
+            if (dto.WorkOrderId.HasValue)
+            {
+                var wo = await _context.WorkOrders.FindAsync(dto.WorkOrderId.Value);
+                if (wo != null)
+                {
+                    wo.Status = MytechERP.domain.Enums.WorkOrderStatus.Completed;
+                    wo.CompletedDate = DateTime.UtcNow;
+
+                    // Sync WorkOrderItems with the generated invoice items
+                    var existingWoItems = await _context.Set<MytechERP.domain.Entities.Finance.WorkOrderItem>()
+                        .Where(wi => wi.WorkOrderId == dto.WorkOrderId.Value && wi.TenantId == tId)
+                        .ToListAsync();
+                    
+                    _context.RemoveRange(existingWoItems);
+
+                    foreach(var item in dto.Items)
+                    {
+                        _context.Add(new MytechERP.domain.Entities.Finance.WorkOrderItem
+                        {
+                            WorkOrderId = dto.WorkOrderId.Value,
+                            Description = item.Description,
+                            Quantity = item.Quantity,
+                            UnitPrice = item.UnitPrice,
+                            IsTaxable = item.IsTaxable,
+                            TenantId = tId,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                    }
+                }
+            }
+            
             await _context.SaveChangesAsync();
 
             return await GetByIdAsync(invoice.Id, tenantId);
+        }
+
+        public async Task<(int customerId, decimal laborCost)> GetJobInvoicePreviewAsync(int workOrderId)
+        {
+            var job = await _context.WorkOrders.FindAsync(workOrderId);
+            if (job == null) throw new Exception("Work Order not found.");
+
+            decimal laborCost = await _timeService.CalculateJobLaborCostAsync(workOrderId, 85.00m);
+            return (job.CustomerId, laborCost);
         }
 
         public async Task<int> GenerateInvoiceFromJobAsync(int workOrderId)
@@ -203,6 +251,8 @@ namespace MyTechERP.Infrastructure.Services
                 AmountPaid = i.AmountPaid,
                 Status = (int)i.Status,
                 StatusString = i.Status.ToString(),
+                PaymentReference = i.PaymentReference,
+                PaymentMethod = i.PaymentMethod,
                 Items = i.Items.Select(item => new InvoiceItemDto
                 {
                     Id = item.Id,
@@ -214,20 +264,27 @@ namespace MyTechERP.Infrastructure.Services
             };
         }
 
-        public async Task<bool> UpdateStatusAsync(int id, int status, string tenantId)
+        public async Task<bool> UpdateStatusAsync(int id, int status, string tenantId, string? paymentReference = null, string? paymentMethod = null)
         {
             int tId = int.Parse(tenantId);
             var invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.Id == id && i.TenantId == tId);
             if (invoice == null) return false;
 
             invoice.Status = (InvoiceStatus)status;
+            if (invoice.Status == InvoiceStatus.Paid)
+            {
+                invoice.AmountPaid = invoice.TotalAmount;
+                if (!string.IsNullOrWhiteSpace(paymentReference))
+                    invoice.PaymentReference = paymentReference;
+                if (!string.IsNullOrWhiteSpace(paymentMethod))
+                    invoice.PaymentMethod = paymentMethod;
+            }
             await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<IEnumerable<InvoiceDto>> GetByCustomerEmailAsync(string email)
         {
-            // Find the customer whose email matches the logged-in user
             var customer = await _context.Customers
                 .FirstOrDefaultAsync(c => c.Email.ToLower() == email.ToLower());
 
@@ -256,6 +313,8 @@ namespace MyTechERP.Infrastructure.Services
                 AmountPaid = i.AmountPaid,
                 Status = (int)i.Status,
                 StatusString = i.Status.ToString(),
+                PaymentReference = i.PaymentReference,
+                PaymentMethod = i.PaymentMethod,
                 Items = i.Items.Select(item => new InvoiceItemDto
                 {
                     Id = item.Id,
@@ -266,6 +325,165 @@ namespace MyTechERP.Infrastructure.Services
                 }).ToList()
             });
         }
+    
+        public async Task<WeeklyAccountingReportDto> GetWeeklyAccountingReportAsync(string tenantId, DateTime weekStart, DateTime weekEnd)
+        {
+            var tId = int.Parse(tenantId);
+            
+            var completedWoIds = await _context.WorkOrders
+                .Where(w => w.TenantId == tId && 
+                            w.Status == MytechERP.domain.Enums.WorkOrderStatus.Completed && 
+                            w.CompletedDate.HasValue && 
+                            w.CompletedDate.Value.Date >= weekStart.Date && 
+                            w.CompletedDate.Value.Date <= weekEnd.Date)
+                .Select(w => w.Id)
+                .ToListAsync();
+
+            var paidInvoices = await _context.Invoices
+                .IgnoreQueryFilters()
+                .Include(i => i.Items)
+                .Include(i => i.Customer)
+                .Where(i => i.TenantId == tId && 
+                            i.WorkOrderId != null &&
+                            completedWoIds.Contains(i.WorkOrderId.Value) &&
+                            (i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Paid || 
+                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Draft ||
+                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Issued))
+                .ToListAsync();
+
+            var report = new WeeklyAccountingReportDto
+            {
+                DateFrom = weekStart,
+                DateTo = weekEnd,
+                PaidInvoiceCount = paidInvoices.Count,
+                MaterialsBreakdown = new List<ReportLineItemDto>(),
+                LaborServicesBreakdown = new List<ReportLineItemDto>()
+            };
+
+            foreach (var inv in paidInvoices)
+            {
+                foreach (var item in inv.Items)
+                {
+                    var line = new ReportLineItemDto
+                    {
+                        InvoiceNumber = inv.InvoiceNumber,
+                        CustomerName = inv.Customer?.Name ?? "",
+                        Description = item.Description ?? "",
+                        Quantity = item.Quantity,
+                        UnitPrice = item.UnitPrice,
+                        LineTotal = item.TotalPrice,
+                        InvoiceDate = inv.IssueDate
+                    };
+
+                    if (item.ItemCategory == MytechERP.domain.Enums.ItemCategory.Material)
+                    {
+                        report.MaterialsBreakdown.Add(line);
+                        report.MaterialsSalesTotal += line.LineTotal;
+                    }
+                    else
+                    {
+                        report.LaborServicesBreakdown.Add(line);
+                        report.LaborServicesSalesTotal += line.LineTotal;
+                    }
+                }
+            }
+
+            return report;
+        }
+
+                public async Task SendInvoiceEmailAsync(int id, string tenantId, string recipientEmail)
+        {
+            int tId = int.Parse(tenantId);
+            var invoice = await _context.Invoices.Include(i => i.Customer).FirstOrDefaultAsync(i => i.Id == id && i.TenantId == tId);
+            if (invoice == null) throw new Exception("Invoice not found.");
+
+            string subject = $"Invoice {invoice.InvoiceNumber} from FieldZenPro";
+            string body = $@"
+                <h2>Hello {invoice.Customer?.Name},</h2>
+                <p>Your invoice <strong>{invoice.InvoiceNumber}</strong> has been issued.</p>
+                <p><strong>Total Amount:</strong> ${invoice.TotalAmount:F2}</p>
+                <p><strong>Due Date:</strong> {invoice.DueDate:yyyy-MM-dd}</p>
+                <p>Please find the PDF copy of your invoice attached to this email.</p>
+                <p>Thank you for your business!</p>
+            ";
+
+            var pdfBytes = await _pdfService.GenerateInvoicePdfAsync(id);
+            await _emailService.SendEmailWithAttachmentAsync(recipientEmail, subject, body, pdfBytes, $"Invoice_{invoice.InvoiceNumber}.pdf");
+        }
+
+                        public async Task<byte[]> ExportWeeklyCompletedZippedPdfsAsync(string tenantId)
+        {
+            var startOfWeek = DateTime.UtcNow.Date.AddDays(-(int)DateTime.UtcNow.DayOfWeek);
+            
+            var completedWorkOrderIds = await _context.WorkOrders
+                .Where(w => w.TenantId == int.Parse(tenantId) && w.Status == MytechERP.domain.Enums.WorkOrderStatus.Completed && w.CompletedDate >= startOfWeek)
+                .Select(w => w.Id)
+                .ToListAsync();
+
+            var invoices = await _context.Invoices
+                .Where(i => i.TenantId == int.Parse(tenantId) && 
+                            i.WorkOrderId != null && 
+                            completedWorkOrderIds.Contains(i.WorkOrderId.Value) &&
+                            (i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Paid || 
+                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Draft ||
+                             i.Status == MytechERP.domain.Entities.Finance.InvoiceStatus.Issued))
+                .ToListAsync();
+
+            using var memoryStream = new System.IO.MemoryStream();
+            using (var archive = new System.IO.Compression.ZipArchive(memoryStream, System.IO.Compression.ZipArchiveMode.Create, true))
+            {
+                foreach (var inv in invoices)
+                {
+                    var pdfBytes = await _pdfService.GenerateInvoicePdfAsync(inv.Id);
+                    var entry = archive.CreateEntry($"Invoice_{inv.InvoiceNumber}.pdf");
+                    using var entryStream = entry.Open();
+                    await entryStream.WriteAsync(pdfBytes, 0, pdfBytes.Length);
+                }
+            }
+            memoryStream.Position = 0;
+            return memoryStream.ToArray();
+        }
+
+        public async Task SendWeeklyReportEmailAsync(string tenantId, DateTime weekStart, DateTime weekEnd, string recipientEmail)
+        {
+            var report = await GetWeeklyAccountingReportAsync(tenantId, weekStart, weekEnd);
+
+            var csv = new StringBuilder();
+            csv.AppendLine("Category,Invoice Number,Date,Customer,Description,Quantity,Unit Price,Total");
+            
+            foreach(var m in report.MaterialsBreakdown)
+                csv.AppendLine($"Material,{m.InvoiceNumber},{m.InvoiceDate:yyyy-MM-dd},\"{m.CustomerName.Replace("\"", "\"\"")}\",\"{m.Description.Replace("\"", "\"\"")}\",{m.Quantity},{m.UnitPrice},{m.LineTotal}");
+            
+            foreach(var l in report.LaborServicesBreakdown)
+                csv.AppendLine($"Labor/Service,{l.InvoiceNumber},{l.InvoiceDate:yyyy-MM-dd},\"{l.CustomerName.Replace("\"", "\"\"")}\",\"{l.Description.Replace("\"", "\"\"")}\",{l.Quantity},{l.UnitPrice},{l.LineTotal}");
+            
+            csv.AppendLine($"SUMMARY,,,,,,Total Material,{report.MaterialsSalesTotal}");
+            csv.AppendLine($"SUMMARY,,,,,,Total Labor,{report.LaborServicesSalesTotal}");
+            csv.AppendLine($"SUMMARY,,,,,,TOTAL,{report.GrandTotal}");
+
+            byte[] fileBytes = Encoding.UTF8.GetBytes(csv.ToString());
+
+            string body = $@"
+                <h2>Weekly Accounting Report</h2>
+                <p>Week: {weekStart:MMM dd, yyyy} - {weekEnd:MMM dd, yyyy}</p>
+                <p>Total Material Revenue: {report.MaterialsSalesTotal:C}</p>
+                <p>Total Labor/Service Revenue: {report.LaborServicesSalesTotal:C}</p>
+                <h3>Total Revenue: {report.GrandTotal:C}</h3>
+                <p>Please find the detailed breakdown attached as a CSV.</p>
+            ";
+
+            await _emailService.SendEmailWithAttachmentAsync(
+                recipientEmail, 
+                $"Weekly Accounting Report ({weekStart:MMM dd} - {weekEnd:MMM dd})", 
+                body, 
+                fileBytes, 
+                $"WeeklyReport_{weekStart:yyyyMMdd}.csv"
+            );
+        }
     }
 }
+
+
+
+
 

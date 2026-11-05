@@ -1,0 +1,4 @@
+{
+  "summary": "Fixed IInvoiceService interface with proper structure and new UpdateStatusAsync signature",
+  "updatedAt": "2026-09-01T18:03:34.058889500Z"
+}

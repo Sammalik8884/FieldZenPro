@@ -59,9 +59,12 @@ namespace MyTechERP.Infrastructure.Services
             if (userTenantId == null)
                 throw new UnauthorizedAccessException("Security Error: No Tenant ID found in user token.");
 
+            int finalCustomerId = request.CustomerId;
+            int? finalSiteId = request.SiteId;
+
             if (request.ContractId > 0)
             {
-                var contract = await _contractRepository.GetByIdAsync(request.ContractId);
+                var contract = await _contractRepository.GetByIdAsync(request.ContractId.Value);
                 if (contract == null)
                 {
                     throw new KeyNotFoundException($"Contract with ID {request.ContractId} not found.");
@@ -70,18 +73,22 @@ namespace MyTechERP.Infrastructure.Services
                 {
                     throw new UnauthorizedAccessException("Access Denied: You cannot create Work Orders for a different Tenant's contract.");
                 }
+                finalCustomerId = contract.CustomerId;
+                // Contracts don't have a single SiteId, so we keep request.SiteId or null
             }
 
             var workOrder = new WorkOrder
             {
                 Description = request.Description,
                 ContractId = request.ContractId > 0 ? request.ContractId : null,
+                CustomerId = finalCustomerId,
+                SiteId = finalSiteId,
                 ScheduledDate = request.ScheduledDate,
                 TechnicianId = request.TechnicianId,
-                Status = WorkOrderStatus.Created,
+                Status = !request.ScheduledDate.HasValue ? WorkOrderStatus.Unscheduled : 
+                          (string.IsNullOrEmpty(request.TechnicianId) ? WorkOrderStatus.Created : WorkOrderStatus.Assigned),
                 TenantId = userTenantId.Value,
                 AssetId = request.AssetId > 0 ? request.AssetId : null
-
             };
 
             var createdEntity = await _repository.AddAsync(workOrder);
@@ -116,12 +123,15 @@ namespace MyTechERP.Infrastructure.Services
             if (workOrder == null) return false;
 
             if (!string.IsNullOrEmpty(request.Description)) workOrder.Description = request.Description;
-            if (request.ScheduledDate.HasValue) workOrder.ScheduledDate = request.ScheduledDate.Value;
+            if (request.ClearScheduledDate) workOrder.ScheduledDate = null;
+            else if (request.ScheduledDate.HasValue) workOrder.ScheduledDate = request.ScheduledDate.Value;
+
             if (!string.IsNullOrEmpty(request.TechnicianId)) workOrder.TechnicianId = request.TechnicianId;
             if (!string.IsNullOrEmpty(request.Status) && Enum.TryParse<WorkOrderStatus>(request.Status, true, out var parsedStatus))
                 workOrder.Status = parsedStatus;
             if (!string.IsNullOrEmpty(request.TechnicianNotes)) workOrder.TechnicianNotes = request.TechnicianNotes;
             if (request.AssetId.HasValue && request.AssetId.Value > 0) workOrder.AssetId = request.AssetId.Value;
+            if (request.SequenceOrder.HasValue) workOrder.SequenceOrder = request.SequenceOrder.Value;
 
             await _repository.UpdateAsync(workOrder);
             return true;
@@ -135,6 +145,26 @@ namespace MyTechERP.Infrastructure.Services
             return true;
         }
 
+                private static string GetValidCustomerName(WorkOrder w)
+        {
+            if (w.Customer != null)
+            {
+                if (!string.IsNullOrWhiteSpace(w.Customer.CompanyName)) return w.Customer.CompanyName;
+                if (!string.IsNullOrWhiteSpace(w.Customer.Name)) return w.Customer.Name;
+            }
+            if (w.Contract?.Customer != null)
+            {
+                if (!string.IsNullOrWhiteSpace(w.Contract.Customer.CompanyName)) return w.Contract.Customer.CompanyName;
+                if (!string.IsNullOrWhiteSpace(w.Contract.Customer.Name)) return w.Contract.Customer.Name;
+            }
+            if (w.ReferenceQuotation?.Customer != null)
+            {
+                if (!string.IsNullOrWhiteSpace(w.ReferenceQuotation.Customer.CompanyName)) return w.ReferenceQuotation.Customer.CompanyName;
+                if (!string.IsNullOrWhiteSpace(w.ReferenceQuotation.Customer.Name)) return w.ReferenceQuotation.Customer.Name;
+            }
+            return "Unknown";
+        }
+
         private static WorkOrderDto MapToDto(WorkOrder w)
         {
             return new WorkOrderDto
@@ -144,19 +174,32 @@ namespace MyTechERP.Infrastructure.Services
                 Status = w.Status.ToString(),
                 Result = w.Result.ToString(), 
                 ScheduledDate = w.ScheduledDate,
+                SequenceOrder = w.SequenceOrder,
                 CompletedDate = w.CompletedDate,
                 ContractId = w.ContractId ?? 0,
-                CustomerName = w.Contract?.Customer?.CompanyName
-                               ?? w.ReferenceQuotation?.Customer?.Name
-                               ?? "Unknown",
-                SiteName = w.Contract?.Customer?.SiteName
+                CustomerId = w.CustomerId,
+                CustomerName = GetValidCustomerName(w),
+                SiteName = w.Site?.Name
+                           ?? w.Customer?.SiteName
+                           ?? w.Contract?.Customer?.SiteName
                            ?? w.Asset?.Site?.Name
                            ?? "Unknown",
+                CustomerPhone = w.Customer?.Phone ?? w.Contract?.Customer?.Phone ?? w.ReferenceQuotation?.Customer?.Phone ?? "",
+                CustomerAltPhone = w.Customer?.AltPhone ?? w.Contract?.Customer?.AltPhone ?? w.ReferenceQuotation?.Customer?.AltPhone,
+                CustomerAddress = w.Customer?.Address ?? w.Contract?.Customer?.Address ?? w.ReferenceQuotation?.Customer?.Address ?? "",
                 TechnicianId = w.TechnicianId,
                 TechnicianName = w.Technician?.UserName,
                 TechnicianNotes = w.TechnicianNotes,
                 CheckInTime = w.TimeLogs?.OrderByDescending(t => t.CheckInTime).FirstOrDefault()?.CheckInTime,
-                CheckOutTime = w.TimeLogs?.OrderByDescending(t => t.CheckInTime).FirstOrDefault()?.CheckOutTime
+                CheckOutTime = w.TimeLogs?.OrderByDescending(t => t.CheckInTime).FirstOrDefault()?.CheckOutTime,
+                Evidences = w.Evidences?.Select(e => new MytechERP.Application.DTOs.CRM.JobEvidenceDto
+                {
+                    Id = e.Id,
+                    FileName = e.FileName,
+                    FileUrl = e.FileUrl,
+                    FileType = e.FileType,
+                    Timestamp = e.Timestamp
+                }).ToList() ?? new List<MytechERP.Application.DTOs.CRM.JobEvidenceDto>()
             };
         }
 
@@ -177,33 +220,30 @@ namespace MyTechERP.Infrastructure.Services
                 throw new UnauthorizedAccessException("Access Denied: This Work Order belongs to another Tenant.");
             }
 
-            if (workorder.Asset == null)
-            {
-               
-                throw new Exception("This Work Order is not linked to an Asset, so inspection cannot be initialized.");
-            }
-
             bool alreadyinitialzed = await _context.WorkOrderChecklistResults.AnyAsync(r => r.WorkOrderId == workOrderId);
             if (alreadyinitialzed) return MapToDto(workorder);
 
-            var templateQuestions = await _checklistRepository.GetByCategoryIdAsync(workorder.Asset.CategoryId);
-
-            if (!templateQuestions.Any())
-                throw new Exception($"No checklist questions found for Category: {workorder.Asset.CategoryId}");
-
-            var newResults = templateQuestions.Select(q => new WorkOrderChecklistResult
+            if (workorder.Asset != null)
             {
-                WorkOrderId = workOrderId,
-                ChecklistQuestionId = q.Id,
-                SnapshotText = q.Text,
-                SnapshotJson = q.ConfigJson,
-                QuestionText = q.Text,
-                Value = string.Empty,
-                IsPass = true,
-                TenantId = workorder.TenantId
-            }).ToList();
+                var templateQuestions = await _checklistRepository.GetByCategoryIdAsync(workorder.Asset.CategoryId);
+                
+                if (templateQuestions.Any())
+                {
+                    var newResults = templateQuestions.Select(q => new WorkOrderChecklistResult
+                    {
+                        WorkOrderId = workOrderId,
+                        ChecklistQuestionId = q.Id,
+                        SnapshotText = q.Text,
+                        SnapshotJson = q.ConfigJson,
+                        QuestionText = q.Text,
+                        Value = string.Empty,
+                        IsPass = true,
+                        TenantId = workorder.TenantId
+                    }).ToList();
 
-            _context.WorkOrderChecklistResults.AddRange(newResults);
+                    _context.WorkOrderChecklistResults.AddRange(newResults);
+                }
+            }
 
             _workflowService.ValidateTransition(workorder.Status, WorkOrderStatus.Initialized);
             workorder.Status = WorkOrderStatus.Initialized;
@@ -277,20 +317,51 @@ namespace MyTechERP.Infrastructure.Services
             return true;
         }
 
-        public async Task<bool> CompleteJobAsync(int id, string notes, InspectionResult result)
+         public async Task<bool> MarkWaitingForPartsAsync(int id, string notes)
+         {
+             var technicianId = _currentUserService.UserId;
+             if (string.IsNullOrEmpty(technicianId)) throw new UnauthorizedAccessException("User not authenticated.");
+             var workOrder = await _context.WorkOrders.FindAsync(id);
+             if (workOrder == null) return false;
+
+             _workflowService.ValidateTransition(workOrder.Status, WorkOrderStatus.WaitingForParts);
+
+             workOrder.Status = WorkOrderStatus.WaitingForParts;
+             workOrder.TechnicianNotes = notes;
+             workOrder.ScheduledDate = null;
+
+             var log = new AuditLog
+             {
+                 EntityName = "WorkOrder",
+                 EntityId = id,
+                 Action = "WaitingForParts",
+                 UserId = technicianId,
+                 Details = $"Job marked as Waiting For Parts. Notes: {notes}",
+                 Timestamp = DateTime.UtcNow
+             };
+             _context.AuditLogs.Add(log);
+
+             await _context.SaveChangesAsync();
+             return true;
+         }
+
+         public async Task<bool> CompleteJobAsync(int id, string notes, InspectionResult result)
         {
             var technicianId = _currentUserService.UserId;
             if (string.IsNullOrEmpty(technicianId)) throw new UnauthorizedAccessException("User not authenticated.");
             var workOrder = await _context.WorkOrders.FindAsync(id);
             if (workOrder == null) return false;
 
-            _workflowService.ValidateTransition(workOrder.Status, WorkOrderStatus.PendingApproval);
+            if (workOrder.Status != WorkOrderStatus.Completed)
+            {
+                _workflowService.ValidateTransition(workOrder.Status, WorkOrderStatus.Completed);
+            }
 
             var evidenceCount = await _context.JobEvidences.CountAsync(e => e.WorkOrderId == id);
-            if (evidenceCount == 0)
-                throw new InvalidOperationException("Compliance Block: You must upload at least one evidence photo.");
+            // if (evidenceCount == 0) throw new InvalidOperationException("Compliance Block: You must upload at least one evidence photo.");
 
-            workOrder.Status = WorkOrderStatus.PendingApproval;
+            workOrder.Status = WorkOrderStatus.Completed;
+            workOrder.CompletedDate = DateTime.UtcNow;
             workOrder.TechnicianNotes = notes;
             workOrder.Result = result; 
 
@@ -298,9 +369,9 @@ namespace MyTechERP.Infrastructure.Services
             {
                 EntityName = "WorkOrder",
                 EntityId = id,
-                Action = "SubmittedForReview",
+                Action = "Completed",
                 UserId = technicianId,
-                Details = $"Technician finished. Result: {result}. Evidence: {evidenceCount}",
+                Details = $"Technician finished and completed job. Result: {result}. Evidence: {evidenceCount}",
                 Timestamp = DateTime.UtcNow
             };
             _context.AuditLogs.Add(log);
@@ -308,6 +379,19 @@ namespace MyTechERP.Infrastructure.Services
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> ReopenJobAsync(int id)
+        {
+            var workOrder = await _context.WorkOrders.FindAsync(id);
+            if (workOrder == null) return false;
+
+            if (workOrder.Status != WorkOrderStatus.PendingApproval && workOrder.Status != WorkOrderStatus.Completed)
+                throw new InvalidOperationException("Only completed or pending approval jobs can be reopened.");
+
+            workOrder.Status = WorkOrderStatus.InProgress;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> ApproveJobAsync(int id, bool isApproved)
         {
             var managerId = _currentUserService.UserId;
@@ -513,3 +597,6 @@ namespace MyTechERP.Infrastructure.Services
         }
     }
 }
+
+
+

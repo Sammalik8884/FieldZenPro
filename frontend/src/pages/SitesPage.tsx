@@ -1,3 +1,4 @@
+import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
 import { MapPin, Plus, Edit, Trash2, Loader2, Search } from "lucide-react";
 import { siteService } from "../services/siteService";
@@ -116,7 +117,7 @@ export const SitesPage = () => {
  });
  };
 
- return (
+ return (<>
  <div className="p-8 animate-in fade-in duration-500">
  <div className="flex justify-between items-center mb-8">
  <div>
@@ -212,9 +213,12 @@ export const SitesPage = () => {
  </div>
  </div>
 
- {/* Modal */}
+
+</div>
+ {/* Modal */} 
  {isModalOpen && (
- <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
+ <ModalPortal>
+ <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
  <div className="bg-secondary border border-border rounded-2xl w-full max-w-md shadow-md overflow-hidden relative">
  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
 
@@ -289,6 +293,7 @@ export const SitesPage = () => {
  </div>
  </div>
  </div>
+ </ModalPortal>
  )}
 
  <ConfirmModal
@@ -300,6 +305,6 @@ export const SitesPage = () => {
  onConfirm={confirmModal.onConfirm}
  onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
  />
- </div>
- );
-};
+ </> ); };
+
+

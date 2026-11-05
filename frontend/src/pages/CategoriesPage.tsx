@@ -1,3 +1,4 @@
+import { ModalPortal } from "../components/common/ModalPortal";
 import { useState, useEffect } from "react";
 import { FolderTree, Plus, Edit, Trash2, Loader2, Search } from "lucide-react";
 import { categoryService } from "../services/categoryService";
@@ -18,7 +19,8 @@ export const CategoriesPage = () => {
  const [editingCategory, setEditingCategory] = useState<CategoryDto | null>(null);
  const [formData, setFormData] = useState<CreateCategoryDto>({
  name: "",
- description: ""
+ description: "",
+ categoryType: "Material"
  });
 
  const fetchCategories = async () => {
@@ -47,11 +49,12 @@ export const CategoriesPage = () => {
  setEditingCategory(category);
  setFormData({
  name: category.name,
- description: category.description || ""
+ description: category.description || "",
+ categoryType: category.categoryType || "Material"
  });
  } else {
  setEditingCategory(null);
- setFormData({ name: "", description: "" });
+ setFormData({ name: "", description: "", categoryType: "Material" });
  }
  setIsModalOpen(true);
  };
@@ -154,6 +157,11 @@ export const CategoriesPage = () => {
  <FolderTree className="h-4 w-4 text-primary/70" />
  <span>{category.name}</span>
  </td>
+ <td className="px-6 py-4">
+ <span className={"text-xs font-semibold px-2 py-0.5 rounded-full ${category.categoryType === 'Service' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'}"}>
+ {category.categoryType === 'Service' ? 'Service' : 'Material'}
+ </span>
+ </td>
  <td className="px-6 py-4 text-muted-foreground">
  {category.description || "-"}
  </td>
@@ -185,7 +193,8 @@ export const CategoriesPage = () => {
 
  {/* Modal */}
  {isModalOpen && (
- <div className="fixed top-16 inset-x-0 bottom-0 z-30 flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
+ <ModalPortal>
+ <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-background/80 animate-in fade-in">
  <div className="bg-secondary border border-border rounded-2xl w-full max-w-md shadow-md overflow-hidden relative">
  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-accent" />
 
@@ -215,6 +224,15 @@ export const CategoriesPage = () => {
  />
  </div>
 
+ <div>
+ <label className="text-xs font-semibold text-muted-foreground mb-1 block">Category Type *</label>
+ <select value={formData.categoryType} onChange={e => setFormData({ ...formData, categoryType: e.target.value })} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary">
+ <option value="Material">Material (Parts / Products)</option>
+ <option value="Service">Service (Labor / Services)</option>
+ </select>
+ <p className="text-[11px] text-muted-foreground mt-1">Items in a Material category appear in the Parts picker. Items in a Service category appear in the Services picker.</p>
+ </div>
+
  <div className="flex justify-end space-x-3 pt-4 mt-6 border-t border-border">
  <button
  type="button"
@@ -236,6 +254,7 @@ export const CategoriesPage = () => {
  </div>
  </div>
  </div>
+ </ModalPortal>
  )}
 
  <ConfirmModal
@@ -249,3 +268,5 @@ export const CategoriesPage = () => {
  </div>
  );
 };
+
+
