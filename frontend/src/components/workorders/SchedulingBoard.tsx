@@ -549,7 +549,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                 .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
                             const todayDay = isSameDay(day, getNYDate());
                             return (
-                                <div key={day.toISOString()} className={`flex-1 min-w-[200px] flex flex-col ${todayDay ? 'bg-primary/5' : ''} ${dragOverDate === dateStr ? 'ring-2 ring-primary ring-inset bg-primary/10' : ''}`} onDragOver={(e) => { e.preventDefault(); setDragOverDate(dateStr); }} onDragLeave={() => setDragOverDate(null)} onDrop={async () => { setDragOverDate(null); if (dragJobId !== null) { await handleAssignToDate(dragJobId, dateStr); setDragJobId(null); } }}>
+                                <div key={day.toISOString()} className={`flex-1 min-w-[120px] flex flex-col ${todayDay ? 'bg-primary/5' : ''} ${dragOverDate === dateStr ? 'ring-2 ring-primary ring-inset bg-primary/10' : ''}`} onDragOver={(e) => { e.preventDefault(); setDragOverDate(dateStr); }} onDragLeave={() => setDragOverDate(null)} onDrop={async () => { setDragOverDate(null); if (dragJobId !== null) { await handleAssignToDate(dragJobId, dateStr); setDragJobId(null); } }}>
                                     <div className={`p-2 text-center border-b border-border ${todayDay ? 'bg-primary/10 text-primary font-bold' : 'bg-muted text-muted-foreground font-medium'}`}>
                                         <div className="text-xs uppercase">{format(day, 'EEE')}</div>
                                         <div className="text-lg">{format(day, 'd')}</div>

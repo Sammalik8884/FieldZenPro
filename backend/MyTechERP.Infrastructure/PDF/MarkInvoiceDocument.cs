@@ -256,7 +256,7 @@ namespace MyTechERP.Infrastructure.PDF
                 );
 
                 col.Item().PaddingTop(15).Background(LightBrandColor).BorderLeft(3).BorderColor(BrandColor).Padding(10).Column(c => {
-                    c.Item().Text("Please remit payment by check to:").Bold().FontSize(10).FontColor(BrandColor);
+                    c.Item().Text("Mailing Address:").Bold().FontSize(10).FontColor(BrandColor);
                     c.Item().Text("Acumen Mobile Equipment Service").Bold().FontSize(9);
                     c.Item().Text("1958 Washington Ave").FontSize(9);
                     c.Item().Text("Portland, ME 04103").FontSize(9);

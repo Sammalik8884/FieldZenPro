@@ -311,7 +311,6 @@ export const CustomersPage = () => {
          { label: "Phone", field: "phone", type: "tel", required: false },
          { label: "Alt Phone", field: "altPhone", type: "tel", required: false },
          { label: "Address", field: "address", type: "text", required: false },
-         { label: "Tax Number", field: "taxNumber", type: "text", required: false },
         ].map(({ label, field, type, required }) => (
          <div key={field}>
           <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">{label}</label>
@@ -340,7 +339,6 @@ export const CustomersPage = () => {
          { label: "Phone", field: "phone", type: "tel", required: false },
          { label: "Alt Phone", field: "altPhone", type: "tel", required: false },
          { label: "Address", field: "address", type: "text", required: false },
-         { label: "Tax Number", field: "taxNumber", type: "text", required: false },
         ].map(({ label, field, type, required }) => (
          <div key={field}>
           <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">{label}</label>

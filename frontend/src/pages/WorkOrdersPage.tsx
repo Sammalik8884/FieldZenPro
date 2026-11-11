@@ -79,6 +79,11 @@ export const WorkOrdersPage = () => {
  const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
  const [showTechDropdown, setShowTechDropdown] = useState(false);
 
+ // Quick-create customer sub-modal (inside Create WO modal)
+ const [showQuickCreateCustomer, setShowQuickCreateCustomer] = useState(false);
+ const [quickCustomerForm, setQuickCustomerForm] = useState({ name: '', email: '', phone: '', altPhone: '', address: '' });
+ const [quickCustomerLoading, setQuickCustomerLoading] = useState(false);
+
  // Delete modal state
  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
  const [jobToDelete, setJobToDelete] = useState<WorkOrderDto | null>(null);
@@ -181,7 +186,7 @@ export const WorkOrdersPage = () => {
    toast.success("Work Order created successfully!");
    setIsCreateModalOpen(false);
    setCreateForm({ description: "", customerId: 0, contractId: 0, scheduledDate: "", technicianId: null, assetId: undefined });
-   setCreateCustomerSearch(""); setCreateTechSearch("");
+   setCreateCustomerSearch(""); setCreateTechSearch(""); setShowQuickCreateCustomer(false);
    fetchData();
   } catch (error: any) {
    toast.error(extractApiError(error, "Failed to create work order."));
@@ -192,6 +197,27 @@ export const WorkOrdersPage = () => {
   setEditingJob(wo);
   setFormData({ id: wo.id, description: wo.description, status: wo.status, scheduledDate: wo.scheduledDate ? wo.scheduledDate.split('T')[0] : "", technicianId: wo.technicianId || "", assetId: (wo as any).assetId || null });
   setIsEditModalOpen(true);
+ };
+
+ const handleQuickCreateCustomer = async () => {
+  if (!quickCustomerForm.name.trim()) { toast.error("Customer name is required."); return; }
+  try {
+   setQuickCustomerLoading(true);
+   const result = await customerService.create({ ...quickCustomerForm, taxNumber: '' });
+   // Refresh customer list and auto-select
+   const updated = await customerService.getAll();
+   setCustomers(updated);
+   const created = updated.find(c => c.id === result.id) || { id: result.id, name: quickCustomerForm.name, companyName: quickCustomerForm.name } as any;
+   setCreateForm(prev => ({ ...prev, customerId: result.id }));
+   setCreateCustomerSearch(created.companyName || created.name || quickCustomerForm.name);
+   setShowQuickCreateCustomer(false);
+   setQuickCustomerForm({ name: '', email: '', phone: '', altPhone: '', address: '' });
+   toast.success(`Customer "${quickCustomerForm.name}" created and selected!`);
+  } catch (err: any) {
+   toast.error(extractApiError(err, "Failed to create customer."));
+  } finally {
+   setQuickCustomerLoading(false);
+  }
  };
 
  const handleSaveEdit = async (e: React.FormEvent) => {
@@ -282,7 +308,7 @@ export const WorkOrdersPage = () => {
 
     {/* Content */}
     {viewMode === 'board' ? (
-     <div className="p-4 bg-background">
+     <div className="p-1 bg-background">
       <SchedulingBoard
        workOrders={workOrders}
        technicians={technicians.map((t: any) => ({ id: t.id, fullName: t.fullName }))}
@@ -463,7 +489,11 @@ export const WorkOrdersPage = () => {
         </div>
         <div>
          <label className="text-xs font-semibold text-muted-foreground mb-1 block">Assign Technician</label>
-         <select value={formData.technicianId || ""} onChange={e => setFormData({ ...formData, technicianId: e.target.value })} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px] text-base">
+         <select value={formData.technicianId || ""} onChange={e => {
+           const newTechId = e.target.value;
+           const autoAssign = newTechId && (formData.status === 'Created' || formData.status === 'Unscheduled');
+           setFormData({ ...formData, technicianId: newTechId, ...(autoAssign ? { status: 'Assigned' } : {}) });
+         }} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px] text-base">
           <option value="">-- Unassigned --</option>
           {technicians.map(t => (<option key={t.id} value={t.id}>{t.fullName}</option>))}
           {technicians.length === 0 && <option value="" disabled>No technicians found.</option>}
@@ -491,7 +521,7 @@ export const WorkOrdersPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 md:px-6 md:pt-6 md:pb-4 border-b border-border md:border-none bg-card shrink-0 shadow-sm md:shadow-none">
        {/* Mobile Cancel */}
-       <button type="button" onClick={() => { setIsCreateModalOpen(false); setCreateCustomerSearch(""); setCreateTechSearch(""); }} className="md:hidden text-sm font-medium text-muted-foreground p-2 -ml-2">Cancel</button>
+       <button type="button" onClick={() => { setIsCreateModalOpen(false); setCreateCustomerSearch(""); setCreateTechSearch(""); setShowQuickCreateCustomer(false); }} className="md:hidden text-sm font-medium text-muted-foreground p-2 -ml-2">Cancel</button>
        
        <h2 className="font-bold text-base md:text-xl flex items-center gap-2 text-foreground truncate px-2">
         <PlusCircle className="hidden md:block h-5 w-5 text-primary shrink-0" />
@@ -505,7 +535,7 @@ export const WorkOrdersPage = () => {
        </button>
        
        {/* Desktop Close */}
-       <button onClick={() => { setIsCreateModalOpen(false); setCreateCustomerSearch(""); setCreateTechSearch(""); }} className="hidden md:block p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors">
+       <button onClick={() => { setIsCreateModalOpen(false); setCreateCustomerSearch(""); setCreateTechSearch(""); setShowQuickCreateCustomer(false); }} className="hidden md:block p-2 hover:bg-muted rounded-xl text-muted-foreground transition-colors">
         <X className="h-5 w-5" />
        </button>
       </div>
@@ -514,22 +544,42 @@ export const WorkOrdersPage = () => {
       <div className="flex-1 overflow-y-auto p-5 md:p-6 space-y-4 md:space-y-5 pb-20 md:pb-6">
        {/* Customer search */}
        <div>
-        <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Customer *</label>
-        <div className="relative">
-         <input type="text" required placeholder="Search customer..." value={createCustomerSearch}
-          onChange={e => { setCreateCustomerSearch(e.target.value); setShowCustomerDropdown(true); if (!e.target.value) setCreateForm({ ...createForm, customerId: 0 }); }}
-          onFocus={() => setShowCustomerDropdown(true)} onBlur={() => setTimeout(() => setShowCustomerDropdown(false), 150)}
-          className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
-         {showCustomerDropdown && (
-          <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-xl shadow-lg max-h-48 overflow-y-auto">
-           {customers.filter(c => (c.companyName || c.name).toLowerCase().includes(createCustomerSearch.toLowerCase())).length === 0
-            ? <div className="px-3 py-2 text-sm text-muted-foreground">No customers found</div>
-            : customers.filter(c => (c.companyName || c.name).toLowerCase().includes(createCustomerSearch.toLowerCase())).map(c => (
-             <button key={c.id} type="button" onMouseDown={() => { setCreateForm({ ...createForm, customerId: c.id }); setCreateCustomerSearch(c.companyName || c.name); setShowCustomerDropdown(false); }} className="w-full text-left px-3 py-3 text-sm hover:bg-muted transition-colors">{c.companyName || c.name}</button>
-            ))}
-          </div>
-         )}
+        <div className="flex items-center justify-between mb-1.5">
+         <label className="text-xs font-semibold text-muted-foreground">Customer *</label>
+         <button type="button" onClick={() => { setShowQuickCreateCustomer(v => !v); setQuickCustomerForm({ name: createCustomerSearch, email: '', phone: '', altPhone: '', address: '' }); }} className="text-xs font-semibold text-primary flex items-center gap-1 hover:text-primary/80 transition-colors">
+          {showQuickCreateCustomer ? '✕ Cancel' : '＋ New Customer'}
+         </button>
         </div>
+        {showQuickCreateCustomer ? (
+         <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-3">
+          <p className="text-xs font-semibold text-muted-foreground">Quick Add Customer</p>
+          <input type="text" placeholder="Full Name *" value={quickCustomerForm.name} onChange={e => setQuickCustomerForm(f => ({ ...f, name: e.target.value }))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+          <input type="email" placeholder="Email" value={quickCustomerForm.email} onChange={e => setQuickCustomerForm(f => ({ ...f, email: e.target.value }))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+          <input type="tel" placeholder="Phone" value={quickCustomerForm.phone} onChange={e => setQuickCustomerForm(f => ({ ...f, phone: e.target.value }))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+          <input type="tel" placeholder="Alt Phone" value={quickCustomerForm.altPhone} onChange={e => setQuickCustomerForm(f => ({ ...f, altPhone: e.target.value }))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+          <input type="text" placeholder="Address" value={quickCustomerForm.address} onChange={e => setQuickCustomerForm(f => ({ ...f, address: e.target.value }))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+          <button type="button" onClick={handleQuickCreateCustomer} disabled={quickCustomerLoading || !quickCustomerForm.name.trim()} className="w-full px-4 py-3 text-sm font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2 min-h-[48px]">
+           {quickCustomerLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+           {quickCustomerLoading ? 'Creating...' : 'Create & Select Customer'}
+          </button>
+         </div>
+        ) : (
+         <div className="relative">
+          <input type="text" required placeholder="Search customer..." value={createCustomerSearch}
+           onChange={e => { setCreateCustomerSearch(e.target.value); setShowCustomerDropdown(true); if (!e.target.value) setCreateForm({ ...createForm, customerId: 0 }); }}
+           onFocus={() => setShowCustomerDropdown(true)} onBlur={() => setTimeout(() => setShowCustomerDropdown(false), 150)}
+           className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+          {showCustomerDropdown && (
+           <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-xl shadow-lg max-h-48 overflow-y-auto">
+            {customers.filter(c => (c.companyName || c.name).toLowerCase().includes(createCustomerSearch.toLowerCase())).length === 0
+             ? <div className="px-3 py-2 text-sm text-muted-foreground">No customers found — use "＋ New Customer" above</div>
+             : customers.filter(c => (c.companyName || c.name).toLowerCase().includes(createCustomerSearch.toLowerCase())).map(c => (
+              <button key={c.id} type="button" onMouseDown={() => { setCreateForm({ ...createForm, customerId: c.id }); setCreateCustomerSearch(c.companyName || c.name); setShowCustomerDropdown(false); }} className="w-full text-left px-3 py-3 text-sm hover:bg-muted transition-colors">{c.companyName || c.name}</button>
+             ))}
+           </div>
+          )}
+         </div>
+        )}
         {createForm.customerId > 0 && <p className="text-xs text-green-600 mt-1 font-medium">✓ Customer selected</p>}
        </div>
 
@@ -567,7 +617,7 @@ export const WorkOrdersPage = () => {
 
        {/* Desktop Save/Cancel (hidden on mobile) */}
        <div className="hidden md:flex gap-3 pt-4 border-t border-border mt-6">
-        <button type="button" onClick={() => { setIsCreateModalOpen(false); setCreateCustomerSearch(""); setCreateTechSearch(""); }} className="flex-1 px-4 py-3 text-sm font-medium border border-border hover:bg-muted rounded-xl transition-colors min-h-[48px] text-muted-foreground">Cancel</button>
+        <button type="button" onClick={() => { setIsCreateModalOpen(false); setCreateCustomerSearch(""); setCreateTechSearch(""); setShowQuickCreateCustomer(false); }} className="flex-1 px-4 py-3 text-sm font-medium border border-border hover:bg-muted rounded-xl transition-colors min-h-[48px] text-muted-foreground">Cancel</button>
         <button type="button" onClick={handleCreateSubmit as any} disabled={processingId === -10 || !createForm.customerId} className="flex-1 px-4 py-3 text-sm font-semibold bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 min-h-[48px]">
          {processingId === -10 ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
          Create Work Order
