@@ -35,6 +35,7 @@ namespace MyTechERP.Infrastructure.Services
         }
         public void ValidateTransition(WorkOrderStatus current, WorkOrderStatus target)
         {
+            if (current == target) return; // Same status = no-op, always allowed
             if (!CanTransition(current, target))
             {
                 throw new InvalidOperationException($"Illegal State Transition: Cannot move from '{current}' to '{target}'.");

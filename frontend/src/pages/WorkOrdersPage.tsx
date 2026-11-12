@@ -316,7 +316,7 @@ export const WorkOrdersPage = () => {
        workOrders={workOrders}
        technicians={technicians.map((t: any) => ({ id: t.id, fullName: t.fullName }))}
        onUpdateJob={async (id, updates) => {
-         const { technicianId, ...rest } = updates as any;
+         const { technicianId, status: _statusStripped, ...rest } = updates as any;
          if (technicianId === null || technicianId === '') {
            await workOrderService.unassignTechnician(id);
            if (Object.keys(rest).length > 0) await workOrderService.update(id, rest as any);
