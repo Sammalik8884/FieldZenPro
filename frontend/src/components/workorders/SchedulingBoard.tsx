@@ -31,6 +31,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, te
     const [expandedNotes, setExpandedNotes] = useState<number[]>([]);
     const [selectedDay, setSelectedDay] = useState<Date>(getNYDate());
     const [queueOpen, setQueueOpen] = useState(true);
+    const [showWeekends, setShowWeekends] = useState(false);
     // Tracks the job ID most recently returned to the queue — always sorts to absolute top
     const [priorityJobId, setPriorityJobId] = useState<number | null>(null);
     // Drag-and-drop state
@@ -81,6 +82,7 @@ export const SchedulingBoard: React.FC<SchedulingBoardProps> = ({ workOrders, te
     const currentWeek = () => { const t = startOfWeek(getNYDate(), { weekStartsOn: 1 }); setCurrentWeekStart(t); setSelectedDay(getNYDate()); };
 
     const weekDays = Array.from({ length: 7 }).map((_, i) => addDays(currentWeekStart, i));
+    const visibleDays = showWeekends ? weekDays : weekDays.slice(0, 5); // Mon–Fri only by default
 
     const handlePrintSchedule = () => {
         const pw = window.open('', '_blank');
@@ -450,7 +452,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
             {/* ── DESKTOP LAYOUT (hidden on mobile, shown lg+) ── */}
             <div className="hidden lg:flex gap-6 h-[75vh]">
                 {/* Unscheduled Queue */}
-                <div className={`w-1/4 bg-muted/30 border border-border rounded-xl flex flex-col h-full overflow-hidden ${dragJobId !== null ? "ring-2 ring-destructive/50 ring-inset" : ""}`} onDragOver={(e) => e.preventDefault()} onDrop={async () => { if (dragJobId !== null) { await handleUnschedule(dragJobId); setDragJobId(null); } }}>
+                <div className={`w-56 shrink-0 bg-muted/30 border border-border rounded-xl flex flex-col h-full overflow-hidden ${dragJobId !== null ? "ring-2 ring-destructive/50 ring-inset" : ""}`} onDragOver={(e) => e.preventDefault()} onDrop={async () => { if (dragJobId !== null) { await handleUnschedule(dragJobId); setDragJobId(null); } }}>
                     <div className="p-4 border-b border-border bg-card">
                         <h3 className="font-semibold text-foreground flex items-center gap-2">
                             Unscheduled Queue
@@ -523,7 +525,7 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                 </div>
 
                 {/* Weekly Schedule */}
-                <div className="w-3/4 flex flex-col h-full bg-card border border-border rounded-xl overflow-hidden">
+                <div className="flex-1 min-w-0 flex flex-col h-full bg-card border border-border rounded-xl overflow-hidden">
                     <div className="p-4 border-b border-border flex justify-between items-center bg-muted/20">
                         <div className="flex items-center gap-2">
                             <Calendar className="h-5 w-5 text-primary" />
@@ -537,19 +539,22 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                 <button onClick={prevWeek} className="p-1.5 hover:bg-muted rounded border border-transparent hover:border-border"><ChevronLeft className="h-4 w-4" /></button>
                                 <button onClick={currentWeek} className="px-3 py-1 text-xs hover:bg-muted rounded border border-transparent hover:border-border font-medium">Today</button>
                                 <button onClick={nextWeek} className="p-1.5 hover:bg-muted rounded border border-transparent hover:border-border"><ChevronRight className="h-4 w-4" /></button>
+                                <button onClick={() => setShowWeekends(v => !v)} className={`px-2.5 py-1 text-xs rounded border font-medium transition-colors ml-1 ${showWeekends ? 'bg-primary text-primary-foreground border-primary' : 'hover:bg-muted border-border text-muted-foreground'}`} title="Toggle Saturday & Sunday">
+                                    {showWeekends ? 'Mon–Sun' : 'Mon–Fri'}
+                                </button>
                                 <button onClick={handlePrintSchedule} title="Print Schedule" className="p-1.5 hover:bg-primary/10 rounded border border-transparent hover:border-primary/30 text-primary ml-1"><Printer className="h-4 w-4" /></button>
                             </div>
                         </div>
                     </div>
                     <div className="flex flex-1 overflow-x-auto divide-x divide-border">
-                        {weekDays.map(day => {
+                        {visibleDays.map(day => {
                             const dateStr = format(day, 'yyyy-MM-dd');
                             const dayJobs = workOrders
                                 .filter(w => w.scheduledDate && w.scheduledDate.substring(0, 10) === dateStr && w.status !== 'WaitingForParts' && w.status !== 'PendingQuote')
                                 .sort((a, b) => (a.sequenceOrder || 0) - (b.sequenceOrder || 0));
                             const todayDay = isSameDay(day, getNYDate());
                             return (
-                                <div key={day.toISOString()} className={`flex-1 min-w-[120px] flex flex-col ${todayDay ? 'bg-primary/5' : ''} ${dragOverDate === dateStr ? 'ring-2 ring-primary ring-inset bg-primary/10' : ''}`} onDragOver={(e) => { e.preventDefault(); setDragOverDate(dateStr); }} onDragLeave={() => setDragOverDate(null)} onDrop={async () => { setDragOverDate(null); if (dragJobId !== null) { await handleAssignToDate(dragJobId, dateStr); setDragJobId(null); } }}>
+                                <div key={day.toISOString()} className={`flex-1 min-w-[150px] flex flex-col ${todayDay ? 'bg-primary/5' : ''} ${dragOverDate === dateStr ? 'ring-2 ring-primary ring-inset bg-primary/10' : ''}`} onDragOver={(e) => { e.preventDefault(); setDragOverDate(dateStr); }} onDragLeave={() => setDragOverDate(null)} onDrop={async () => { setDragOverDate(null); if (dragJobId !== null) { await handleAssignToDate(dragJobId, dateStr); setDragJobId(null); } }}>
                                     <div className={`p-2 text-center border-b border-border ${todayDay ? 'bg-primary/10 text-primary font-bold' : 'bg-muted text-muted-foreground font-medium'}`}>
                                         <div className="text-xs uppercase">{format(day, 'EEE')}</div>
                                         <div className="text-lg">{format(day, 'd')}</div>

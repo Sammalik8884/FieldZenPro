@@ -308,7 +308,7 @@ export const WorkOrdersPage = () => {
 
     {/* Content */}
     {viewMode === 'board' ? (
-     <div className="p-1 bg-background">
+     <div className="p-2 bg-background">
       <SchedulingBoard
        workOrders={workOrders}
        technicians={technicians.map((t: any) => ({ id: t.id, fullName: t.fullName }))}
