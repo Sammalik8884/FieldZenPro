@@ -595,11 +595,6 @@ namespace MyTechERP.Infrastructure.Services
 
             return true;
         }
-    }
-}
-
-
-
 
         public async Task<bool> UnassignTechnicianAsync(int workOrderId)
         {
@@ -635,3 +630,5 @@ namespace MyTechERP.Infrastructure.Services
             await _context.SaveChangesAsync();
             return true;
         }
+    }
+}
