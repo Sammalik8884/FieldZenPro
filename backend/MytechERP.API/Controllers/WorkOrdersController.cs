@@ -314,6 +314,21 @@ namespace MytechERP.API.Controllers
             }
         }
 
+        [HttpDelete("{id}/unassign")]
+        [Authorize(Roles = "Admin,Manager,Engineer")]
+        public async Task<IActionResult> UnassignTechnician(int id)
+        {
+            try
+            {
+                var success = await _service.UnassignTechnicianAsync(id);
+                if (!success) return NotFound();
+                return Ok(new { Message = "Technician unassigned successfully." });
+            }
+            catch (KeyNotFoundException ex) { return NotFound(new { Message = ex.Message }); }
+            catch (UnauthorizedAccessException ex) { return Unauthorized(new { Message = ex.Message }); }
+            catch (Exception ex) { return StatusCode(500, new { Message = "An unexpected error occurred: " + ex.Message }); }
+        }
+
         // ─── Job Line Items (Parts & Services) ─────────────────────────────────
         [Authorize(Roles = Roles.Admin + "," + Roles.Manager + "," + Roles.Engineer + "," + Roles.Technician)]
         [HttpGet("{id}/items")]

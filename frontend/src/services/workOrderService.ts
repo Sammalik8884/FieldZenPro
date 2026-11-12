@@ -53,6 +53,11 @@ export const workOrderService = {
         return response.data;
     },
 
+    unassignTechnician: async (id: number): Promise<any> => {
+        const response = await apiClient.delete<any>(`/WorkOrders/${id}/unassign`);
+        return response.data;
+    },
+
     initialize: async (id: number): Promise<any> => {
         const response = await apiClient.post<any>(`/WorkOrders/${id}/initialize`);
         return response.data;

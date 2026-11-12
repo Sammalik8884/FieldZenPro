@@ -600,3 +600,38 @@ namespace MyTechERP.Infrastructure.Services
 
 
 
+
+        public async Task<bool> UnassignTechnicianAsync(int workOrderId)
+        {
+            var userTenantId = _currentUserService.TenantId;
+            if (userTenantId == null)
+                throw new UnauthorizedAccessException("Security Error: No Tenant ID found in user token.");
+
+            var workOrder = await _context.WorkOrders.FirstOrDefaultAsync(w => w.Id == workOrderId);
+            if (workOrder == null)
+                throw new KeyNotFoundException($"WorkOrder with ID {workOrderId} not found.");
+
+            if (workOrder.TenantId != userTenantId)
+                throw new UnauthorizedAccessException("Access Denied: Work Order belongs to another Tenant.");
+
+            workOrder.TechnicianId = null;
+
+            if (workOrder.Status == WorkOrderStatus.Assigned)
+            {
+                workOrder.Status = WorkOrderStatus.Unscheduled;
+            }
+
+            var log = new AuditLog
+            {
+                EntityName = "WorkOrder",
+                EntityId = workOrderId,
+                Action = "Technician Unassigned",
+                UserId = _currentUserService.UserId,
+                Details = "Technician removed from Work Order.",
+                Timestamp = DateTime.UtcNow
+            };
+            _context.AuditLogs.Add(log);
+
+            await _context.SaveChangesAsync();
+            return true;
+        }

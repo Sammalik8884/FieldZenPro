@@ -26,5 +26,6 @@ namespace MytechERP.Application.Interfaces
         Task<int> CreateWorkOrderFromQuoteAsync(CreateRepairJobDto dto);
         Task<object> AddEvidenceAsync(int workOrderId, System.IO.Stream fileStream, string fileName, string contentType, double? latitude, double? longitude);
         Task<bool> AssignTechnicianAsync(int workOrderId, AssignTechnicianDto dto);
+        Task<bool> UnassignTechnicianAsync(int workOrderId);
     }
 }

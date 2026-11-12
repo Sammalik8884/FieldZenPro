@@ -224,8 +224,11 @@ export const WorkOrdersPage = () => {
   e.preventDefault();
   try {
    if (formData.technicianId !== undefined && formData.technicianId !== editingJob?.technicianId) {
-    if (formData.technicianId === "") { formData.technicianId = null; }
-    else { await workOrderService.assignTechnician(formData.id, formData.technicianId as string); }
+    if (formData.technicianId === "" || formData.technicianId === null) {
+     await workOrderService.unassignTechnician(formData.id);
+    } else {
+     await workOrderService.assignTechnician(formData.id, formData.technicianId as string);
+    }
    }
    const updatePayload: any = {
     id: formData.id,
@@ -312,7 +315,19 @@ export const WorkOrdersPage = () => {
       <SchedulingBoard
        workOrders={workOrders}
        technicians={technicians.map((t: any) => ({ id: t.id, fullName: t.fullName }))}
-       onUpdateJob={async (id, updates) => { await workOrderService.update(id, updates as any); fetchData(); }}
+       onUpdateJob={async (id, updates) => {
+         const { technicianId, ...rest } = updates as any;
+         if (technicianId === null || technicianId === '') {
+           await workOrderService.unassignTechnician(id);
+           if (Object.keys(rest).length > 0) await workOrderService.update(id, rest as any);
+         } else if (technicianId) {
+           await workOrderService.assignTechnician(id, technicianId);
+           if (Object.keys(rest).length > 0) await workOrderService.update(id, rest as any);
+         } else {
+           await workOrderService.update(id, updates as any);
+         }
+         fetchData();
+       }}
        onEditJob={(job) => { handleOpenEdit(job); }}
       />
      </div>
