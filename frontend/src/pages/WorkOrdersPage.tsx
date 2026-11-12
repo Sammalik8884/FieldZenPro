@@ -492,7 +492,13 @@ export const WorkOrdersPage = () => {
          <select value={formData.technicianId || ""} onChange={e => {
            const newTechId = e.target.value;
            const autoAssign = newTechId && (formData.status === 'Created' || formData.status === 'Unscheduled');
-           setFormData({ ...formData, technicianId: newTechId, ...(autoAssign ? { status: 'Assigned' } : {}) });
+           const autoUnassign = !newTechId && formData.status === 'Assigned';
+           setFormData({
+             ...formData,
+             technicianId: newTechId,
+             ...(autoAssign ? { status: 'Assigned' } : {}),
+             ...(autoUnassign ? { status: 'Unscheduled' } : {}),
+           });
          }} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px] text-base">
           <option value="">-- Unassigned --</option>
           {technicians.map(t => (<option key={t.id} value={t.id}>{t.fullName}</option>))}
