@@ -493,8 +493,15 @@ ${dayBlocks || '<p style="color:#888">No scheduled stops for this week.</p>'}
                                             value={job.technicianId || ''}
                                             className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary disabled:opacity-50"
                                             onChange={async (e) => {
-                                                await onUpdateJob(job.id, { technicianId: e.target.value || null });
-                                                toast.success('Technician assigned.');
+                                                const newTechId = e.target.value || null;
+                                                const autoAssign = newTechId && (job.status === 'Created' || job.status === 'Unscheduled');
+                                                const autoUnassign = !newTechId && job.status === 'Assigned';
+                                                await onUpdateJob(job.id, {
+                                                    technicianId: newTechId,
+                                                    ...(autoAssign ? { status: 'Assigned' } : {}),
+                                                    ...(autoUnassign ? { status: 'Unscheduled' } : {}),
+                                                });
+                                                toast.success(newTechId ? 'Technician assigned.' : 'Technician removed.');
                                             }}
                                         >
                                             <option value="">— Unassigned —</option>
