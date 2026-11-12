@@ -491,13 +491,15 @@ export const WorkOrdersPage = () => {
          <label className="text-xs font-semibold text-muted-foreground mb-1 block">Assign Technician</label>
          <select value={formData.technicianId || ""} onChange={e => {
            const newTechId = e.target.value;
-           const autoAssign = newTechId && (formData.status === 'Created' || formData.status === 'Unscheduled');
-           const autoUnassign = !newTechId && formData.status === 'Assigned';
-           setFormData({
-             ...formData,
-             technicianId: newTechId,
-             ...(autoAssign ? { status: 'Assigned' } : {}),
-             ...(autoUnassign ? { status: 'Unscheduled' } : {}),
+           setFormData(prev => {
+             const autoAssign = newTechId && (prev.status === 'Created' || prev.status === 'Unscheduled');
+             const autoUnassign = !newTechId && prev.status === 'Assigned';
+             return {
+               ...prev,
+               technicianId: newTechId,
+               ...(autoAssign ? { status: 'Assigned' } : {}),
+               ...(autoUnassign ? { status: 'Unscheduled' } : {}),
+             };
            });
          }} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary min-h-[52px] text-base">
           <option value="">-- Unassigned --</option>
