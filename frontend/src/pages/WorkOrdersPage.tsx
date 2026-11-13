@@ -439,7 +439,6 @@ export const WorkOrdersPage = () => {
               <button onClick={() => { setReviewWorkOrder(wo); setReviewModalOpen(true); }} className="p-2 border border-border text-muted-foreground hover:bg-muted/20 rounded-lg bg-muted/10"><BriefcaseBusiness className="h-4 w-4" /></button>
              </div>
             )}
-            {(wo.status === 'Assigned' || wo.status === 'Initialized') && <div className="flex justify-end text-[11px] text-muted-foreground italic items-center gap-1 mb-1"><Loader2 className="h-3 w-3 animate-spin" /> Waiting for Tech</div>}
             {wo.status === 'InProgress' && <div className="flex justify-end text-[11px] text-blue-500 italic items-center gap-1 mb-1"><Loader2 className="h-3 w-3 animate-spin" /> In Progress</div>}
             <div className="flex justify-end space-x-2">
              <button onClick={() => handleOpenEdit(wo)} className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"><Edit className="h-4 w-4" /></button>
@@ -577,7 +576,7 @@ export const WorkOrdersPage = () => {
          <div className="bg-muted/40 border border-border rounded-xl p-4 space-y-3">
           <p className="text-xs font-semibold text-muted-foreground">Quick Add Customer</p>
           <input type="text" placeholder="Full Name *" value={quickCustomerForm.name} onChange={e => setQuickCustomerForm(f => ({ ...f, name: e.target.value }))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
-          <input type="email" placeholder="Email" value={quickCustomerForm.email} onChange={e => setQuickCustomerForm(f => ({ ...f, email: e.target.value }))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
+          <input type="text" placeholder="Email (optional)" value={quickCustomerForm.email} onChange={e => setQuickCustomerForm(f => ({ ...f, email: e.target.value }))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
           <input type="tel" placeholder="Phone" value={quickCustomerForm.phone} onChange={e => setQuickCustomerForm(f => ({ ...f, phone: e.target.value }))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
           <input type="tel" placeholder="Alt Phone" value={quickCustomerForm.altPhone} onChange={e => setQuickCustomerForm(f => ({ ...f, altPhone: e.target.value }))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />
           <input type="text" placeholder="Address" value={quickCustomerForm.address} onChange={e => setQuickCustomerForm(f => ({ ...f, address: e.target.value }))} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary text-base min-h-[52px]" />

@@ -270,28 +270,6 @@ namespace MyTechERP.Infrastructure.PDF
             {
                 col.Item().LineHorizontal(2).LineColor(BrandColor);
                 
-                col.Item().PaddingTop(5).Row(row => 
-                {
-                    row.RelativeItem().Column(c => {
-                        c.Item().Text("Head Office:").Bold().FontSize(8);
-                        c.Item().Text("1958 Washington Ave").FontSize(7);
-                        c.Item().Text("Portland, ME 04103").FontSize(7);
-                    });
-
-                    row.AutoItem().PaddingHorizontal(5).LineVertical(30).LineColor(Colors.Grey.Medium);
-
-                    row.RelativeItem().Column(c => {
-                        c.Item().Text("Contact:").Bold().FontSize(8);
-                        c.Item().Text("(207) 245-0780").FontSize(7);
-                    });
-                    
-                    row.AutoItem().PaddingHorizontal(5).LineVertical(30).LineColor(Colors.Grey.Medium);
-                    
-                    row.RelativeItem().Column(c => {
-                        c.Item().Text("Business Identity:").Bold().FontSize(8);
-                        c.Item().Text("Acumen Mobile Equipment Service").FontSize(7).FontColor(BrandColor).Bold();
-                    });
-                });
                 
                 col.Item().PaddingTop(5).AlignCenter().Text(x =>
                 {
