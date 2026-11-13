@@ -349,7 +349,7 @@ export const WorkOrdersPage = () => {
      </div>
     ) : (
      <>
-      {/* â”€â”€ Mobile Card List â”€â”€ */}
+      {/* -- Mobile Card List -- */}
       <div className="block md:hidden divide-y divide-border/30">
        {filteredWorkOrders.map(wo => (
         <div key={wo.id} className="p-4">
@@ -360,7 +360,7 @@ export const WorkOrdersPage = () => {
             <span className={`text-xs font-semibold border px-2 py-0.5 rounded-full ${statusStyle(wo.status)}`}>{wo.status}</span>
            </div>
            <p className="text-sm font-medium text-foreground line-clamp-2 leading-snug">{wo.description}</p>
-           <p className="text-xs text-muted-foreground mt-1">{wo.customerName}{wo.siteName ? ` â€” ${wo.siteName}` : ''}</p>
+           <p className="text-xs text-muted-foreground mt-1">{wo.customerName}{wo.siteName ? `  -  ${wo.siteName}` : ''}</p>
            <p className="text-xs text-primary mt-0.5 font-medium">Tech: {wo.technicianName || 'Unassigned'}</p>
           </div>
           <div className="flex gap-1.5 shrink-0">
@@ -389,7 +389,7 @@ export const WorkOrdersPage = () => {
        ))}
       </div>
 
-      {/* â”€â”€ Desktop Table â”€â”€ */}
+      {/* -- Desktop Table -- */}
       <div className="hidden md:block overflow-x-auto">
        <table className="w-full text-sm text-left">
         <thead className="text-xs text-muted-foreground uppercase bg-muted border-b border-border">
@@ -449,7 +449,7 @@ export const WorkOrdersPage = () => {
     </div>
    </div>
 
-   {/* â”€â”€ Edit Modal â”€â”€ */}
+   {/* -- Edit Modal -- */}
    {isEditModalOpen && editingJob && (
     <ModalPortal>
     <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in">
@@ -527,7 +527,7 @@ export const WorkOrdersPage = () => {
     </ModalPortal>
    )}
 
-   {/* â”€â”€ Create Modal â”€â”€ */}
+   {/* -- Create Modal -- */}
    {isCreateModalOpen && (
     <ModalPortal>
     <div className="fixed inset-0 z-[200] flex flex-col md:items-center md:justify-center bg-background md:bg-black/60 md:backdrop-blur-sm animate-in fade-in">
@@ -563,7 +563,7 @@ export const WorkOrdersPage = () => {
         <div className="flex items-center justify-between mb-1.5">
          <label className="text-xs font-semibold text-muted-foreground">Customer *</label>
          <button type="button" onClick={() => { setShowQuickCreateCustomer(v => !v); setQuickCustomerForm({ name: createCustomerSearch, email: '', phone: '', altPhone: '', address: '' }); }} className="text-xs font-semibold text-primary flex items-center gap-1 hover:text-primary/80 transition-colors">
-          {showQuickCreateCustomer ? 'âœ• Cancel' : 'ï¼‹ New Customer'}
+          {showQuickCreateCustomer ? 'x Cancel' : '+ New Customer'}
          </button>
         </div>
         {showQuickCreateCustomer ? (
@@ -588,7 +588,7 @@ export const WorkOrdersPage = () => {
           {showCustomerDropdown && (
            <div className="absolute z-50 w-full mt-1 bg-card border border-border rounded-xl shadow-lg max-h-48 overflow-y-auto">
             {customers.filter(c => (c.companyName || c.name).toLowerCase().includes(createCustomerSearch.toLowerCase())).length === 0
-             ? <div className="px-3 py-2 text-sm text-muted-foreground">No customers found â€” use "ï¼‹ New Customer" above</div>
+             ? <div className="px-3 py-2 text-sm text-muted-foreground">No customers found  -  use "+ New Customer" above</div>
              : customers.filter(c => (c.companyName || c.name).toLowerCase().includes(createCustomerSearch.toLowerCase())).map(c => (
               <button key={c.id} type="button" onMouseDown={() => { setCreateForm({ ...createForm, customerId: c.id }); setCreateCustomerSearch(c.companyName || c.name); setShowCustomerDropdown(false); }} className="w-full text-left px-3 py-3 text-sm hover:bg-muted transition-colors">{c.companyName || c.name}</button>
              ))}
@@ -596,7 +596,7 @@ export const WorkOrdersPage = () => {
           )}
          </div>
         )}
-        {createForm.customerId > 0 && <p className="text-xs text-green-600 mt-1 font-medium">âœ“ Customer selected</p>}
+        {createForm.customerId > 0 && <p className="text-xs text-green-600 mt-1 font-medium">✓ Customer selected</p>}
        </div>
 
        {/* Description */}
