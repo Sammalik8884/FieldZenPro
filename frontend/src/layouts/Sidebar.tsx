@@ -1,6 +1,6 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+﻿import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
-    Home, Users, MapPin, Briefcase, LogOut, FileText, FolderTree, Package, Receipt,
+    Home, Users, Briefcase, LogOut, FileText, FolderTree, Package, Receipt,
     ShieldAlert, X, Wrench, Camera,
     Lock, 
 } from "lucide-react";
@@ -136,10 +136,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                                     <NavLink to="/customers" className={({ isActive }) => cn("text-xs py-2 px-2 rounded-lg transition-colors", isActive ? "text-primary font-medium bg-primary/5" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50")}>
                                         Client List
                                     </NavLink>
-                                    <NavLink to="/sites" className={({ isActive }) => cn("text-xs py-2 px-2 rounded-lg transition-colors flex items-center space-x-2", isActive ? "text-primary font-medium bg-primary/5" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50")}>
-                                        <MapPin className="h-3 w-3" />
-                                        <span>Sites & Locations</span>
-                                    </NavLink>
+                                    {/* Sites & Locations hidden Ã¢â‚¬â€ route still exists */}
                                 </div>
                             )}
                         </div>
